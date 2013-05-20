@@ -1,4 +1,7 @@
 glfw
 ====
 
-GLFW 3.0 wrapper for Go
+Most of the library is wrapped except
+
+* Native access (no plans of implementing)
+* Window and input callback functions
