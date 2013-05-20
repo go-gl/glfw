@@ -18,3 +18,7 @@ void InitVidmodeArray(GLFWmonitor* monitor, int* length) {
 GLFWvidmode GetVidmodeAtIndex(int index) {
 	return vidmodes[index];
 }
+
+void glfwSetMonitorCallbackCB() {
+	glfwSetMonitorCallback(goMonitorCB)
+}

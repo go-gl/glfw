@@ -1,6 +1,12 @@
 package glfw
 
 //#include <GL/glfw3.h>
+//void glfwSetKeyCallbackCB(GLFWwindow *window);
+//void glfwSetCharCallbackCB(GLFWwindow *window);
+//void glfwSetMouseCallbackCB(GLFWwindow *window);
+//void glfwSetPosCallbackCB(GLFWwindow *window);
+//void glfwSetEnterCallbackCB(GLFWwindow *window);
+//void glfwSetScrollCallbackCB(GLFWwindow *window);
 import "C"
 
 import "unsafe"
@@ -170,6 +176,54 @@ const (
 	Repeat  = C.GLFW_REPEAT
 )
 
+type (
+	goMouseFunc  func(*Window, int, int)
+	goPosFunc    func(*Window, float64, float64)
+	goEnterFunc  func(*Window, int)
+	goScrollFunc func(*Window, float64, float64)
+	goKeyFunc    func(*Window, int, int)
+	goCharFunc   func(*Window, uint)
+)
+
+var (
+	fMouseHolder  goMouseFunc
+	fPosHolder    goPosFunc
+	fEnterHolder  goEnterFunc
+	fScrollHolder goScrollFunc
+	fKeyHolder    goKeyFunc
+	fCharHodler   goCharFunc
+)
+
+//export goMouseCB
+func goMouseCB(window *C.GLFWwindow, button, action C.int) {
+	fMouseHolder((*Window)(unsafe.Pointer(window)), int(button), int(action))
+}
+
+//export goPosCB
+func goPosCB(window *C.GLFWwindow, xpos, ypos C.double) {
+	fPosHolder((*Window)(unsafe.Pointer(window)), float64(xpos), float64(ypos))
+}
+
+//export goEnterCB
+func goEnterCB(window *C.GLFWwindow, entered C.int) {
+	fEnterHolder((*Window)(unsafe.Pointer(window)), int(entered))
+}
+
+//export goScrollCB
+func goScrollCB(window *C.GLFWwindow, xpos, ypos C.double) {
+	fScrollHolder((*Window)(unsafe.Pointer(window)), float64(xpos), float64(ypos))
+}
+
+//export goKeyCB
+func goKeyCB(window *C.GLFWwindow, key, action C.int) {
+	fKeyHolder((*Window)(unsafe.Pointer(window)), int(key), int(action))
+}
+
+//export goCharCB
+func goCharCB(window *C.GLFWwindow, character C.uint) {
+	fCharHolder((*Window)(unsafe.Pointer(window)), uint(character))
+}
+
 func (w *Window) GetInputMode(mode int) int {
 	return int(C.glfwGetInputMode((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(mode)))
 }
@@ -194,6 +248,36 @@ func (w *Window) GetCursorPosition() (float64, float64) {
 
 func (w *Window) SetCursorPosition(xpos, ypos float64) {
 	C.glfwSetCursorPos((*C.GLFWwindow)(unsafe.Pointer(w)), C.double(xpos), C.double(ypos))
+}
+
+func (w *Window) SetKeyCallback(cbfun goKeyFunc) {
+	fKeyHolder = cbfun
+	C.glfwSetKeyCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+}
+
+func (w *Window) SetCharacterCallback(cbfun goCharFunc) {
+	fCharHolder = cbfun
+	C.glfwSetCharCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+}
+
+func (w *Window) SetMouseButtonCallback(cbfun goMouseFunc) {
+	fMouseHolder = cbfun
+	C.glfwSetMouseCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+}
+
+func (w *Window) SetCursorPositionCallback(cbfun goPosFunc) {
+	fPosHolder = cbfun
+	C.glfwSetPosCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+}
+
+func (w *Window) SetCursorEnterCallback(cbfun goEnterFunc) {
+	fEnterHolder = cbfun
+	C.glfwSetEnterCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+}
+
+func (w *Window) SetScrollCallback(cbfun goScrollFunc) {
+	fScrollHolder = cbfun
+	C.glfwSetScrollCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
 func GetJoystickParameter(joy, param int) int {

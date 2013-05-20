@@ -2,12 +2,12 @@ package glfw
 
 //#include <stdlib.h>
 //#include <GL/glfw3.h>
-//extern void glfwSetWindowPosCallbackCB(GLFWwindow *window);
-//extern void glfwSetWindowSizeCallbackCB(GLFWwindow *window);
-//extern void glfwSetWindowCloseCallbackCB(GLFWwindow *window);
-//extern void glfwSetWindowRefreshCallbackCB(GLFWwindow *window);
-//extern void glfwSetWindowFocusCallbackCB(GLFWwindow *window);
-//extern void glfwSetWindowIconifyCallbackCB(GLFWwindow *window);
+//void glfwSetWindowPosCallbackCB(GLFWwindow *window);
+//void glfwSetWindowSizeCallbackCB(GLFWwindow *window);
+//void glfwSetWindowCloseCallbackCB(GLFWwindow *window);
+//void glfwSetWindowRefreshCallbackCB(GLFWwindow *window);
+//void glfwSetWindowFocusCallbackCB(GLFWwindow *window);
+//void glfwSetWindowIconifyCallbackCB(GLFWwindow *window);
 import "C"
 
 import "unsafe"
@@ -41,23 +41,53 @@ const (
 
 type Window C.GLFWwindow
 
-type goPositionFunc func(*Window, int, int)
-
-//type goSizeFunc func(*Window, int, int)
-//type goCloseFunc func(*Window)
-//type goRefreshFunc func(*Window)
-//type goFocusFunc func(*Window, int)
-//type goIconifyFunc func(*Window, int)
+type (
+	goPositionFunc func(*Window, int, int)
+	goSizeFunc     func(*Window, int, int)
+	goCloseFunc    func(*Window)
+	goRefreshFunc  func(*Window)
+	goFocusFunc    func(*Window, int)
+	goIconifyFunc  func(*Window, int)
+)
 
 var (
 	fPositionHolder goPositionFunc
-
-//	fSizeHolder goSizeFunc
-//	fCloseHolder goCloseFunc
-//	fRefreshHolder goRefreshFunc
-//	fFocusHolder goFocusFunc
-//	fIconifyHolder goIconifyFunc
+	fSizeHolder     goSizeFunc
+	fCloseHolder    goCloseFunc
+	fRefreshHolder  goRefreshFunc
+	fFocusHolder    goFocusFunc
+	fIconifyHolder  goIconifyFunc
 )
+
+//export goPositionCB
+func goPositionCB(window *C.GLFWwindow, xpos, ypos C.int) {
+	fPositionHolder((*Window)(unsafe.Pointer(window)), int(xpos), int(ypos))
+}
+
+//export goSizeCB
+func goSizeCB(window *C.GLFWwindow, width, height C.int) {
+	fSizeHolder((*Window)(unsafe.Pointer(window)), int(width), int(height))
+}
+
+//export goCloseCB
+func goCloseCB(window *C.GLFWwindow) {
+	fCloseHolder((*Window)(unsafe.Pointer(window)))
+}
+
+//export goRefreshCB
+func goRefreshCB(window *C.GLFWwindow) {
+	fRefreshHolder((*Window)(unsafe.Pointer(window)))
+}
+
+//export goFocusCB
+func goFocusCB(window *C.GLFWwindow, focused C.int) {
+	fFocusHolder((*Window)(unsafe.Pointer(window)), int(focuses))
+}
+
+//export goIconifyCB
+func goIconifyCB(window *C.GLFWwindow, iconified C.int) {
+	fIconifyHolder((*Window)(unsafe.Pointer(window)), int(iconified))
+}
 
 func DefaultWindowHints() {
 	C.glfwDefaultWindowHints()
@@ -149,65 +179,35 @@ func (w *Window) GetUserPointer() unsafe.Pointer {
 	return C.glfwGetWindowUserPointer((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
-////export goPositionCB
-//func goPositionCB(window *C.GLFWwindow, xpos, ypos C.int) {
-//	fPositionHolder((*Window)(unsafe.Pointer(window)), int(xpos), int(ypos))
-//}
+func (w *Window) SetPositionCallback(cbfun goPositionFunc) {
+	fPositionHolder = cbfun
+	C.glfwSetWindowPosCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+}
 
-//func (w *Window) SetPositionCallback(cbfun goPositionFunc) {
-//	fPositionHolder = cbfun
-//	C.glfwSetWindowPosCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
-//}
+func (w *Window) SetSizeCallback(cbfun goSizeFunc) {
+	fSizeHolder = cbfun
+	C.glfwSetWindowSizeCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+}
 
-////export goSizeCB
-//func goSizeCB(window *C.GLFWwindow, width, height C.int) {
-//	fSizeHolder((*Window)(unsafe.Pointer(window)), int(width), int(height))
-//}
+func (w *Window) SetCloseCallback(cbfun goCloseFunc) {
+	fCloseHolder = cbfun
+	C.glfwSetWindowCloseCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+}
 
-//func (w *Window) SetSizeCallback(cbfun goSizeFunc) {
-//	fSizeHolder = cbfun
-//	C.glfwSetWindowSizeCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
-//}
+func (w *Window) SetRefreshCallback(cbfun goRefreshFunc) {
+	fRefreshHolder = cbfun
+	C.glfwSetWindowRefreshCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+}
 
-////export goCloseCB
-//func goCloseCB(window *C.GLFWwindow) {
-//	fCloseHolder((*Window)(unsafe.Pointer(window)))
-//}
+func (w *Window) SetFocusCallback(cbfun goFocusFunc) {
+	fFocusHolder = cbfun
+	C.glfwSetWindowFocusCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+}
 
-//func (w *Window) SetCloseCallback(cbfun goCloseFunc) {
-//	fCloseHolder = cbfun
-//	C.glfwSetWindowCloseCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
-//}
-
-////export goRefreshCB
-//func goRefreshCB(window *C.GLFWwindow) {
-//	fRefreshHolder((*Window)(unsafe.Pointer(window)))
-//}
-
-//func (w *Window) SetRefreshCallback(cbfun goRefreshFunc) {
-//	fRefreshHolder = cbfun
-//	C.glfwSetWindowRefreshCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
-//}
-
-////export goFocusCB
-//func goFocusCB(window *C.GLFWwindow, focused C.int) {
-//	fFocusHolder((*Window)(unsafe.Pointer(window)), int(focuses))
-//}
-
-//func (w *Window) SetFocusCallback(cbfun goFocusFunc) {
-//	fFocusHolder = cbfun
-//	C.glfwSetWindowFocusCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
-//}
-
-////export goIconifyCB
-//func goIconifyCB(window *C.GLFWwindow, iconified C.int) {
-//	fIconifyHolder((*Window)(unsafe.Pointer(window)), int(iconified))
-//}
-
-//func (w *Window) SetIconifyCallback(cbfun goIconifyFunc) {
-//	fIconifyHolder = cbfun
-//	C.glfwSetWindowIconifyCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
-//}
+func (w *Window) SetIconifyCallback(cbfun goIconifyFunc) {
+	fIconifyHolder = cbfun
+	C.glfwSetWindowIconifyCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+}
 
 func PollEvents() {
 	C.glfwPollEvents()

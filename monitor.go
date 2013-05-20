@@ -5,6 +5,7 @@ package glfw
 //GLFWmonitor* GetMonitorAtIndex(int index);
 //void InitVidmodeArray(GLFWmonitor* monitor, int* length);
 //GLFWvidmode GetVidmodeAtIndex(int index);
+//void glfwSetMonitorCallbackCB();
 import "C"
 
 import "unsafe"
@@ -17,6 +18,15 @@ type VideoMode struct {
 	RedBits   int
 	GreenBits int
 	BlueBits  int
+}
+
+type goMonitorFunc func(*Monitor, int)
+
+var fMonitorHolder goMonitorFunc
+
+//export goMonitorCB
+func goMonitorCB(monitor *C.GLFWmonitor, event C.int) {
+	fMonitorHolder((*Monitor)(unsafe.Pointer(monitor)), int(event))
 }
 
 func GetMonitors() [](*Monitor) {
@@ -49,6 +59,11 @@ func (m *Monitor) GetPhysicalSize() (int, int) {
 
 func (m *Monitor) GetName() string {
 	return C.GoString(C.glfwGetMonitorName((*C.GLFWmonitor)(unsafe.Pointer(m))))
+}
+
+func SetMonitorCallback(cbfun goMonitoFunc) {
+	fMonitorHolder = cbfun
+	C.glfwSetMonitorCallbackCB()
 }
 
 func (m *Monitor) GetVideoModes() [](*VideoMode) {
