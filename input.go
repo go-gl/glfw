@@ -191,36 +191,36 @@ var (
 	fEnterHolder  goEnterFunc
 	fScrollHolder goScrollFunc
 	fKeyHolder    goKeyFunc
-	fCharHodler   goCharFunc
+	fCharHolder   goCharFunc
 )
 
 //export goMouseCB
-func goMouseCB(window *C.GLFWwindow, button, action C.int) {
+func goMouseCB(window unsafe.Pointer, button, action C.int) {
 	fMouseHolder((*Window)(unsafe.Pointer(window)), int(button), int(action))
 }
 
 //export goPosCB
-func goPosCB(window *C.GLFWwindow, xpos, ypos C.double) {
+func goPosCB(window unsafe.Pointer, xpos, ypos C.double) {
 	fPosHolder((*Window)(unsafe.Pointer(window)), float64(xpos), float64(ypos))
 }
 
 //export goEnterCB
-func goEnterCB(window *C.GLFWwindow, entered C.int) {
+func goEnterCB(window unsafe.Pointer, entered C.int) {
 	fEnterHolder((*Window)(unsafe.Pointer(window)), int(entered))
 }
 
 //export goScrollCB
-func goScrollCB(window *C.GLFWwindow, xpos, ypos C.double) {
+func goScrollCB(window unsafe.Pointer, xpos, ypos C.double) {
 	fScrollHolder((*Window)(unsafe.Pointer(window)), float64(xpos), float64(ypos))
 }
 
 //export goKeyCB
-func goKeyCB(window *C.GLFWwindow, key, action C.int) {
+func goKeyCB(window unsafe.Pointer, key, action C.int) {
 	fKeyHolder((*Window)(unsafe.Pointer(window)), int(key), int(action))
 }
 
 //export goCharCB
-func goCharCB(window *C.GLFWwindow, character C.uint) {
+func goCharCB(window unsafe.Pointer, character C.uint) {
 	fCharHolder((*Window)(unsafe.Pointer(window)), uint(character))
 }
 

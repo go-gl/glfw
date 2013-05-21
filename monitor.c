@@ -19,6 +19,10 @@ GLFWvidmode GetVidmodeAtIndex(int index) {
 	return vidmodes[index];
 }
 
+void glfwMonitorCB(GLFWmonitor* monitor, int event) {
+	goMonitorCB(monitor, event);
+}
+
 void glfwSetMonitorCallbackCB() {
-	glfwSetMonitorCallback(goMonitorCB)
+	glfwSetMonitorCallback(glfwMonitorCB);
 }

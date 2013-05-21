@@ -25,7 +25,7 @@ type goMonitorFunc func(*Monitor, int)
 var fMonitorHolder goMonitorFunc
 
 //export goMonitorCB
-func goMonitorCB(monitor *C.GLFWmonitor, event C.int) {
+func goMonitorCB(monitor unsafe.Pointer, event C.int) {
 	fMonitorHolder((*Monitor)(unsafe.Pointer(monitor)), int(event))
 }
 
@@ -61,7 +61,7 @@ func (m *Monitor) GetName() string {
 	return C.GoString(C.glfwGetMonitorName((*C.GLFWmonitor)(unsafe.Pointer(m))))
 }
 
-func SetMonitorCallback(cbfun goMonitoFunc) {
+func SetMonitorCallback(cbfun goMonitorFunc) {
 	fMonitorHolder = cbfun
 	C.glfwSetMonitorCallbackCB()
 }

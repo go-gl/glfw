@@ -60,32 +60,32 @@ var (
 )
 
 //export goPositionCB
-func goPositionCB(window *C.GLFWwindow, xpos, ypos C.int) {
+func goPositionCB(window unsafe.Pointer, xpos, ypos C.int) {
 	fPositionHolder((*Window)(unsafe.Pointer(window)), int(xpos), int(ypos))
 }
 
 //export goSizeCB
-func goSizeCB(window *C.GLFWwindow, width, height C.int) {
+func goSizeCB(window unsafe.Pointer, width, height C.int) {
 	fSizeHolder((*Window)(unsafe.Pointer(window)), int(width), int(height))
 }
 
 //export goCloseCB
-func goCloseCB(window *C.GLFWwindow) {
+func goCloseCB(window unsafe.Pointer) {
 	fCloseHolder((*Window)(unsafe.Pointer(window)))
 }
 
 //export goRefreshCB
-func goRefreshCB(window *C.GLFWwindow) {
+func goRefreshCB(window unsafe.Pointer) {
 	fRefreshHolder((*Window)(unsafe.Pointer(window)))
 }
 
 //export goFocusCB
-func goFocusCB(window *C.GLFWwindow, focused C.int) {
-	fFocusHolder((*Window)(unsafe.Pointer(window)), int(focuses))
+func goFocusCB(window unsafe.Pointer, focused C.int) {
+	fFocusHolder((*Window)(unsafe.Pointer(window)), int(focused))
 }
 
 //export goIconifyCB
-func goIconifyCB(window *C.GLFWwindow, iconified C.int) {
+func goIconifyCB(window unsafe.Pointer, iconified C.int) {
 	fIconifyHolder((*Window)(unsafe.Pointer(window)), int(iconified))
 }
 

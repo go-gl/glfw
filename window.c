@@ -1,25 +1,49 @@
 #include "_cgo_export.h"
 
-void glfwSetWindowPosCallbackCB(GLFWwindow *window) {
-	glfwSetWindowPosCallback(window, goPositionCB)
+void glfwPositionCB(GLFWwindow* window, int xpos, int ypos) {
+	goPositionCB(window, xpos, ypos);
 }
 
-void glfwSetWindowSizeCallbackCB(GLFWwindow *window) {
-	glfwSetWindowSizeCallbackCB(window, goSizeCB)
+void glfwSizeCB(GLFWwindow* window, int width, int height) {
+	goSizeCB(window, width, height);
 }
 
-void glfwSetWindowCloseCallbackCB(GLFWwindow *window) {
-	glfwSetWindowCloseCallbackCB(window, goCloseCB)
+void glfwCloseCB(GLFWwindow* window) {
+	goCloseCB(window);
 }
 
-void glfwSetWindowRefreshCallbackCB(GLFWwindow *window) {
-	glfwSetWindowRefreshCallbackCB(window, goRefreshCB)
+void glfwRefreshCB(GLFWwindow* window) {
+	goRefreshCB(window);
 }
 
-void glfwSetWindowFocusCallbackCB(GLFWwindow *window) {
-	glfwSetWindowFocusCallbackCB(window, goFocusCB)
+void glfwFocusCB(GLFWwindow* window, int focused) {
+	goFocusCB(window, focused);
 }
 
-void glfwSetWindowIconifyCallbackCB(GLFWwindow *window) {
-	glfwSetWindowIconifyCallbackCB(window, goIconifyCB)
+void glfwIconifyCB(GLFWwindow* window, int iconified) {
+	goIconifyCB(window, iconified);
+}
+
+void glfwSetWindowPosCallbackCB(GLFWwindow* window) {
+	glfwSetWindowPosCallback(window, glfwPositionCB);
+}
+
+void glfwSetWindowSizeCallbackCB(GLFWwindow* window) {
+	glfwSetWindowSizeCallback(window, glfwSizeCB);
+}
+
+void glfwSetWindowCloseCallbackCB(GLFWwindow* window) {
+	glfwSetWindowCloseCallback(window, glfwCloseCB);
+}
+
+void glfwSetWindowRefreshCallbackCB(GLFWwindow* window) {
+	glfwSetWindowRefreshCallback(window, glfwRefreshCB);
+}
+
+void glfwSetWindowFocusCallbackCB(GLFWwindow* window) {
+	glfwSetWindowFocusCallback(window, glfwFocusCB);
+}
+
+void glfwSetWindowIconifyCallbackCB(GLFWwindow* window) {
+	glfwSetWindowIconifyCallback(window, glfwIconifyCB);
 }
