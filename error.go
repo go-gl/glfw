@@ -19,7 +19,8 @@ const (
 	ApiUnavailable = C.GLFW_API_UNAVAILABLE
 	//The requested client API version is not available.
 	VersionUnavailable = C.GLFW_VERSION_UNAVAILABLE
-	//A platform-specific error occurred that does not match any of the more specific categories.
+	//A platform-specific error occurred that does not match any of the more
+	//specific categories.
 	PlatformError = C.GLFW_PLATFORM_ERROR
 	//The clipboard did not contain data in the requested format.
 	FormatUnavailable = C.GLFW_FORMAT_UNAVAILABLE

@@ -31,6 +31,9 @@ const (
 	JoystickLast = C.GLFW_JOYSTICK_LAST
 )
 
+//These key codes are inspired by the USB HID Usage Tables v1.12 (p. 53-60),
+//but re-arranged to map to 7-bit ASCII for printable keys (function keys are
+//put in the 256+ range).
 const (
 	KeySpace        = C.GLFW_KEY_SPACE
 	KeyApostrophe   = C.GLFW_KEY_APOSTROPHE
@@ -171,9 +174,12 @@ const (
 )
 
 const (
+	//The key or button was released.
 	Release = C.GLFW_RELEASE
-	Press   = C.GLFW_PRESS
-	Repeat  = C.GLFW_REPEAT
+	//The key or button was pressed.
+	Press = C.GLFW_PRESS
+	//The key was held down until it repeated.
+	Repeat = C.GLFW_REPEAT
 )
 
 type (
