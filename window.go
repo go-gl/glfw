@@ -107,8 +107,12 @@ func (w *Window) Destroy() {
 	C.glfwDestroyWindow((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
-func (w *Window) ShouldClose() int {
-	return int(C.glfwWindowShouldClose((*C.GLFWwindow)(unsafe.Pointer(w))))
+func (w *Window) ShouldClose() bool {
+	r := int(C.glfwWindowShouldClose((*C.GLFWwindow)(unsafe.Pointer(w))))
+	if r == C.GL_FALSE {
+		return false
+	}
+	return true
 }
 
 func (w *Window) SetShouldClose(value int) {
