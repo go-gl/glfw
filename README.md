@@ -11,7 +11,7 @@ The library can be used as below:
 	
 	import (
 		"fmt"
-		glfw "github.com/tapir/glfw-go"
+		glfw "github.com/tapir/glfw3-go"
 	)
 	
 	func errorCallback(err int, desc string) {
