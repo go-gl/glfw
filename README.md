@@ -2,7 +2,7 @@ GLFW 3.0 (WIP) Bindings for Go
 ==============================
 
 * All the modules are implemented except "Native Acess".
-* See http://godoc.org/github.com/tapir/glfw-go for documentation.
+* See http://godoc.org/github.com/tapir/glfw3-go for documentation.
 * You can help by submitting examples.
 
 The library can be used as below:
