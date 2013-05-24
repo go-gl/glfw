@@ -182,6 +182,23 @@ const (
 	Repeat = C.GLFW_REPEAT
 )
 
+//Input modes
+const (
+	//See Cursor mode values
+	Cursor = C.GLFW_CURSOR
+	//Value can be either 1 or 0
+	StickyKeys = C.GLFW_STICKY_KEYS
+	//Value can be either 1 or 0
+	StickyMouseButtons = C.GLFW_STICKY_MOUSE_BUTTONS
+)
+
+//Cursor mode values
+const (
+	CursorNormal = C.GLFW_CURSOR_NORMAL
+	CursorHidden = C.GLFW_CURSOR_HIDDEN
+	CursorDisabled = C.GLFW_CURSOR_DISABLED
+)
+
 type (
 	goMouseFunc  func(*Window, int, int)
 	goPosFunc    func(*Window, float64, float64)
@@ -230,32 +247,78 @@ func goCharCB(window unsafe.Pointer, character C.uint) {
 	fCharHolder((*Window)(unsafe.Pointer(window)), uint(character))
 }
 
+// etInputMode returns the value of an input option.
 func (w *Window) GetInputMode(mode int) int {
 	return int(C.glfwGetInputMode((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(mode)))
 }
 
+//Sets an input option.
 func (w *Window) SetInputMode(mode, value int) {
 	C.glfwSetInputMode((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(mode), C.int(value))
 }
 
+//GetKey returns the last reported state of a keyboard key. The returned state
+//is one of Press or Release. The higher-level state Repeat is only reported to
+//the key callback.
+//
+//If the StickyKeys input mode is enabled, this function returns Press the first
+//time you call this function after a key has been pressed, even if the key has
+//already been released.
+//
+//The key functions deal with physical keys, with key tokens named after their
+//use on the standard US keyboard layout. If you want to input text, use the
+//Unicode character callback instead.
 func (w *Window) GetKey(key int) int {
 	return int(C.glfwGetKey((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(key)))
 }
 
+//GetMouseButton returns the last state reported for the specified mouse button.
+//
+//If the StickyMouseButtons input mode is enabled, this function returns Press
+//the first time you call this function after a mouse button has been pressed,
+//even if the mouse button has already been released.
 func (w *Window) GetMouseButton(button int) int {
 	return int(C.glfwGetMouseButton((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(button)))
 }
 
+//GetCursorPosition returns the last reported position of the cursor.
+//
+//If the cursor is disabled (with CursorDisabled) then the cursor position is
+//unbounded and limited only by the minimum and maximum values of a double.
+//
+//The coordinate can be converted to their integer equivalents with the floor
+//function. Casting directly to an integer type works for positive coordinates,
+//but fails for negative ones.
 func (w *Window) GetCursorPosition() (float64, float64) {
 	var xpos, ypos C.double
 	C.glfwGetCursorPos((*C.GLFWwindow)(unsafe.Pointer(w)), &xpos, &ypos)
 	return float64(xpos), float64(ypos)
 }
 
+//SetCursorPosition sets the position of the cursor. The specified window mus
+//be focused. If the window does not have focus when this function is called,
+//it fails silently.
+//
+//If the cursor is disabled (with CursorDisabled) then the cursor position is
+//unbounded and limited only by the minimum and maximum values of a double.
 func (w *Window) SetCursorPosition(xpos, ypos float64) {
 	C.glfwSetCursorPos((*C.GLFWwindow)(unsafe.Pointer(w)), C.double(xpos), C.double(ypos))
 }
 
+//SetKeyCallback sets the key callback which is called when a key is pressed,
+//repeated or released.
+//
+//The key functions deal with physical keys, with layout independent key tokens
+//named after their values in the standard US keyboard layout. If you want to
+//input text, use the SetCharCallback instead.
+//
+//When a window loses focus, it will generate synthetic key release events for
+//all pressed keys. You can tell these events from user-generated events by the
+//fact that the synthetic ones are generated after the window has lost focus,
+//i.e. Focused will be false and the focus callback will have already been
+//called.
+//
+//Function signature for this callback is: func(*Window, int, int)
 func (w *Window) SetKeyCallback(cbfun goKeyFunc) {
 	fKeyHolder = cbfun
 	C.glfwSetKeyCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
