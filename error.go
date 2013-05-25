@@ -38,6 +38,8 @@ func goErrorCB(err C.int, desc *C.char) {
 //and a human-readable description each time a GLFW error occurs.
 //
 //This function may be called before Init.
+//
+//Function signature for this callbask is: func(int, string)
 func SetErrorCallback(cbfun goErrorFunc) {
 	fErrorHolder = cbfun
 	C.glfwSetErrorCallbackCB()

@@ -247,7 +247,7 @@ func goCharCB(window unsafe.Pointer, character C.uint) {
 	fCharHolder((*Window)(unsafe.Pointer(window)), uint(character))
 }
 
-// etInputMode returns the value of an input option.
+//GetInputMode returns the value of an input option.
 func (w *Window) GetInputMode(mode int) int {
 	return int(C.glfwGetInputMode((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(mode)))
 }
