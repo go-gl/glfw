@@ -1,21 +1,10 @@
 #include "_cgo_export.h"
 
-GLFWmonitor** monitors;
-const GLFWvidmode* vidmodes;
-
-void InitMonitorArray(int* length) {
-	monitors = glfwGetMonitors(length);
-}
-
-GLFWmonitor* GetMonitorAtIndex(int index) {
+GLFWmonitor *GetMonitorAtIndex(GLFWmonitor **monitors, int index) {
 	return monitors[index];
 }
 
-void InitVidmodeArray(GLFWmonitor* monitor, int* length) {
-	vidmodes = glfwGetVideoModes(monitor, length);
-}
-
-GLFWvidmode GetVidmodeAtIndex(int index) {
+GLFWvidmode GetVidmodeAtIndex(GLFWvidmode *vidmodes, int index) {
 	return vidmodes[index];
 }
 

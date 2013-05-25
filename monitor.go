@@ -1,10 +1,8 @@
 package glfw
 
 //#include <GLFW/glfw3.h>
-//void InitMonitorArray(int* length);
-//GLFWmonitor* GetMonitorAtIndex(int index);
-//void InitVidmodeArray(GLFWmonitor* monitor, int* length);
-//GLFWvidmode GetVidmodeAtIndex(int index);
+//GLFWmonitor* GetMonitorAtIndex(GLFWmonitor **monitors, int index);
+//GLFWvidmode GetVidmodeAtIndex(GLFWvidmode *vidmodes, int index);
 //void glfwSetMonitorCallbackCB();
 import "C"
 
@@ -32,11 +30,12 @@ func goMonitorCB(monitor unsafe.Pointer, event C.int) {
 //GetMonitors returns a slice of handles for all currently connected monitors.
 func GetMonitors() [](*Monitor) {
 	var length int
-	C.InitMonitorArray((*C.int)(unsafe.Pointer(&length)))
+	
+	mC := C.glfwGetMonitors((*C.int)(unsafe.Pointer(&length)))
 	m := make([](*Monitor), length)
 
 	for i := 0; i < length; i++ {
-		m[i] = (*Monitor)(unsafe.Pointer(C.GetMonitorAtIndex(C.int(i))))
+		m[i] = (*Monitor)(unsafe.Pointer(C.GetMonitorAtIndex(mC, C.int(i))))
 	}
 
 	return m
@@ -90,11 +89,12 @@ func SetMonitorCallback(cbfun goMonitorFunc) {
 //of width and height).
 func (m *Monitor) GetVideoModes() [](*VideoMode) {
 	var length int
-	C.InitVidmodeArray((*C.GLFWmonitor)(unsafe.Pointer(m)), (*C.int)(unsafe.Pointer(&length)))
+
+	vC := C.glfwGetVideoModes((*C.GLFWmonitor)(unsafe.Pointer(m)), (*C.int)(unsafe.Pointer(&length)))
 	v := make([](*VideoMode), length)
 
 	for i := 0; i < length; i++ {
-		t := C.GetVidmodeAtIndex(C.int(i))
+		t := C.GetVidmodeAtIndex(vC, C.int(i))
 		v[i] = &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits)}
 	}
 
