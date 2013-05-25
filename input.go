@@ -324,35 +324,68 @@ func (w *Window) SetKeyCallback(cbfun goKeyFunc) {
 	C.glfwSetKeyCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
+//SetCharacterCallback sets the character callback which is called when a 
+//Unicode character is input.
+//
+//The character callback is intended for text input. If you want to know whether
+//a specific key was pressed or released, use the key callback instead.
+//
+//Function signature for this callback is: func(*Window, uint)
 func (w *Window) SetCharacterCallback(cbfun goCharFunc) {
 	fCharHolder = cbfun
 	C.glfwSetCharCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
+//SetMouseButtonCallback sets the mouse button callback which is called when a 
+//mouse button is pressed or released.
+//
+//When a window loses focus, it will generate synthetic mouse button release
+//events for all pressed mouse buttons. You can tell these events from
+//user-generated events by the fact that the synthetic ones are generated after
+//the window has lost focus, i.e. Focused will be false and the focus
+//callback will have already been called.
+//
+//Function signature for this callback is: func(*Window, int, int)
 func (w *Window) SetMouseButtonCallback(cbfun goMouseFunc) {
 	fMouseHolder = cbfun
 	C.glfwSetMouseCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
+//SetCursorPositionCallback sets the cursor position callback which is called
+//when the cursor is moved. The callback is provided
+//with the position relative to the upper-left corner of the client area of the
+//window.
+//
+//Function signature for this callback is: func(*Window, float64, float64)
 func (w *Window) SetCursorPositionCallback(cbfun goPosFunc) {
 	fPosHolder = cbfun
 	C.glfwSetPosCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
+//SetCursorEnterCallback the cursor boundary crossing callback which is called
+//when the cursor enters or leaves the client area of the window.
+//
+//Function signature for this callback is: func(*Window, int)
 func (w *Window) SetCursorEnterCallback(cbfun goEnterFunc) {
 	fEnterHolder = cbfun
 	C.glfwSetEnterCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
+//SetScrollCallback sets the scroll callback which is called when a scrolling
+//device is used, such as a mouse wheel or scrolling area of a touchpad.
+//
+//Function signature for this callback is: func(*Window, float64, float64)
 func (w *Window) SetScrollCallback(cbfun goScrollFunc) {
 	fScrollHolder = cbfun
 	C.glfwSetScrollCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
+//GetJoystickParameter returns a parameter of the specified joystick.
 func GetJoystickParameter(joy, param int) int {
 	return int(C.glfwGetJoystickParam(C.int(joy), C.int(param)))
 }
 
+//GetJoystickAxes returns an array of axis values.
 func GetJoystickAxes(joy int) []float32 {
 	var axes [16]C.float
 	length := int(C.glfwGetJoystickAxes(C.int(joy), (*C.float)(unsafe.Pointer(&axes[0])), 16))
