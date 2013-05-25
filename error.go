@@ -19,15 +19,15 @@ const (
 	ApiUnavailable = C.GLFW_API_UNAVAILABLE
 	//The requested client API version is not available.
 	VersionUnavailable = C.GLFW_VERSION_UNAVAILABLE
-	//A platform-specific error occurred that does not match any of the more
-	//specific categories.
+	//A platform-specific error occurred that does not match any of the more specific categories.
 	PlatformError = C.GLFW_PLATFORM_ERROR
 	//The clipboard did not contain data in the requested format.
 	FormatUnavailable = C.GLFW_FORMAT_UNAVAILABLE
 )
 
-type goErrorFunc func(int, string) // Function signature to callback
-var fErrorHolder goErrorFunc       // Holds the function for after use
+type goErrorFunc func(int, string)
+
+var fErrorHolder goErrorFunc
 
 //export goErrorCB
 func goErrorCB(err C.int, desc *C.char) {
@@ -39,7 +39,7 @@ func goErrorCB(err C.int, desc *C.char) {
 //
 //This function may be called before Init.
 //
-//Function signature for this callbask is: func(int, string)
+//Function signature for this callback is: func(int, string)
 func SetErrorCallback(cbfun goErrorFunc) {
 	fErrorHolder = cbfun
 	C.glfwSetErrorCallbackCB()

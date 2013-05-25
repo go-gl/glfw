@@ -6,7 +6,7 @@ import "C"
 
 import "unsafe"
 
-//MakeContextCurrent makes the context of the specified window current.
+//MakeContextCurrent makes the context of the window current.
 func (w *Window) MakeContextCurrent() {
 	C.glfwMakeContextCurrent(w.data)
 }
@@ -16,7 +16,7 @@ func GetCurrentContext() *Window {
 	return &Window{C.glfwGetCurrentContext()}
 }
 
-//SwapBuffers swaps the front and back buffers of the specified window. If the
+//SwapBuffers swaps the front and back buffers of the window. If the
 //swap interval is greater than zero, the GPU driver waits the specified number
 //of screen updates before swapping the buffers.
 func (w *Window) SwapBuffers() {
@@ -50,9 +50,11 @@ func SwapInterval(interval int) {
 //The extension strings will not change during the lifetime of a context, so
 //there is no danger in doing this.
 func ExtensionSupported(extension string) bool {
-	w := C.CString(extension)
-	defer C.free(unsafe.Pointer(w))
-	r := C.glfwExtensionSupported(w)
+	e := C.CString(extension)
+	defer C.free(unsafe.Pointer(e))
+
+	r := C.glfwExtensionSupported(e)
+
 	if r == C.GL_FALSE {
 		return false
 	}

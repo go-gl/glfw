@@ -7,13 +7,15 @@ import "C"
 
 //GammaRamp describes the gamma ramp for a monitor.
 type GammaRamp struct {
-	Red   []uint16
+	//A slice of value describing the response of the red channel.
+	Red []uint16
+	//A slice of value describing the response of the green channel.
 	Green []uint16
-	Blue  []uint16
-	Size  uint
+	//A slice of value describing the response of the blue channel.
+	Blue []uint16
 }
 
-//SetGamma generates a gamma ramp from the specified exponent and then calls
+//SetGamma generates a 256-element gamma ramp from the specified exponent and then calls
 //SetGamma with it.
 func (m *Monitor) SetGamma(gamma float32) {
 	C.glfwSetGamma(m.data, C.float(gamma))
@@ -25,11 +27,9 @@ func (m *Monitor) GetGammaRamp() *GammaRamp {
 
 	rampC := C.glfwGetGammaRamp(m.data)
 	length := int(rampC.size)
-
 	ramp.Red = make([]uint16, length)
 	ramp.Green = make([]uint16, length)
 	ramp.Blue = make([]uint16, length)
-	ramp.Size = uint(length)
 
 	for i := 0; i < length; i++ {
 		ramp.Red[i] = uint16(C.GetGammaAtIndex(rampC.red, C.int(i)))
@@ -40,18 +40,17 @@ func (m *Monitor) GetGammaRamp() *GammaRamp {
 	return &ramp
 }
 
-//SetGammaRamp sets the current gamma ramp for the specified monitor.
+//SetGammaRamp sets the current gamma ramp for the monitor.
 func (m *Monitor) SetGammaRamp(ramp *GammaRamp) {
 	var rampC C.GLFWgammaramp
 
-	length := int(ramp.Size)
+	length := len(ramp.Red)
 
 	for i := 0; i < length; i++ {
 		C.SetGammaAtIndex(rampC.red, C.int(i), C.ushort(ramp.Red[i]))
 		C.SetGammaAtIndex(rampC.green, C.int(i), C.ushort(ramp.Green[i]))
 		C.SetGammaAtIndex(rampC.blue, C.int(i), C.ushort(ramp.Blue[i]))
 	}
-	rampC.size = C.uint(ramp.Size)
 
 	C.glfwSetGammaRamp(m.data, &rampC)
 }

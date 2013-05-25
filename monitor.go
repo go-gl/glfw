@@ -12,12 +12,18 @@ type Monitor struct {
 	data *C.GLFWmonitor
 }
 
+//VideoMode describes a single video mode.
 type VideoMode struct {
-	Width     int
-	Height    int
-	RedBits   int
+	//The width, in pixels, of the video mode.
+	Width int
+	//The height, in pixels, of the video mode.
+	Height int
+	//The bit depth of the red channel of the video mode.
+	RedBits int
+	//The bit depth of the green channel of the video mode.
 	GreenBits int
-	BlueBits  int
+	//The bit depth of the blue channel of the video mode.
+	BlueBits int
 }
 
 type goMonitorFunc func(*Monitor, int)
@@ -50,7 +56,7 @@ func GetPrimaryMonitor() *Monitor {
 }
 
 //GetPosition returns the position, in screen coordinates, of the upper-left
-//corner of the specified monitor.
+//corner of the monitor.
 func (m *Monitor) GetPosition() (int, int) {
 	var xpos, ypos C.int
 	C.glfwGetMonitorPos(m.data, &xpos, &ypos)
@@ -58,7 +64,7 @@ func (m *Monitor) GetPosition() (int, int) {
 }
 
 //GetPhysicalSize returns the size, in millimetres, of the display area of the
-//specified monitor.
+//monitor.
 //
 //Note: Some operating systems do not provide accurate information, either
 //because the monitor's EDID data is incorrect, or because the driver does not
@@ -69,8 +75,7 @@ func (m *Monitor) GetPhysicalSize() (int, int) {
 	return int(width), int(height)
 }
 
-//GetName returns a human-readable name, encoded as UTF-8, of the specified
-//monitor.
+//GetName returns a human-readable name, encoded as UTF-8, of the monitor.
 func (m *Monitor) GetName() string {
 	return C.GoString(C.glfwGetMonitorName(m.data))
 }
@@ -79,16 +84,16 @@ func (m *Monitor) GetName() string {
 //currently set callback. This is called when a monitor is connected to or
 //disconnected from the system.
 //
-//Function signature for this callback is: func(*Monitori int)
+//Function signature for this callback is: func(*Monitor, int)
 func SetMonitorCallback(cbfun goMonitorFunc) {
 	fMonitorHolder = cbfun
 	C.glfwSetMonitorCallbackCB()
 }
 
-//GetVideoModes returns an array of all video modes supported by the specified
-//monitor. The returned array is sorted in ascending order, first by color bit
-//depth (the sum of all channel depths) and then by resolution area (the product
-//of width and height).
+//GetVideoModes returns an array of all video modes supported by the monitor.
+//The returned array is sorted in ascending order, first by color bit depth
+//(the sum of all channel depths) and then by resolution area (the product of
+//width and height).
 func (m *Monitor) GetVideoModes() [](*VideoMode) {
 	var length int
 
@@ -103,7 +108,7 @@ func (m *Monitor) GetVideoModes() [](*VideoMode) {
 	return v
 }
 
-//GetVideoMode returns the current video mode of the specified monitor. If you
+//GetVideoMode returns the current video mode of the monitor. If you
 //are using a full screen window, the return value will therefore depend on
 //whether it is focused.
 func (m *Monitor) GetVideoMode() *VideoMode {

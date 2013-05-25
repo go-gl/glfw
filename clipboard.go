@@ -11,6 +11,7 @@ import "unsafe"
 func (w *Window) SetClipboardString(str string) {
 	cp := C.CString(str)
 	defer C.free(unsafe.Pointer(cp))
+
 	C.glfwSetClipboardString(w.data, cp)
 }
 

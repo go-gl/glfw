@@ -176,6 +176,13 @@ const (
 )
 
 const (
+	ModShift   = C.GLFW_MOD_SHIFT
+	ModControl = C.GLFW_MOD_CONTROL
+	ModAlt     = C.GLFW_MOD_ALT
+	ModSuper   = C.GLFW_MOD_SUPER
+)
+
+const (
 	//The key or button was released.
 	Release = C.GLFW_RELEASE
 	//The key or button was pressed.
@@ -249,12 +256,12 @@ func goCharCB(window unsafe.Pointer, character C.uint) {
 	fCharHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, uint(character))
 }
 
-//GetInputMode returns the value of an input option.
+//GetInputMode returns the value of an input option of the window.
 func (w *Window) GetInputMode(mode int) int {
 	return int(C.glfwGetInputMode(w.data, C.int(mode)))
 }
 
-//Sets an input option.
+//Sets an input option for the window.
 func (w *Window) SetInputMode(mode, value int) {
 	C.glfwSetInputMode(w.data, C.int(mode), C.int(value))
 }
@@ -387,7 +394,7 @@ func JoystickPresent(joy int) int {
 	return int(C.glfwJoystickPresent(C.int(joy)))
 }
 
-//GetJoystickAxes returns an array of axis values.
+//GetJoystickAxes returns a slice of axis values.
 func GetJoystickAxes(joy int) []float32 {
 	var length int
 	axis := C.glfwGetJoystickAxes(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
@@ -398,6 +405,7 @@ func GetJoystickAxes(joy int) []float32 {
 	return a
 }
 
+//GetJoystickButtons returns a slice of button values.
 func GetJoystickButtons(joy int) []byte {
 	var length int
 	buttons := C.glfwGetJoystickButtons(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
@@ -408,6 +416,7 @@ func GetJoystickButtons(joy int) []byte {
 	return b
 }
 
+//GetJoystickName returns the name, encoded as UTF-8, of the specified joystick.
 func GetJoystickName(joy int) string {
 	return C.GoString(C.glfwGetJoystickName(C.int(joy)))
 }

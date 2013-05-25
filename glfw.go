@@ -7,11 +7,9 @@ import "C"
 const (
 	//This is incremented when the API is changed in non-compatible ways.
 	VersionMajor = C.GLFW_VERSION_MAJOR
-	//This is incremented when features are added to the API but it
-	//remains backward-compatible.
+	//This is incremented when features are added to the API but it remains backward-compatible.
 	VersionMinor = C.GLFW_VERSION_MINOR
-	//This is incremented when a bug fix release is made that does not contain
-	//any API changes.
+	//This is incremented when a bug fix release is made that does not contain any API changes.
 	VersionRevision = C.GLFW_VERSION_REVISION
 )
 
@@ -29,11 +27,12 @@ const (
 //This function may take several seconds to complete on some systems, while on
 //other systems it may take only a fraction of a second to complete.
 //
-//NOTE: On Mac OS X, this function will change the current directory of the
+//On Mac OS X, this function will change the current directory of the
 //application to the Contents/Resources subdirectory of the application's
 //bundle, if present.
 func Init() bool {
 	r := C.glfwInit()
+
 	if r == C.GL_TRUE {
 		return true
 	}
@@ -63,6 +62,7 @@ func GetVersion() (int, int, int) {
 		minor C.int
 		rev   C.int
 	)
+
 	C.glfwGetVersion(&major, &minor, &rev)
 	return int(major), int(minor), int(rev)
 }
@@ -71,6 +71,8 @@ func GetVersion() (int, int, int) {
 //to which configuration macros were defined. This is intended for use when
 //submitting bug reports, to allow developers to see which code paths are
 //enabled in a binary.
+//
+//This function may be called before Init.
 func GetVersionString() string {
 	return C.GoString(C.glfwGetVersionString())
 }
