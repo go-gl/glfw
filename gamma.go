@@ -5,8 +5,6 @@ package glfw
 //void SetGammaAtIndex(unsigned short *color, int i, unsigned short value);
 import "C"
 
-import "unsafe"
-
 //GammaRamp describes the gamma ramp for a monitor.
 type GammaRamp struct {
 	Red   []uint16
@@ -18,14 +16,14 @@ type GammaRamp struct {
 //SetGamma generates a gamma ramp from the specified exponent and then calls
 //SetGamma with it.
 func (m *Monitor) SetGamma(gamma float32) {
-	C.glfwSetGamma((*C.GLFWmonitor)(unsafe.Pointer(m)), C.float(gamma))
+	C.glfwSetGamma(m.data, C.float(gamma))
 }
 
 //GetGammaRamp retrieves the current gamma ramp of the specified monitor.
 func (m *Monitor) GetGammaRamp() *GammaRamp {
 	var ramp GammaRamp
 
-	rampC := C.glfwGetGammaRamp((*C.GLFWmonitor)(unsafe.Pointer(m)))
+	rampC := C.glfwGetGammaRamp(m.data)
 	length := int(rampC.size)
 
 	ramp.Red = make([]uint16, length)
@@ -55,5 +53,5 @@ func (m *Monitor) SetGammaRamp(ramp *GammaRamp) {
 	}
 	rampC.size = C.uint(ramp.Size)
 
-	C.glfwSetGammaRamp((*C.GLFWmonitor)(unsafe.Pointer(m)), &rampC)
+	C.glfwSetGammaRamp(m.data, &rampC)
 }

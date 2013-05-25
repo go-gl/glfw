@@ -221,42 +221,42 @@ var (
 
 //export goMouseCB
 func goMouseCB(window unsafe.Pointer, button, action, mods C.int) {
-	fMouseHolder((*Window)(unsafe.Pointer(window)), int(button), int(action), int(mods))
+	fMouseHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(button), int(action), int(mods))
 }
 
 //export goPosCB
 func goPosCB(window unsafe.Pointer, xpos, ypos C.double) {
-	fPosHolder((*Window)(unsafe.Pointer(window)), float64(xpos), float64(ypos))
+	fPosHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, float64(xpos), float64(ypos))
 }
 
 //export goEnterCB
 func goEnterCB(window unsafe.Pointer, entered C.int) {
-	fEnterHolder((*Window)(unsafe.Pointer(window)), int(entered))
+	fEnterHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(entered))
 }
 
 //export goScrollCB
 func goScrollCB(window unsafe.Pointer, xpos, ypos C.double) {
-	fScrollHolder((*Window)(unsafe.Pointer(window)), float64(xpos), float64(ypos))
+	fScrollHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, float64(xpos), float64(ypos))
 }
 
 //export goKeyCB
 func goKeyCB(window unsafe.Pointer, key, action, mods C.int) {
-	fKeyHolder((*Window)(unsafe.Pointer(window)), int(key), int(action), int(mods))
+	fKeyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(key), int(action), int(mods))
 }
 
 //export goCharCB
 func goCharCB(window unsafe.Pointer, character C.uint) {
-	fCharHolder((*Window)(unsafe.Pointer(window)), uint(character))
+	fCharHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, uint(character))
 }
 
 //GetInputMode returns the value of an input option.
 func (w *Window) GetInputMode(mode int) int {
-	return int(C.glfwGetInputMode((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(mode)))
+	return int(C.glfwGetInputMode(w.data, C.int(mode)))
 }
 
 //Sets an input option.
 func (w *Window) SetInputMode(mode, value int) {
-	C.glfwSetInputMode((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(mode), C.int(value))
+	C.glfwSetInputMode(w.data, C.int(mode), C.int(value))
 }
 
 //GetKey returns the last reported state of a keyboard key. The returned state
@@ -271,7 +271,7 @@ func (w *Window) SetInputMode(mode, value int) {
 //use on the standard US keyboard layout. If you want to input text, use the
 //Unicode character callback instead.
 func (w *Window) GetKey(key int) int {
-	return int(C.glfwGetKey((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(key)))
+	return int(C.glfwGetKey(w.data, C.int(key)))
 }
 
 //GetMouseButton returns the last state reported for the specified mouse button.
@@ -280,7 +280,7 @@ func (w *Window) GetKey(key int) int {
 //the first time you call this function after a mouse button has been pressed,
 //even if the mouse button has already been released.
 func (w *Window) GetMouseButton(button int) int {
-	return int(C.glfwGetMouseButton((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(button)))
+	return int(C.glfwGetMouseButton(w.data, C.int(button)))
 }
 
 //GetCursorPosition returns the last reported position of the cursor.
@@ -293,7 +293,7 @@ func (w *Window) GetMouseButton(button int) int {
 //but fails for negative ones.
 func (w *Window) GetCursorPosition() (float64, float64) {
 	var xpos, ypos C.double
-	C.glfwGetCursorPos((*C.GLFWwindow)(unsafe.Pointer(w)), &xpos, &ypos)
+	C.glfwGetCursorPos(w.data, &xpos, &ypos)
 	return float64(xpos), float64(ypos)
 }
 
@@ -304,7 +304,7 @@ func (w *Window) GetCursorPosition() (float64, float64) {
 //If the cursor is disabled (with CursorDisabled) then the cursor position is
 //unbounded and limited only by the minimum and maximum values of a double.
 func (w *Window) SetCursorPosition(xpos, ypos float64) {
-	C.glfwSetCursorPos((*C.GLFWwindow)(unsafe.Pointer(w)), C.double(xpos), C.double(ypos))
+	C.glfwSetCursorPos(w.data, C.double(xpos), C.double(ypos))
 }
 
 //SetKeyCallback sets the key callback which is called when a key is pressed,
@@ -323,7 +323,7 @@ func (w *Window) SetCursorPosition(xpos, ypos float64) {
 //Function signature for this callback is: func(*Window, int, int)
 func (w *Window) SetKeyCallback(cbfun goKeyFunc) {
 	fKeyHolder = cbfun
-	C.glfwSetKeyCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetKeyCallbackCB(w.data)
 }
 
 //SetCharacterCallback sets the character callback which is called when a
@@ -335,7 +335,7 @@ func (w *Window) SetKeyCallback(cbfun goKeyFunc) {
 //Function signature for this callback is: func(*Window, uint)
 func (w *Window) SetCharacterCallback(cbfun goCharFunc) {
 	fCharHolder = cbfun
-	C.glfwSetCharCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetCharCallbackCB(w.data)
 }
 
 //SetMouseButtonCallback sets the mouse button callback which is called when a
@@ -350,7 +350,7 @@ func (w *Window) SetCharacterCallback(cbfun goCharFunc) {
 //Function signature for this callback is: func(*Window, int, int)
 func (w *Window) SetMouseButtonCallback(cbfun goMouseFunc) {
 	fMouseHolder = cbfun
-	C.glfwSetMouseCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetMouseCallbackCB(w.data)
 }
 
 //SetCursorPositionCallback sets the cursor position callback which is called
@@ -361,7 +361,7 @@ func (w *Window) SetMouseButtonCallback(cbfun goMouseFunc) {
 //Function signature for this callback is: func(*Window, float64, float64)
 func (w *Window) SetCursorPositionCallback(cbfun goPosFunc) {
 	fPosHolder = cbfun
-	C.glfwSetPosCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetPosCallbackCB(w.data)
 }
 
 //SetCursorEnterCallback the cursor boundary crossing callback which is called
@@ -370,7 +370,7 @@ func (w *Window) SetCursorPositionCallback(cbfun goPosFunc) {
 //Function signature for this callback is: func(*Window, int)
 func (w *Window) SetCursorEnterCallback(cbfun goEnterFunc) {
 	fEnterHolder = cbfun
-	C.glfwSetEnterCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetEnterCallbackCB(w.data)
 }
 
 //SetScrollCallback sets the scroll callback which is called when a scrolling
@@ -379,7 +379,7 @@ func (w *Window) SetCursorEnterCallback(cbfun goEnterFunc) {
 //Function signature for this callback is: func(*Window, float64, float64)
 func (w *Window) SetScrollCallback(cbfun goScrollFunc) {
 	fScrollHolder = cbfun
-	C.glfwSetScrollCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetScrollCallbackCB(w.data)
 }
 
 //GetJoystickPresent returns whether the specified joystick is present.

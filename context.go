@@ -8,19 +8,19 @@ import "unsafe"
 
 //MakeContextCurrent makes the context of the specified window current.
 func (w *Window) MakeContextCurrent() {
-	C.glfwMakeContextCurrent((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwMakeContextCurrent(w.data)
 }
 
 //GetCurrentContext returns the window whose context is current.
 func GetCurrentContext() *Window {
-	return (*Window)(unsafe.Pointer(C.glfwGetCurrentContext()))
+	return &Window{C.glfwGetCurrentContext()}
 }
 
 //SwapBuffers swaps the front and back buffers of the specified window. If the
 //swap interval is greater than zero, the GPU driver waits the specified number
 //of screen updates before swapping the buffers.
 func (w *Window) SwapBuffers() {
-	C.glfwSwapBuffers((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSwapBuffers(w.data)
 }
 
 //SwapInterval sets the swap interval for the current context, i.e. the number

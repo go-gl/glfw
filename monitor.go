@@ -8,7 +8,9 @@ import "C"
 
 import "unsafe"
 
-type Monitor C.GLFWmonitor
+type Monitor struct {
+	data *C.GLFWmonitor
+}
 
 type VideoMode struct {
 	Width     int
@@ -24,18 +26,18 @@ var fMonitorHolder goMonitorFunc
 
 //export goMonitorCB
 func goMonitorCB(monitor unsafe.Pointer, event C.int) {
-	fMonitorHolder((*Monitor)(unsafe.Pointer(monitor)), int(event))
+	fMonitorHolder(&Monitor{(*C.GLFWmonitor)(unsafe.Pointer(monitor))}, int(event))
 }
 
 //GetMonitors returns a slice of handles for all currently connected monitors.
 func GetMonitors() [](*Monitor) {
 	var length int
-	
+
 	mC := C.glfwGetMonitors((*C.int)(unsafe.Pointer(&length)))
 	m := make([](*Monitor), length)
 
 	for i := 0; i < length; i++ {
-		m[i] = (*Monitor)(unsafe.Pointer(C.GetMonitorAtIndex(mC, C.int(i))))
+		m[i].data = C.GetMonitorAtIndex(mC, C.int(i))
 	}
 
 	return m
@@ -44,14 +46,14 @@ func GetMonitors() [](*Monitor) {
 //GetPrimaryMonitor returns the primary monitor. This is usually the monitor
 //where elements like the Windows task bar or the OS X menu bar is located.
 func GetPrimaryMonitor() *Monitor {
-	return (*Monitor)(unsafe.Pointer(C.glfwGetPrimaryMonitor()))
+	return &Monitor{C.glfwGetPrimaryMonitor()}
 }
 
 //GetPosition returns the position, in screen coordinates, of the upper-left
 //corner of the specified monitor.
 func (m *Monitor) GetPosition() (int, int) {
 	var xpos, ypos C.int
-	C.glfwGetMonitorPos((*C.GLFWmonitor)(unsafe.Pointer(m)), &xpos, &ypos)
+	C.glfwGetMonitorPos(m.data, &xpos, &ypos)
 	return int(xpos), int(ypos)
 }
 
@@ -63,14 +65,14 @@ func (m *Monitor) GetPosition() (int, int) {
 //report it accurately.
 func (m *Monitor) GetPhysicalSize() (int, int) {
 	var width, height C.int
-	C.glfwGetMonitorPhysicalSize((*C.GLFWmonitor)(unsafe.Pointer(m)), &width, &height)
+	C.glfwGetMonitorPhysicalSize(m.data, &width, &height)
 	return int(width), int(height)
 }
 
 //GetName returns a human-readable name, encoded as UTF-8, of the specified
 //monitor.
 func (m *Monitor) GetName() string {
-	return C.GoString(C.glfwGetMonitorName((*C.GLFWmonitor)(unsafe.Pointer(m))))
+	return C.GoString(C.glfwGetMonitorName(m.data))
 }
 
 //SetMonitorCallback sets the monitor configuration callback, or removes the
@@ -90,7 +92,7 @@ func SetMonitorCallback(cbfun goMonitorFunc) {
 func (m *Monitor) GetVideoModes() [](*VideoMode) {
 	var length int
 
-	vC := C.glfwGetVideoModes((*C.GLFWmonitor)(unsafe.Pointer(m)), (*C.int)(unsafe.Pointer(&length)))
+	vC := C.glfwGetVideoModes(m.data, (*C.int)(unsafe.Pointer(&length)))
 	v := make([](*VideoMode), length)
 
 	for i := 0; i < length; i++ {
@@ -105,6 +107,6 @@ func (m *Monitor) GetVideoModes() [](*VideoMode) {
 //are using a full screen window, the return value will therefore depend on
 //whether it is focused.
 func (m *Monitor) GetVideoMode() *VideoMode {
-	t := C.glfwGetVideoMode((*C.GLFWmonitor)(unsafe.Pointer(m)))
+	t := C.glfwGetVideoMode(m.data)
 	return &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits)}
 }

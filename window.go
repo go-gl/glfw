@@ -39,7 +39,9 @@ const (
 	OpenglCompatProfile = C.GLFW_OPENGL_COMPAT_PROFILE
 )
 
-type Window C.GLFWwindow
+type Window struct {
+	data *C.GLFWwindow
+}
 
 type (
 	goPositionFunc func(*Window, int, int)
@@ -61,32 +63,32 @@ var (
 
 //export goPositionCB
 func goPositionCB(window unsafe.Pointer, xpos, ypos C.int) {
-	fPositionHolder((*Window)(unsafe.Pointer(window)), int(xpos), int(ypos))
+	fPositionHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(xpos), int(ypos))
 }
 
 //export goSizeCB
 func goSizeCB(window unsafe.Pointer, width, height C.int) {
-	fSizeHolder((*Window)(unsafe.Pointer(window)), int(width), int(height))
+	fSizeHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(width), int(height))
 }
 
 //export goCloseCB
 func goCloseCB(window unsafe.Pointer) {
-	fCloseHolder((*Window)(unsafe.Pointer(window)))
+	fCloseHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))})
 }
 
 //export goRefreshCB
 func goRefreshCB(window unsafe.Pointer) {
-	fRefreshHolder((*Window)(unsafe.Pointer(window)))
+	fRefreshHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))})
 }
 
 //export goFocusCB
 func goFocusCB(window unsafe.Pointer, focused C.int) {
-	fFocusHolder((*Window)(unsafe.Pointer(window)), int(focused))
+	fFocusHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(focused))
 }
 
 //export goIconifyCB
 func goIconifyCB(window unsafe.Pointer, iconified C.int) {
-	fIconifyHolder((*Window)(unsafe.Pointer(window)), int(iconified))
+	fIconifyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(iconified))
 }
 
 func DefaultWindowHints() {
@@ -100,15 +102,15 @@ func WindowHint(target, hint int) {
 func CreateWindow(width, height int, title string, monitor *Monitor, share *Window) *Window {
 	t := C.CString(title)
 	defer C.free(unsafe.Pointer(t))
-	return (*Window)(unsafe.Pointer(C.glfwCreateWindow(C.int(width), C.int(height), t, (*C.GLFWmonitor)(unsafe.Pointer(monitor)), (*C.GLFWwindow)(unsafe.Pointer(share)))))
+	return &Window{C.glfwCreateWindow(C.int(width), C.int(height), t, monitor.data, share.data)}
 }
 
 func (w *Window) Destroy() {
-	C.glfwDestroyWindow((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwDestroyWindow(w.data)
 }
 
 func (w *Window) ShouldClose() bool {
-	r := int(C.glfwWindowShouldClose((*C.GLFWwindow)(unsafe.Pointer(w))))
+	r := int(C.glfwWindowShouldClose(w.data))
 	if r == C.GL_FALSE {
 		return false
 	}
@@ -116,13 +118,13 @@ func (w *Window) ShouldClose() bool {
 }
 
 func (w *Window) SetShouldClose(value int) {
-	C.glfwSetWindowShouldClose((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(value))
+	C.glfwSetWindowShouldClose(w.data, C.int(value))
 }
 
 func (w *Window) SetTitle(title string) {
 	t := C.CString(title)
 	defer C.free(unsafe.Pointer(t))
-	C.glfwSetWindowTitle((*C.GLFWwindow)(unsafe.Pointer(w)), t)
+	C.glfwSetWindowTitle(w.data, t)
 }
 
 func (w *Window) GetPosition() (int, int) {
@@ -130,12 +132,13 @@ func (w *Window) GetPosition() (int, int) {
 		xpos C.int
 		ypos C.int
 	)
-	C.glfwGetWindowPos((*C.GLFWwindow)(unsafe.Pointer(w)), &xpos, &ypos)
+
+	C.glfwGetWindowPos(w.data, &xpos, &ypos)
 	return int(xpos), int(ypos)
 }
 
 func (w *Window) SetPosition(xpos, ypos int) {
-	C.glfwSetWindowPos((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(xpos), C.int(ypos))
+	C.glfwSetWindowPos(w.data, C.int(xpos), C.int(ypos))
 }
 
 func (w *Window) GetSize() (int, int) {
@@ -143,74 +146,75 @@ func (w *Window) GetSize() (int, int) {
 		width  C.int
 		height C.int
 	)
-	C.glfwGetWindowSize((*C.GLFWwindow)(unsafe.Pointer(w)), &width, &height)
+
+	C.glfwGetWindowSize(w.data, &width, &height)
 	return int(width), int(height)
 }
 
 func (w *Window) SetSize(width, height int) {
-	C.glfwSetWindowSize((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(width), C.int(height))
+	C.glfwSetWindowSize(w.data, C.int(width), C.int(height))
 }
 
 func (w *Window) Iconify() {
-	C.glfwIconifyWindow((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwIconifyWindow(w.data)
 }
 
 func (w *Window) Restore() {
-	C.glfwRestoreWindow((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwRestoreWindow(w.data)
 }
 
 func (w *Window) Show() {
-	C.glfwShowWindow((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwShowWindow(w.data)
 }
 
 func (w *Window) Hide() {
-	C.glfwHideWindow((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwHideWindow(w.data)
 }
 
 func (w *Window) GetMonitor() *Monitor {
-	return (*Monitor)(unsafe.Pointer(C.glfwGetWindowMonitor((*C.GLFWwindow)(unsafe.Pointer(w)))))
+	return &Monitor{C.glfwGetWindowMonitor(w.data)}
 }
 
 func (w *Window) GetAttribute(attrib int) int {
-	return int(C.glfwGetWindowAttrib((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(attrib)))
+	return int(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
 }
 
 func (w *Window) SetUserPointer(pointer unsafe.Pointer) {
-	C.glfwSetWindowUserPointer((*C.GLFWwindow)(unsafe.Pointer(w)), pointer)
+	C.glfwSetWindowUserPointer(w.data, pointer)
 }
 
 func (w *Window) GetUserPointer() unsafe.Pointer {
-	return C.glfwGetWindowUserPointer((*C.GLFWwindow)(unsafe.Pointer(w)))
+	return C.glfwGetWindowUserPointer(w.data)
 }
 
 func (w *Window) SetPositionCallback(cbfun goPositionFunc) {
 	fPositionHolder = cbfun
-	C.glfwSetWindowPosCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetWindowPosCallbackCB(w.data)
 }
 
 func (w *Window) SetSizeCallback(cbfun goSizeFunc) {
 	fSizeHolder = cbfun
-	C.glfwSetWindowSizeCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetWindowSizeCallbackCB(w.data)
 }
 
 func (w *Window) SetCloseCallback(cbfun goCloseFunc) {
 	fCloseHolder = cbfun
-	C.glfwSetWindowCloseCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetWindowCloseCallbackCB(w.data)
 }
 
 func (w *Window) SetRefreshCallback(cbfun goRefreshFunc) {
 	fRefreshHolder = cbfun
-	C.glfwSetWindowRefreshCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetWindowRefreshCallbackCB(w.data)
 }
 
 func (w *Window) SetFocusCallback(cbfun goFocusFunc) {
 	fFocusHolder = cbfun
-	C.glfwSetWindowFocusCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetWindowFocusCallbackCB(w.data)
 }
 
 func (w *Window) SetIconifyCallback(cbfun goIconifyFunc) {
 	fIconifyHolder = cbfun
-	C.glfwSetWindowIconifyCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
+	C.glfwSetWindowIconifyCallbackCB(w.data)
 }
 
 func PollEvents() {
