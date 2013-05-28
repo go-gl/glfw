@@ -1,7 +1,7 @@
 package glfw
 
 //#include <stdlib.h>
-//#include <GL/glfw3.h>
+//#include <GLFW/glfw3.h>
 //void glfwSetWindowPosCallbackCB(GLFWwindow *window);
 //void glfwSetWindowSizeCallbackCB(GLFWwindow *window);
 //void glfwSetWindowCloseCallbackCB(GLFWwindow *window);
@@ -171,8 +171,8 @@ func (w *Window) GetMonitor() *Monitor {
 	return (*Monitor)(unsafe.Pointer(C.glfwGetWindowMonitor((*C.GLFWwindow)(unsafe.Pointer(w)))))
 }
 
-func (w *Window) GetParameter(param int) int {
-	return int(C.glfwGetWindowParam((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(param)))
+func (w *Window) GetAttribute(attrib int) int {
+	return int(C.glfwGetWindowAttrib((*C.GLFWwindow)(unsafe.Pointer(w)), C.int(attrib)))
 }
 
 func (w *Window) SetUserPointer(pointer unsafe.Pointer) {

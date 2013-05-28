@@ -1,7 +1,7 @@
 package glfw
 
 //#include <stdlib.h>
-//#include <GL/glfw3.h>
+//#include <GLFW/glfw3.h>
 import "C"
 
 import "unsafe"

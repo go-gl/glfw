@@ -1,7 +1,7 @@
 GLFW 3.0 (WIP) Bindings for Go
 ==============================
 
-ATTENTION: GLFW 3.0 is still in development and the API changes occur very often. Current wrapper is built with master elmindreda/glfw checked out at 20.05.2013.
+ATTENTION: GLFW 3.0 is still in development and the API changes occur very often. I try to stay updated with the latest changes on github.com/glfw/glfw (Last update: c159411944c68c79797321bc76529a351544236a)
 
 * All the modules are implemented except "Native Acess".
 * See http://godoc.org/github.com/tapir/glfw3-go for documentation.

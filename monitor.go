@@ -1,6 +1,6 @@
 package glfw
 
-//#include <GL/glfw3.h>
+//#include <GLFW/glfw3.h>
 //void InitMonitorArray(int* length);
 //GLFWmonitor* GetMonitorAtIndex(int index);
 //void InitVidmodeArray(GLFWmonitor* monitor, int* length);
@@ -48,7 +48,6 @@ func GetPrimaryMonitor() *Monitor {
 	return (*Monitor)(unsafe.Pointer(C.glfwGetPrimaryMonitor()))
 }
 
-
 //GetPosition returns the position, in screen coordinates, of the upper-left
 //corner of the specified monitor.
 func (m *Monitor) GetPosition() (int, int) {
@@ -56,7 +55,6 @@ func (m *Monitor) GetPosition() (int, int) {
 	C.glfwGetMonitorPos((*C.GLFWmonitor)(unsafe.Pointer(m)), &xpos, &ypos)
 	return int(xpos), int(ypos)
 }
-
 
 //GetPhysicalSize returns the size, in millimetres, of the display area of the
 //specified monitor.

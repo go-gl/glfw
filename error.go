@@ -1,6 +1,6 @@
 package glfw
 
-//#include <GL/glfw3.h>
+//#include <GLFW/glfw3.h>
 //void glfwSetErrorCallbackCB();
 import "C"
 

@@ -1,12 +1,14 @@
 package glfw
 
-//#include <GL/glfw3.h>
+//#include <GLFW/glfw3.h>
 //void glfwSetKeyCallbackCB(GLFWwindow *window);
 //void glfwSetCharCallbackCB(GLFWwindow *window);
 //void glfwSetMouseCallbackCB(GLFWwindow *window);
 //void glfwSetPosCallbackCB(GLFWwindow *window);
 //void glfwSetEnterCallbackCB(GLFWwindow *window);
 //void glfwSetScrollCallbackCB(GLFWwindow *window);
+//float GetAxisAtIndex(float *axis, int i);
+//unsigned char GetButtonsAtIndex(unsigned char *buttons, int i);
 import "C"
 
 import "unsafe"
@@ -194,17 +196,17 @@ const (
 
 //Cursor mode values
 const (
-	CursorNormal = C.GLFW_CURSOR_NORMAL
-	CursorHidden = C.GLFW_CURSOR_HIDDEN
+	CursorNormal   = C.GLFW_CURSOR_NORMAL
+	CursorHidden   = C.GLFW_CURSOR_HIDDEN
 	CursorDisabled = C.GLFW_CURSOR_DISABLED
 )
 
 type (
-	goMouseFunc  func(*Window, int, int)
+	goMouseFunc  func(*Window, int, int, int)
 	goPosFunc    func(*Window, float64, float64)
 	goEnterFunc  func(*Window, int)
 	goScrollFunc func(*Window, float64, float64)
-	goKeyFunc    func(*Window, int, int)
+	goKeyFunc    func(*Window, int, int, int)
 	goCharFunc   func(*Window, uint)
 )
 
@@ -218,8 +220,8 @@ var (
 )
 
 //export goMouseCB
-func goMouseCB(window unsafe.Pointer, button, action C.int) {
-	fMouseHolder((*Window)(unsafe.Pointer(window)), int(button), int(action))
+func goMouseCB(window unsafe.Pointer, button, action, mods C.int) {
+	fMouseHolder((*Window)(unsafe.Pointer(window)), int(button), int(action), int(mods))
 }
 
 //export goPosCB
@@ -238,8 +240,8 @@ func goScrollCB(window unsafe.Pointer, xpos, ypos C.double) {
 }
 
 //export goKeyCB
-func goKeyCB(window unsafe.Pointer, key, action C.int) {
-	fKeyHolder((*Window)(unsafe.Pointer(window)), int(key), int(action))
+func goKeyCB(window unsafe.Pointer, key, action, mods C.int) {
+	fKeyHolder((*Window)(unsafe.Pointer(window)), int(key), int(action), int(mods))
 }
 
 //export goCharCB
@@ -324,7 +326,7 @@ func (w *Window) SetKeyCallback(cbfun goKeyFunc) {
 	C.glfwSetKeyCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
-//SetCharacterCallback sets the character callback which is called when a 
+//SetCharacterCallback sets the character callback which is called when a
 //Unicode character is input.
 //
 //The character callback is intended for text input. If you want to know whether
@@ -336,7 +338,7 @@ func (w *Window) SetCharacterCallback(cbfun goCharFunc) {
 	C.glfwSetCharCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
-//SetMouseButtonCallback sets the mouse button callback which is called when a 
+//SetMouseButtonCallback sets the mouse button callback which is called when a
 //mouse button is pressed or released.
 //
 //When a window loses focus, it will generate synthetic mouse button release
@@ -380,28 +382,28 @@ func (w *Window) SetScrollCallback(cbfun goScrollFunc) {
 	C.glfwSetScrollCallbackCB((*C.GLFWwindow)(unsafe.Pointer(w)))
 }
 
-//GetJoystickParameter returns a parameter of the specified joystick.
-func GetJoystickParameter(joy, param int) int {
-	return int(C.glfwGetJoystickParam(C.int(joy), C.int(param)))
+//GetJoystickPresent returns whether the specified joystick is present.
+func JoystickPresent(joy int) int {
+	return int(C.glfwJoystickPresent(C.int(joy)))
 }
 
 //GetJoystickAxes returns an array of axis values.
 func GetJoystickAxes(joy int) []float32 {
-	var axes [16]C.float
-	length := int(C.glfwGetJoystickAxes(C.int(joy), (*C.float)(unsafe.Pointer(&axes[0])), 16))
+	var length int
+	axis := C.glfwGetJoystickAxes(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
 	a := make([]float32, length)
 	for i := 0; i < length; i++ {
-		a[i] = float32(axes[i])
+		a[i] = float32(C.GetAxisAtIndex(axis, C.int(i)))
 	}
 	return a
 }
 
 func GetJoystickButtons(joy int) []byte {
-	var buttons [16]C.uchar
-	length := int(C.glfwGetJoystickButtons(C.int(joy), (*C.uchar)(unsafe.Pointer(&buttons[0])), 16))
+	var length int
+	buttons := C.glfwGetJoystickButtons(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
 	b := make([]byte, length)
 	for i := 0; i < length; i++ {
-		b[i] = byte(buttons[i])
+		b[i] = byte(C.GetButtonsAtIndex(buttons, C.int(i)))
 	}
 	return b
 }

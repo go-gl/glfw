@@ -1,7 +1,7 @@
 #include "_cgo_export.h"
 
-void glfwMouseCB(GLFWwindow* window, int button, int action) {
-	goMouseCB(window, button, action);
+void glfwMouseCB(GLFWwindow* window, int button, int action, int mods) {
+	goMouseCB(window, button, action, mods);
 }
 
 void glfwPosCB(GLFWwindow* window, double xpos, double ypos) {
@@ -16,8 +16,8 @@ void glfwScrollCB(GLFWwindow* window, double xpos, double ypos) {
 	goScrollCB(window, xpos, ypos);
 }
 
-void glfwKeyCB(GLFWwindow* window, int key, int action) {
-	goKeyCB(window, key, action);
+void glfwKeyCB(GLFWwindow* window, int key, int action, int mods) {
+	goKeyCB(window, key, action, mods);
 }
 
 void glfwCharCB(GLFWwindow* window, unsigned int character) {
@@ -46,4 +46,12 @@ void glfwSetEnterCallbackCB(GLFWwindow *window) {
 
 void glfwSetScrollCallbackCB(GLFWwindow *window) {
 	glfwSetScrollCallback(window, glfwScrollCB);
+}
+
+float GetAxisAtIndex(float *axis, int i) {
+	return axis[i];
+}
+
+unsigned char GetButtonsAtIndex(unsigned char *buttons, int i) {
+	return buttons[i];
 }

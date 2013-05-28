@@ -1,16 +1,18 @@
 package glfw
 
-//#include <GL/glfw3.h>
+//#include <GLFW/glfw3.h>
+//unsigned int GetGammaAtIndex(unsigned short *color, int i);
+//void SetGammaAtIndex(unsigned short *color, int i, unsigned short value);
 import "C"
 
 import "unsafe"
 
-const GammaRampSize = C.GLFW_GAMMA_RAMP_SIZE
-
+//GammaRamp describes the gamma ramp for a monitor.
 type GammaRamp struct {
-	Red [GammaRampSize]uint16
-	Green [GammaRampSize]uint16
-	Blue [GammaRampSize]uint16
+	Red   []uint16
+	Green []uint16
+	Blue  []uint16
+	Size  uint
 }
 
 //SetGamma generates a gamma ramp from the specified exponent and then calls
@@ -20,38 +22,44 @@ func (m *Monitor) SetGamma(gamma float32) {
 }
 
 //GetGammaRamp retrieves the current gamma ramp of the specified monitor.
-//
-//NOTE: This function does not yet support monitors whose original gamma ramp
-//has more or less than gammaRampSize entries.
 func (m *Monitor) GetGammaRamp() *GammaRamp {
 	var (
-		ramp C.GLFWgammaramp
+		length int
 		rampGo GammaRamp
 	)
-	
-	C.glfwGetGammaRamp((*C.GLFWmonitor)(unsafe.Pointer(m)), &ramp)
-	
-	for i := 0; i < GammaRampSize; i++ {
-		rampGo.Red[i] = uint16(ramp.red[i])
-		rampGo.Green[i] = uint16(ramp.green[i])
-		rampGo.Blue[i] = uint16(ramp.blue[i])
+
+	rampC := C.glfwGetGammaRamp((*C.GLFWmonitor)(unsafe.Pointer(m)))
+	length = int(rampC.size)
+
+	rampGo.Red = make([]uint16, length)
+	rampGo.Green = make([]uint16, length)
+	rampGo.Blue = make([]uint16, length)
+	rampGo.Size = uint(length)
+
+	for i := 0; i < length; i++ {
+		rampGo.Red[i] = uint16(C.GetGammaAtIndex(rampC.red, C.int(i)))
+		rampGo.Green[i] = uint16(C.GetGammaAtIndex(rampC.green, C.int(i)))
+		rampGo.Blue[i] = uint16(C.GetGammaAtIndex(rampC.blue, C.int(i)))
 	}
-	
+
 	return &rampGo
 }
 
 //SetGammaRamp sets the current gamma ramp for the specified monitor.
-//
-//NOTE: This function does not yet support monitors whose original gamma ramp
-//has more or less than gammaRampSize entries.
 func (m *Monitor) SetGammaRamp(ramp *GammaRamp) {
-	var rampC C.GLFWgammaramp
-	
-	for i := 0; i < GammaRampSize; i++ {
-		rampC.red[i] = C.ushort(ramp.Red[i])
-		rampC.green[i] = C.ushort(ramp.Green[i])
-		rampC.blue[i] = C.ushort(ramp.Blue[i])
+	var (
+		length int
+		rampC  C.GLFWgammaramp
+	)
+
+	length = int(ramp.Size)
+
+	for i := 0; i < length; i++ {
+		C.SetGammaAtIndex(rampC.red, C.int(i), C.ushort(ramp.Red[i]))
+		C.SetGammaAtIndex(rampC.green, C.int(i), C.ushort(ramp.Green[i]))
+		C.SetGammaAtIndex(rampC.blue, C.int(i), C.ushort(ramp.Blue[i]))
 	}
-	
+	rampC.size = C.uint(ramp.Size)
+
 	C.glfwSetGammaRamp((*C.GLFWmonitor)(unsafe.Pointer(m)), &rampC)
 }
