@@ -38,7 +38,7 @@ func GetMonitors() [](*Monitor) {
 	m := make([](*Monitor), length)
 
 	for i := 0; i < length; i++ {
-		m[i].data = C.GetMonitorAtIndex(mC, C.int(i))
+		m[i] = &Monitor{C.GetMonitorAtIndex(mC, C.int(i))}
 	}
 
 	return m
