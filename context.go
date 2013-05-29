@@ -13,7 +13,12 @@ func (w *Window) MakeContextCurrent() {
 
 //GetCurrentContext returns the window whose context is current.
 func GetCurrentContext() *Window {
-	return &Window{C.glfwGetCurrentContext()}
+	w := C.glfwGetCurrentContext()
+
+	if w == nil {
+		return nil
+	}
+	return &Window{w}
 }
 
 //SwapBuffers swaps the front and back buffers of the window. If the

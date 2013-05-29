@@ -35,6 +35,11 @@ func GetMonitors() [](*Monitor) {
 	var length int
 
 	mC := C.glfwGetMonitors((*C.int)(unsafe.Pointer(&length)))
+
+	if mC == nil {
+		return nil
+	}
+
 	m := make([](*Monitor), length)
 
 	for i := 0; i < length; i++ {
@@ -47,7 +52,12 @@ func GetMonitors() [](*Monitor) {
 //GetPrimaryMonitor returns the primary monitor. This is usually the monitor
 //where elements like the Windows task bar or the OS X menu bar is located.
 func GetPrimaryMonitor() *Monitor {
-	return &Monitor{C.glfwGetPrimaryMonitor()}
+	m := C.glfwGetPrimaryMonitor()
+
+	if m == nil {
+		return nil
+	}
+	return &Monitor{m}
 }
 
 //GetPosition returns the position, in screen coordinates, of the upper-left
@@ -95,6 +105,10 @@ func (m *Monitor) GetVideoModes() [](*VideoMode) {
 	var length int
 
 	vC := C.glfwGetVideoModes(m.data, (*C.int)(unsafe.Pointer(&length)))
+	if vC == nil {
+		return nil
+	}
+
 	v := make([](*VideoMode), length)
 
 	for i := 0; i < length; i++ {
@@ -110,5 +124,9 @@ func (m *Monitor) GetVideoModes() [](*VideoMode) {
 //whether it is focused.
 func (m *Monitor) GetVideoMode() *VideoMode {
 	t := C.glfwGetVideoMode(m.data)
+
+	if t == nil {
+		return nil
+	}
 	return &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits)}
 }

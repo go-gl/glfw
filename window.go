@@ -171,9 +171,32 @@ func WindowHint(target, hint int) {
 //application's bundle. For more information on bundles, see the Bundle
 //Programming Guide provided by Apple.
 func CreateWindow(width, height int, title string, monitor *Monitor, share *Window) *Window {
+	var (
+		m *C.GLFWmonitor
+		s *C.GLFWwindow
+	)
+
 	t := C.CString(title)
 	defer C.free(unsafe.Pointer(t))
-	return &Window{C.glfwCreateWindow(C.int(width), C.int(height), t, monitor.data, share.data)}
+
+	if monitor == nil {
+		m = nil
+	} else {
+		m = monitor.data
+	}
+
+	if share == nil {
+		s = nil
+	} else {
+		s = share.data
+	}
+
+	w := C.glfwCreateWindow(C.int(width), C.int(height), t, m, s)
+
+	if w == nil {
+		return nil
+	}
+	return &Window{w}
 }
 
 //Destroy destroys the specified window and its context. On calling this
@@ -288,7 +311,12 @@ func (w *Window) Hide() {
 //GetMonitor returns the handle of the monitor that the window is in
 //fullscreen on.
 func (w *Window) GetMonitor() *Monitor {
-	return &Monitor{C.glfwGetWindowMonitor(w.data)}
+	m := C.glfwGetWindowMonitor(w.data)
+
+	if m == nil {
+		return nil
+	}
+	return &Monitor{m}
 }
 
 //GetAttribute returns an attribute of the window. There are many attributes,
