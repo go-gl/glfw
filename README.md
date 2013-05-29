@@ -28,7 +28,7 @@ The library can be used as below:
 		}
 		defer glfw.Terminate()
 	
-		window := glfw.CreateWindow(640, 480, "Testing", &glfw.Monitor{}, &glfw.Window{})
+		window := glfw.CreateWindow(640, 480, "Testing", nil, nil)
 		if window == nil {
 			panic("Can't create window!")
 		}
