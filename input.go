@@ -13,6 +13,7 @@ import "C"
 
 import "unsafe"
 
+//Joystick IDs
 const (
 	Joystick1    = C.GLFW_JOYSTICK_1
 	Joystick2    = C.GLFW_JOYSTICK_2
@@ -160,6 +161,15 @@ const (
 	KeyLast         = C.GLFW_KEY_LAST
 )
 
+//Modifier keys
+const (
+	ModShift   = C.GLFW_MOD_SHIFT
+	ModControl = C.GLFW_MOD_CONTROL
+	ModAlt     = C.GLFW_MOD_ALT
+	ModSuper   = C.GLFW_MOD_SUPER
+)
+
+//Mouse buttons
 const (
 	MouseButton1      = C.GLFW_MOUSE_BUTTON_1
 	MouseButton2      = C.GLFW_MOUSE_BUTTON_2
@@ -176,29 +186,16 @@ const (
 )
 
 const (
-	ModShift   = C.GLFW_MOD_SHIFT
-	ModControl = C.GLFW_MOD_CONTROL
-	ModAlt     = C.GLFW_MOD_ALT
-	ModSuper   = C.GLFW_MOD_SUPER
-)
-
-const (
-	//The key or button was released.
-	Release = C.GLFW_RELEASE
-	//The key or button was pressed.
-	Press = C.GLFW_PRESS
-	//The key was held down until it repeated.
-	Repeat = C.GLFW_REPEAT
+	Release = C.GLFW_RELEASE //The key or button was released.
+	Press   = C.GLFW_PRESS   //The key or button was pressed.
+	Repeat  = C.GLFW_REPEAT  //The key was held down until it repeated.
 )
 
 //Input modes
 const (
-	//See Cursor mode values
-	Cursor = C.GLFW_CURSOR
-	//Value can be either 1 or 0
-	StickyKeys = C.GLFW_STICKY_KEYS
-	//Value can be either 1 or 0
-	StickyMouseButtons = C.GLFW_STICKY_MOUSE_BUTTONS
+	Cursor             = C.GLFW_CURSOR               //See Cursor mode values
+	StickyKeys         = C.GLFW_STICKY_KEYS          //Value can be either 1 or 0
+	StickyMouseButtons = C.GLFW_STICKY_MOUSE_BUTTONS //Value can be either 1 or 0
 )
 
 //Cursor mode values
@@ -300,6 +297,7 @@ func (w *Window) GetMouseButton(button int) int {
 //but fails for negative ones.
 func (w *Window) GetCursorPosition() (float64, float64) {
 	var xpos, ypos C.double
+
 	C.glfwGetCursorPos(w.data, &xpos, &ypos)
 	return float64(xpos), float64(ypos)
 }
@@ -327,7 +325,7 @@ func (w *Window) SetCursorPosition(xpos, ypos float64) {
 //i.e. Focused will be false and the focus callback will have already been
 //called.
 //
-//Function signature for this callback is: func(*Window, int, int)
+//Function signature for this callback is: func(*Window, int, int, int)
 func (w *Window) SetKeyCallback(cbfun goKeyFunc) {
 	fKeyHolder = cbfun
 	C.glfwSetKeyCallbackCB(w.data)
@@ -354,16 +352,15 @@ func (w *Window) SetCharacterCallback(cbfun goCharFunc) {
 //the window has lost focus, i.e. Focused will be false and the focus
 //callback will have already been called.
 //
-//Function signature for this callback is: func(*Window, int, int)
+//Function signature for this callback is: func(*Window, int, int, int)
 func (w *Window) SetMouseButtonCallback(cbfun goMouseFunc) {
 	fMouseHolder = cbfun
 	C.glfwSetMouseCallbackCB(w.data)
 }
 
 //SetCursorPositionCallback sets the cursor position callback which is called
-//when the cursor is moved. The callback is provided
-//with the position relative to the upper-left corner of the client area of the
-//window.
+//when the cursor is moved. The callback is provided with the position relative
+//to the upper-left corner of the client area of the window.
 //
 //Function signature for this callback is: func(*Window, float64, float64)
 func (w *Window) SetCursorPositionCallback(cbfun goPosFunc) {
@@ -397,22 +394,28 @@ func JoystickPresent(joy int) int {
 //GetJoystickAxes returns a slice of axis values.
 func GetJoystickAxes(joy int) []float32 {
 	var length int
+
 	axis := C.glfwGetJoystickAxes(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
 	a := make([]float32, length)
+
 	for i := 0; i < length; i++ {
 		a[i] = float32(C.GetAxisAtIndex(axis, C.int(i)))
 	}
+
 	return a
 }
 
 //GetJoystickButtons returns a slice of button values.
 func GetJoystickButtons(joy int) []byte {
 	var length int
+
 	buttons := C.glfwGetJoystickButtons(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
 	b := make([]byte, length)
+
 	for i := 0; i < length; i++ {
 		b[i] = byte(C.GetButtonsAtIndex(buttons, C.int(i)))
 	}
+
 	return b
 }
 

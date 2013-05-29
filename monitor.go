@@ -14,16 +14,11 @@ type Monitor struct {
 
 //VideoMode describes a single video mode.
 type VideoMode struct {
-	//The width, in pixels, of the video mode.
-	Width int
-	//The height, in pixels, of the video mode.
-	Height int
-	//The bit depth of the red channel of the video mode.
-	RedBits int
-	//The bit depth of the green channel of the video mode.
-	GreenBits int
-	//The bit depth of the blue channel of the video mode.
-	BlueBits int
+	Width     int //The width, in pixels, of the video mode.
+	Height    int //The height, in pixels, of the video mode.
+	RedBits   int //The bit depth of the red channel of the video mode.
+	GreenBits int //The bit depth of the green channel of the video mode.
+	BlueBits  int //The bit depth of the blue channel of the video mode.
 }
 
 type goMonitorFunc func(*Monitor, int)
@@ -59,6 +54,7 @@ func GetPrimaryMonitor() *Monitor {
 //corner of the monitor.
 func (m *Monitor) GetPosition() (int, int) {
 	var xpos, ypos C.int
+
 	C.glfwGetMonitorPos(m.data, &xpos, &ypos)
 	return int(xpos), int(ypos)
 }
@@ -71,11 +67,12 @@ func (m *Monitor) GetPosition() (int, int) {
 //report it accurately.
 func (m *Monitor) GetPhysicalSize() (int, int) {
 	var width, height C.int
+
 	C.glfwGetMonitorPhysicalSize(m.data, &width, &height)
 	return int(width), int(height)
 }
 
-//GetName returns a human-readable name, encoded as UTF-8, of the monitor.
+//GetName returns a human-readable name of the monitor, encoded as UTF-8.
 func (m *Monitor) GetName() string {
 	return C.GoString(C.glfwGetMonitorName(m.data))
 }

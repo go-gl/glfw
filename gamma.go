@@ -7,12 +7,9 @@ import "C"
 
 //GammaRamp describes the gamma ramp for a monitor.
 type GammaRamp struct {
-	//A slice of value describing the response of the red channel.
-	Red []uint16
-	//A slice of value describing the response of the green channel.
-	Green []uint16
-	//A slice of value describing the response of the blue channel.
-	Blue []uint16
+	Red   []uint16 //A slice of value describing the response of the red channel.
+	Green []uint16 //A slice of value describing the response of the green channel.
+	Blue  []uint16 //A slice of value describing the response of the blue channel.
 }
 
 //SetGamma generates a 256-element gamma ramp from the specified exponent and then calls
@@ -21,7 +18,7 @@ func (m *Monitor) SetGamma(gamma float32) {
 	C.glfwSetGamma(m.data, C.float(gamma))
 }
 
-//GetGammaRamp retrieves the current gamma ramp of the specified monitor.
+//GetGammaRamp retrieves the current gamma ramp of the monitor.
 func (m *Monitor) GetGammaRamp() *GammaRamp {
 	var ramp GammaRamp
 

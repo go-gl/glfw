@@ -12,39 +12,69 @@ import "C"
 
 import "unsafe"
 
+//Window related hints.
 const (
-	Focused   = C.GLFW_FOCUSED
-	Iconified = C.GLFW_ICONIFIED
-	Visible   = C.GLFW_VISIBLE
-	Resizable = C.GLFW_RESIZABLE
-	Decorated = C.GLFW_DECORATED
+	Focused   = C.GLFW_FOCUSED   //Specifies whether the window will be focused.
+	Iconified = C.GLFW_ICONIFIED //Specifies whether the window will be minimized.
+	Visible   = C.GLFW_VISIBLE   //Specifies whether the window will be initially visible.
+	Resizable = C.GLFW_RESIZABLE //Specifies whether the window will be resizable by the user.
+	Decorated = C.GLFW_DECORATED //Specifies whether the window will have window decorations such as a border, a close widget, etc.
 )
 
+//Context related hints.
 const (
-	ClientApi           = C.GLFW_CLIENT_API
-	ContextVersionMajor = C.GLFW_CONTEXT_VERSION_MAJOR
-	ContextVersionMinor = C.GLFW_CONTEXT_VERSION_MINOR
-	ContextRobustness   = C.GLFW_CONTEXT_ROBUSTNESS
-	OpenglForwardCompat = C.GLFW_OPENGL_FORWARD_COMPAT
-	OpenglDebugContext  = C.GLFW_OPENGL_DEBUG_CONTEXT
-	OpenglProfile       = C.GLFW_OPENGL_PROFILE
+	ClientApi               = C.GLFW_CLIENT_API            //Specifies which client API to create the context for. Hard constraint.
+	ContextVersionMajor     = C.GLFW_CONTEXT_VERSION_MAJOR //Specifies the client API version that the created context must be compatible with.
+	ContextVersionMinor     = C.GLFW_CONTEXT_VERSION_MINOR //Specifies the client API version that the created context must be compatible with.
+	ContextRobustness       = C.GLFW_CONTEXT_ROBUSTNESS    //Specifies the robustness strategy to be used by the context.
+	OpenglForwardCompatible = C.GLFW_OPENGL_FORWARD_COMPAT //Specifies whether the OpenGL context should be forward-compatible. Hard constraint.
+	OpenglDebugContext      = C.GLFW_OPENGL_DEBUG_CONTEXT
+	OpenglProfile           = C.GLFW_OPENGL_PROFILE //Specifies which OpenGL profile to create the context for. Hard constraint
 )
 
+//Framebuffer related hints.
+const (
+	ContextRevision = C.GLFW_CONTEXT_REVISION
+	RedBits         = C.GLFW_RED_BITS         //Specifies the desired bit depth of the default framebuffer.
+	GreenBits       = C.GLFW_GREEN_BITS       //Specifies the desired bit depth of the default framebuffer.
+	BlueBits        = C.GLFW_BLUE_BITS        //Specifies the desired bit depth of the default framebuffer.
+	AlphaBits       = C.GLFW_ALPHA_BITS       //Specifies the desired bit depth of the default framebuffer.
+	DepthBits       = C.GLFW_DEPTH_BITS       //Specifies the desired bit depth of the default framebuffer.
+	StencilBits     = C.GLFW_STENCIL_BITS     //Specifies the desired bit depth of the default framebuffer.
+	AccumuRedBits   = C.GLFW_ACCUM_RED_BITS   //Specifies the desired bit depth of the accumulation buffer.
+	AccumGreenBits  = C.GLFW_ACCUM_GREEN_BITS //Specifies the desired bit depth of the accumulation buffer.
+	AccumBlueBits   = C.GLFW_ACCUM_BLUE_BITS  //Specifies the desired bit depth of the accumulation buffer.
+	AccumAlphaBits  = C.GLFW_ACCUM_ALPHA_BITS //Specifies the desired bit depth of the accumulation buffer.
+	AuxBuffers      = C.GLFW_AUX_BUFFERS      //Specifies the desired number of auxiliary buffers.
+	Stereo          = C.GLFW_STEREO           //Specifies whether to use stereoscopic rendering. Hard constraint.
+	Samples         = C.GLFW_SAMPLES          //Specifies the desired number of samples to use for multisampling. Zero disables multisampling.
+	SrgbCapable     = C.GLFW_SRGB_CAPABLE     //Specifies whether the framebuffer should be sRGB capable.
+)
+
+//Values for the ClientApi hint.
 const (
 	OpenglApi   = C.GLFW_OPENGL_API
 	OpenglEsApi = C.GLFW_OPENGL_ES_API
 )
 
+//Values for the ContextRobustness hint.
 const (
 	NoRobustness        = C.GLFW_NO_ROBUSTNESS
 	NoResetNotification = C.GLFW_NO_RESET_NOTIFICATION
 	LoseContextOnReset  = C.GLFW_LOSE_CONTEXT_ON_RESET
 )
 
+//Values for the OpenglProfile hint.
 const (
 	OpenglNoProfile     = C.GLFW_OPENGL_NO_PROFILE
 	OpenglCoreProfile   = C.GLFW_OPENGL_CORE_PROFILE
 	OpenglCompatProfile = C.GLFW_OPENGL_COMPAT_PROFILE
+)
+
+//TRUE and FALSE values to use with hints.
+const (
+	True  = C.GL_TRUE
+	False = C.GL_FALSE
 )
 
 type Window struct {
