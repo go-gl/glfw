@@ -213,8 +213,12 @@ func (w *Window) ShouldClose() bool {
 //SetShouldClose sets the value of the close flag of the window. This can be
 //used to override the user's attempt to close the window, or to signal that it
 //should be closed.
-func (w *Window) SetShouldClose(value int) {
-	C.glfwSetWindowShouldClose(w.data, C.int(value))
+func (w *Window) SetShouldClose(value bool) {
+	if value == C.GL_FALSE {
+		C.glfwSetWindowShouldClose(w.data, C.GL_FALSE)
+	} else {
+		C.glfwSetWindowShouldClose(w.data, C.GL_TRUE)
+	}
 }
 
 //SetTitle sets the window title, encoded as UTF-8, of the window.
