@@ -179,15 +179,11 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 	t := C.CString(title)
 	defer C.free(unsafe.Pointer(t))
 
-	if monitor == nil {
-		m = nil
-	} else {
+	if monitor != nil {
 		m = monitor.data
 	}
 
-	if share == nil {
-		s = nil
-	} else {
+	if share != nil {
 		s = share.data
 	}
 
