@@ -31,7 +31,7 @@ func goMonitorCB(monitor unsafe.Pointer, event C.int) {
 }
 
 //GetMonitors returns a slice of handles for all currently connected monitors.
-func GetMonitors() [](*Monitor) {
+func GetMonitors() []*Monitor {
 	var length int
 
 	mC := C.glfwGetMonitors((*C.int)(unsafe.Pointer(&length)))
@@ -40,7 +40,7 @@ func GetMonitors() [](*Monitor) {
 		return nil
 	}
 
-	m := make([](*Monitor), length)
+	m := make([]*Monitor, length)
 
 	for i := 0; i < length; i++ {
 		m[i] = &Monitor{C.GetMonitorAtIndex(mC, C.int(i))}
@@ -101,7 +101,7 @@ func SetMonitorCallback(cbfun goMonitorFunc) {
 //The returned array is sorted in ascending order, first by color bit depth
 //(the sum of all channel depths) and then by resolution area (the product of
 //width and height).
-func (m *Monitor) GetVideoModes() [](*VideoMode) {
+func (m *Monitor) GetVideoModes() []*VideoMode {
 	var length int
 
 	vC := C.glfwGetVideoModes(m.data, (*C.int)(unsafe.Pointer(&length)))
@@ -109,7 +109,7 @@ func (m *Monitor) GetVideoModes() [](*VideoMode) {
 		return nil
 	}
 
-	v := make([](*VideoMode), length)
+	v := make([]*VideoMode, length)
 
 	for i := 0; i < length; i++ {
 		t := C.GetVidmodeAtIndex(vC, C.int(i))

@@ -29,7 +29,7 @@ const (
 	ContextRobustness       = C.GLFW_CONTEXT_ROBUSTNESS    //Specifies the robustness strategy to be used by the context.
 	OpenglForwardCompatible = C.GLFW_OPENGL_FORWARD_COMPAT //Specifies whether the OpenGL context should be forward-compatible. Hard constraint.
 	OpenglDebugContext      = C.GLFW_OPENGL_DEBUG_CONTEXT
-	OpenglProfile           = C.GLFW_OPENGL_PROFILE //Specifies which OpenGL profile to create the context for. Hard constraint
+	OpenglProfile           = C.GLFW_OPENGL_PROFILE //Specifies which OpenGL profile to create the context for. Hard constraint.
 )
 
 //Framebuffer related hints.
@@ -179,15 +179,11 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 	t := C.CString(title)
 	defer C.free(unsafe.Pointer(t))
 
-	if monitor == nil {
-		m = nil
-	} else {
+	if monitor != nil {
 		m = monitor.data
 	}
 
-	if share == nil {
-		s = nil
-	} else {
+	if share != nil {
 		s = share.data
 	}
 
