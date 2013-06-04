@@ -28,19 +28,16 @@ The library can be used as below:
 		}
 		defer glfw.Terminate()
 	
-		window := glfw.CreateWindow(640, 480, "Testing", nil, nil)
-		if window == nil {
-			panic("Can't create window!")
+		window, err := glfw.CreateWindow(640, 480, "Testing", nil, nil)
+		if err != nil {
+			panic(err)
 		}
 		defer window.Destroy()
 	
 		window.MakeContextCurrent()
 	
-		for {
-			if window.ShouldClose() {
-				break
-			}
-		
+		for !window.ShouldClose() {
+			//Do OpenGL stuff
 			glfw.PollEvents()
 		}
 	}
