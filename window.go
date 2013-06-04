@@ -214,7 +214,7 @@ func (w *Window) ShouldClose() bool {
 //used to override the user's attempt to close the window, or to signal that it
 //should be closed.
 func (w *Window) SetShouldClose(value bool) {
-	if value == false {
+	if !value {
 		C.glfwSetWindowShouldClose(w.data, C.GL_FALSE)
 	} else {
 		C.glfwSetWindowShouldClose(w.data, C.GL_TRUE)
