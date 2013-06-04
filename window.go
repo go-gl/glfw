@@ -10,7 +10,10 @@ package glfw
 //void glfwSetWindowIconifyCallbackCB(GLFWwindow *window);
 import "C"
 
-import "unsafe"
+import (
+	"errors"
+	"unsafe"
+)
 
 //Window related hints.
 const (
@@ -170,7 +173,7 @@ func WindowHint(target, hint int) {
 //Hide, Quit and About. The (minimal) about dialog uses information from the
 //application's bundle. For more information on bundles, see the Bundle
 //Programming Guide provided by Apple.
-func CreateWindow(width, height int, title string, monitor *Monitor, share *Window) *Window {
+func CreateWindow(width, height int, title string, monitor *Monitor, share *Window) (*Window, error) {
 	var (
 		m *C.GLFWmonitor
 		s *C.GLFWwindow
@@ -190,9 +193,9 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 	w := C.glfwCreateWindow(C.int(width), C.int(height), t, m, s)
 
 	if w == nil {
-		return nil
+		return nil, errors.New("Can't create window.")
 	}
-	return &Window{w}
+	return &Window{w}, nil
 }
 
 //Destroy destroys the specified window and its context. On calling this
@@ -310,13 +313,13 @@ func (w *Window) Hide() {
 
 //GetMonitor returns the handle of the monitor that the window is in
 //fullscreen on.
-func (w *Window) GetMonitor() *Monitor {
+func (w *Window) GetMonitor() (*Monitor, error) {
 	m := C.glfwGetWindowMonitor(w.data)
 
 	if m == nil {
-		return nil
+		return nil, errors.New("Can't get the monitor.")
 	}
-	return &Monitor{m}
+	return &Monitor{m}, nil
 }
 
 //GetAttribute returns an attribute of the window. There are many attributes,

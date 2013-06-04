@@ -6,7 +6,10 @@ package glfw
 //void glfwSetMonitorCallbackCB();
 import "C"
 
-import "unsafe"
+import (
+	"errors"
+	"unsafe"
+)
 
 type Monitor struct {
 	data *C.GLFWmonitor
@@ -31,13 +34,13 @@ func goMonitorCB(monitor unsafe.Pointer, event C.int) {
 }
 
 //GetMonitors returns a slice of handles for all currently connected monitors.
-func GetMonitors() []*Monitor {
+func GetMonitors() ([]*Monitor, error) {
 	var length int
 
 	mC := C.glfwGetMonitors((*C.int)(unsafe.Pointer(&length)))
 
 	if mC == nil {
-		return nil
+		return nil, errors.New("Can't get the monitor list.")
 	}
 
 	m := make([]*Monitor, length)
@@ -46,18 +49,18 @@ func GetMonitors() []*Monitor {
 		m[i] = &Monitor{C.GetMonitorAtIndex(mC, C.int(i))}
 	}
 
-	return m
+	return m, nil
 }
 
 //GetPrimaryMonitor returns the primary monitor. This is usually the monitor
 //where elements like the Windows task bar or the OS X menu bar is located.
-func GetPrimaryMonitor() *Monitor {
+func GetPrimaryMonitor() (*Monitor, error) {
 	m := C.glfwGetPrimaryMonitor()
 
 	if m == nil {
-		return nil
+		return nil, errors.New("Can't get the primary monitor.")
 	}
-	return &Monitor{m}
+	return &Monitor{m}, nil
 }
 
 //GetPosition returns the position, in screen coordinates, of the upper-left
@@ -101,12 +104,12 @@ func SetMonitorCallback(cbfun goMonitorFunc) {
 //The returned array is sorted in ascending order, first by color bit depth
 //(the sum of all channel depths) and then by resolution area (the product of
 //width and height).
-func (m *Monitor) GetVideoModes() []*VideoMode {
+func (m *Monitor) GetVideoModes() ([]*VideoMode, error) {
 	var length int
 
 	vC := C.glfwGetVideoModes(m.data, (*C.int)(unsafe.Pointer(&length)))
 	if vC == nil {
-		return nil
+		return nil, errors.New("Can't get the video mode list.")
 	}
 
 	v := make([]*VideoMode, length)
@@ -116,17 +119,17 @@ func (m *Monitor) GetVideoModes() []*VideoMode {
 		v[i] = &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits)}
 	}
 
-	return v
+	return v, nil
 }
 
 //GetVideoMode returns the current video mode of the monitor. If you
 //are using a full screen window, the return value will therefore depend on
 //whether it is focused.
-func (m *Monitor) GetVideoMode() *VideoMode {
+func (m *Monitor) GetVideoMode() (*VideoMode, error) {
 	t := C.glfwGetVideoMode(m.data)
 
 	if t == nil {
-		return nil
+		return nil, errors.New("Can't get the video mode.")
 	}
-	return &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits)}
+	return &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits)}, nil
 }

@@ -4,7 +4,10 @@ package glfw
 //#include <GLFW/glfw3.h>
 import "C"
 
-import "unsafe"
+import (
+	"errors"
+	"unsafe"
+)
 
 //MakeContextCurrent makes the context of the window current.
 func (w *Window) MakeContextCurrent() {
@@ -12,13 +15,13 @@ func (w *Window) MakeContextCurrent() {
 }
 
 //GetCurrentContext returns the window whose context is current.
-func GetCurrentContext() *Window {
+func GetCurrentContext() (*Window, error) {
 	w := C.glfwGetCurrentContext()
 
 	if w == nil {
-		return nil
+		return nil, errors.New("Current context is not set.")
 	}
-	return &Window{w}
+	return &Window{w}, nil
 }
 
 //SwapBuffers swaps the front and back buffers of the window. If the
