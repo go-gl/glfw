@@ -13,204 +13,225 @@ import "C"
 
 import "unsafe"
 
+//Joystick corresponds to a joystick.
+type Joystick int
+
 //Joystick IDs
 const (
-	Joystick1    = C.GLFW_JOYSTICK_1
-	Joystick2    = C.GLFW_JOYSTICK_2
-	Joystick3    = C.GLFW_JOYSTICK_3
-	Joystick4    = C.GLFW_JOYSTICK_4
-	Joystick5    = C.GLFW_JOYSTICK_5
-	Joystick6    = C.GLFW_JOYSTICK_6
-	Joystick7    = C.GLFW_JOYSTICK_7
-	Joystick8    = C.GLFW_JOYSTICK_8
-	Joystick9    = C.GLFW_JOYSTICK_9
-	Joystick10   = C.GLFW_JOYSTICK_10
-	Joystick11   = C.GLFW_JOYSTICK_11
-	Joystick12   = C.GLFW_JOYSTICK_12
-	Joystick13   = C.GLFW_JOYSTICK_13
-	Joystick14   = C.GLFW_JOYSTICK_14
-	Joystick15   = C.GLFW_JOYSTICK_15
-	Joystick16   = C.GLFW_JOYSTICK_16
-	JoystickLast = C.GLFW_JOYSTICK_LAST
+	Joystick1    Joystick = C.GLFW_JOYSTICK_1
+	Joystick2    Joystick = C.GLFW_JOYSTICK_2
+	Joystick3    Joystick = C.GLFW_JOYSTICK_3
+	Joystick4    Joystick = C.GLFW_JOYSTICK_4
+	Joystick5    Joystick = C.GLFW_JOYSTICK_5
+	Joystick6    Joystick = C.GLFW_JOYSTICK_6
+	Joystick7    Joystick = C.GLFW_JOYSTICK_7
+	Joystick8    Joystick = C.GLFW_JOYSTICK_8
+	Joystick9    Joystick = C.GLFW_JOYSTICK_9
+	Joystick10   Joystick = C.GLFW_JOYSTICK_10
+	Joystick11   Joystick = C.GLFW_JOYSTICK_11
+	Joystick12   Joystick = C.GLFW_JOYSTICK_12
+	Joystick13   Joystick = C.GLFW_JOYSTICK_13
+	Joystick14   Joystick = C.GLFW_JOYSTICK_14
+	Joystick15   Joystick = C.GLFW_JOYSTICK_15
+	Joystick16   Joystick = C.GLFW_JOYSTICK_16
+	JoystickLast Joystick = C.GLFW_JOYSTICK_LAST
 )
+
+//Key corresponds to a keyboard key.
+type Key int
 
 //These key codes are inspired by the USB HID Usage Tables v1.12 (p. 53-60),
 //but re-arranged to map to 7-bit ASCII for printable keys (function keys are
 //put in the 256+ range).
 const (
-	KeySpace        = C.GLFW_KEY_SPACE
-	KeyApostrophe   = C.GLFW_KEY_APOSTROPHE
-	KeyComma        = C.GLFW_KEY_COMMA
-	KeyMinus        = C.GLFW_KEY_MINUS
-	KeyPeriod       = C.GLFW_KEY_PERIOD
-	KeySlash        = C.GLFW_KEY_SLASH
-	Key0            = C.GLFW_KEY_0
-	Key1            = C.GLFW_KEY_1
-	Key2            = C.GLFW_KEY_2
-	Key3            = C.GLFW_KEY_3
-	Key4            = C.GLFW_KEY_4
-	Key5            = C.GLFW_KEY_5
-	Key6            = C.GLFW_KEY_6
-	Key7            = C.GLFW_KEY_7
-	Key8            = C.GLFW_KEY_8
-	Key9            = C.GLFW_KEY_9
-	KeySemicolon    = C.GLFW_KEY_SEMICOLON
-	KeyEqual        = C.GLFW_KEY_EQUAL
-	KeyA            = C.GLFW_KEY_A
-	KeyB            = C.GLFW_KEY_B
-	KeyC            = C.GLFW_KEY_C
-	KeyD            = C.GLFW_KEY_D
-	KeyE            = C.GLFW_KEY_E
-	KeyF            = C.GLFW_KEY_F
-	KeyG            = C.GLFW_KEY_G
-	KeyH            = C.GLFW_KEY_H
-	KeyI            = C.GLFW_KEY_I
-	KeyJ            = C.GLFW_KEY_J
-	KeyK            = C.GLFW_KEY_K
-	KeyL            = C.GLFW_KEY_L
-	KeyM            = C.GLFW_KEY_M
-	KeyN            = C.GLFW_KEY_N
-	KeyO            = C.GLFW_KEY_O
-	KeyP            = C.GLFW_KEY_P
-	KeyQ            = C.GLFW_KEY_Q
-	KeyR            = C.GLFW_KEY_R
-	KeyS            = C.GLFW_KEY_S
-	KeyT            = C.GLFW_KEY_T
-	KeyU            = C.GLFW_KEY_U
-	KeyV            = C.GLFW_KEY_V
-	KeyW            = C.GLFW_KEY_W
-	KeyX            = C.GLFW_KEY_X
-	KeyY            = C.GLFW_KEY_Y
-	KeyZ            = C.GLFW_KEY_Z
-	KeyLeftBracket  = C.GLFW_KEY_LEFT_BRACKET
-	KeyBackslash    = C.GLFW_KEY_BACKSLASH
-	KeyBracket      = C.GLFW_KEY_RIGHT_BRACKET
-	KeyGraveAccent  = C.GLFW_KEY_GRAVE_ACCENT
-	KeyWorld1       = C.GLFW_KEY_WORLD_1
-	KeyWorld2       = C.GLFW_KEY_WORLD_2
-	KeyEscape       = C.GLFW_KEY_ESCAPE
-	KeyEnter        = C.GLFW_KEY_ENTER
-	KeyTab          = C.GLFW_KEY_TAB
-	KeyBackspace    = C.GLFW_KEY_BACKSPACE
-	KeyInsert       = C.GLFW_KEY_INSERT
-	KeyDelete       = C.GLFW_KEY_DELETE
-	KeyRight        = C.GLFW_KEY_RIGHT
-	KeyLeft         = C.GLFW_KEY_LEFT
-	KeyDown         = C.GLFW_KEY_DOWN
-	KeyUp           = C.GLFW_KEY_UP
-	KeyPageUp       = C.GLFW_KEY_PAGE_UP
-	KeyPageDown     = C.GLFW_KEY_PAGE_DOWN
-	KeyHome         = C.GLFW_KEY_HOME
-	KeyEnd          = C.GLFW_KEY_END
-	KeyCapsLock     = C.GLFW_KEY_CAPS_LOCK
-	KeyScrollLock   = C.GLFW_KEY_SCROLL_LOCK
-	KeyNumLock      = C.GLFW_KEY_NUM_LOCK
-	KeyPrintScreen  = C.GLFW_KEY_PRINT_SCREEN
-	KeyPause        = C.GLFW_KEY_PAUSE
-	KeyF1           = C.GLFW_KEY_F1
-	KeyF2           = C.GLFW_KEY_F2
-	KeyF3           = C.GLFW_KEY_F3
-	KeyF4           = C.GLFW_KEY_F4
-	KeyF5           = C.GLFW_KEY_F5
-	KeyF6           = C.GLFW_KEY_F6
-	KeyF7           = C.GLFW_KEY_F7
-	KeyF8           = C.GLFW_KEY_F8
-	KeyF9           = C.GLFW_KEY_F9
-	KeyF10          = C.GLFW_KEY_F10
-	KeyF11          = C.GLFW_KEY_F11
-	KeyF12          = C.GLFW_KEY_F12
-	KeyF13          = C.GLFW_KEY_F13
-	KeyF14          = C.GLFW_KEY_F14
-	KeyF15          = C.GLFW_KEY_F15
-	KeyF16          = C.GLFW_KEY_F16
-	KeyF17          = C.GLFW_KEY_F17
-	KeyF18          = C.GLFW_KEY_F18
-	KeyF19          = C.GLFW_KEY_F19
-	KeyF20          = C.GLFW_KEY_F20
-	KeyF21          = C.GLFW_KEY_F21
-	KeyF22          = C.GLFW_KEY_F22
-	KeyF23          = C.GLFW_KEY_F23
-	KeyF24          = C.GLFW_KEY_F24
-	KeyF25          = C.GLFW_KEY_F25
-	KeyKp0          = C.GLFW_KEY_KP_0
-	KeyKp1          = C.GLFW_KEY_KP_1
-	KeyKp2          = C.GLFW_KEY_KP_2
-	KeyKp3          = C.GLFW_KEY_KP_3
-	KeyKp4          = C.GLFW_KEY_KP_4
-	KeyKp5          = C.GLFW_KEY_KP_5
-	KeyKp6          = C.GLFW_KEY_KP_6
-	KeyKp7          = C.GLFW_KEY_KP_7
-	KeyKp8          = C.GLFW_KEY_KP_8
-	KeyKp9          = C.GLFW_KEY_KP_9
-	KeyKpDecimal    = C.GLFW_KEY_KP_DECIMAL
-	KeyKpDivide     = C.GLFW_KEY_KP_DIVIDE
-	KeyKpMultiply   = C.GLFW_KEY_KP_MULTIPLY
-	KeyKpSubtract   = C.GLFW_KEY_KP_SUBTRACT
-	KeyKpAdd        = C.GLFW_KEY_KP_ADD
-	KeyKpEnter      = C.GLFW_KEY_KP_ENTER
-	KeyKpEqual      = C.GLFW_KEY_KP_EQUAL
-	KeyLeftShift    = C.GLFW_KEY_LEFT_SHIFT
-	KeyLeftControl  = C.GLFW_KEY_LEFT_CONTROL
-	KeyLeftAlt      = C.GLFW_KEY_LEFT_ALT
-	KeyLeftSuper    = C.GLFW_KEY_LEFT_SUPER
-	KeyRightShift   = C.GLFW_KEY_RIGHT_SHIFT
-	KeyRightControl = C.GLFW_KEY_RIGHT_CONTROL
-	KeyRightAlt     = C.GLFW_KEY_RIGHT_ALT
-	KeyRightSuper   = C.GLFW_KEY_RIGHT_SUPER
-	KeyMenu         = C.GLFW_KEY_MENU
-	KeyLast         = C.GLFW_KEY_LAST
+	KeySpace        Key = C.GLFW_KEY_SPACE
+	KeyApostrophe   Key = C.GLFW_KEY_APOSTROPHE
+	KeyComma        Key = C.GLFW_KEY_COMMA
+	KeyMinus        Key = C.GLFW_KEY_MINUS
+	KeyPeriod       Key = C.GLFW_KEY_PERIOD
+	KeySlash        Key = C.GLFW_KEY_SLASH
+	Key0            Key = C.GLFW_KEY_0
+	Key1            Key = C.GLFW_KEY_1
+	Key2            Key = C.GLFW_KEY_2
+	Key3            Key = C.GLFW_KEY_3
+	Key4            Key = C.GLFW_KEY_4
+	Key5            Key = C.GLFW_KEY_5
+	Key6            Key = C.GLFW_KEY_6
+	Key7            Key = C.GLFW_KEY_7
+	Key8            Key = C.GLFW_KEY_8
+	Key9            Key = C.GLFW_KEY_9
+	KeySemicolon    Key = C.GLFW_KEY_SEMICOLON
+	KeyEqual        Key = C.GLFW_KEY_EQUAL
+	KeyA            Key = C.GLFW_KEY_A
+	KeyB            Key = C.GLFW_KEY_B
+	KeyC            Key = C.GLFW_KEY_C
+	KeyD            Key = C.GLFW_KEY_D
+	KeyE            Key = C.GLFW_KEY_E
+	KeyF            Key = C.GLFW_KEY_F
+	KeyG            Key = C.GLFW_KEY_G
+	KeyH            Key = C.GLFW_KEY_H
+	KeyI            Key = C.GLFW_KEY_I
+	KeyJ            Key = C.GLFW_KEY_J
+	KeyK            Key = C.GLFW_KEY_K
+	KeyL            Key = C.GLFW_KEY_L
+	KeyM            Key = C.GLFW_KEY_M
+	KeyN            Key = C.GLFW_KEY_N
+	KeyO            Key = C.GLFW_KEY_O
+	KeyP            Key = C.GLFW_KEY_P
+	KeyQ            Key = C.GLFW_KEY_Q
+	KeyR            Key = C.GLFW_KEY_R
+	KeyS            Key = C.GLFW_KEY_S
+	KeyT            Key = C.GLFW_KEY_T
+	KeyU            Key = C.GLFW_KEY_U
+	KeyV            Key = C.GLFW_KEY_V
+	KeyW            Key = C.GLFW_KEY_W
+	KeyX            Key = C.GLFW_KEY_X
+	KeyY            Key = C.GLFW_KEY_Y
+	KeyZ            Key = C.GLFW_KEY_Z
+	KeyLeftBracket  Key = C.GLFW_KEY_LEFT_BRACKET
+	KeyBackslash    Key = C.GLFW_KEY_BACKSLASH
+	KeyBracket      Key = C.GLFW_KEY_RIGHT_BRACKET
+	KeyGraveAccent  Key = C.GLFW_KEY_GRAVE_ACCENT
+	KeyWorld1       Key = C.GLFW_KEY_WORLD_1
+	KeyWorld2       Key = C.GLFW_KEY_WORLD_2
+	KeyEscape       Key = C.GLFW_KEY_ESCAPE
+	KeyEnter        Key = C.GLFW_KEY_ENTER
+	KeyTab          Key = C.GLFW_KEY_TAB
+	KeyBackspace    Key = C.GLFW_KEY_BACKSPACE
+	KeyInsert       Key = C.GLFW_KEY_INSERT
+	KeyDelete       Key = C.GLFW_KEY_DELETE
+	KeyRight        Key = C.GLFW_KEY_RIGHT
+	KeyLeft         Key = C.GLFW_KEY_LEFT
+	KeyDown         Key = C.GLFW_KEY_DOWN
+	KeyUp           Key = C.GLFW_KEY_UP
+	KeyPageUp       Key = C.GLFW_KEY_PAGE_UP
+	KeyPageDown     Key = C.GLFW_KEY_PAGE_DOWN
+	KeyHome         Key = C.GLFW_KEY_HOME
+	KeyEnd          Key = C.GLFW_KEY_END
+	KeyCapsLock     Key = C.GLFW_KEY_CAPS_LOCK
+	KeyScrollLock   Key = C.GLFW_KEY_SCROLL_LOCK
+	KeyNumLock      Key = C.GLFW_KEY_NUM_LOCK
+	KeyPrintScreen  Key = C.GLFW_KEY_PRINT_SCREEN
+	KeyPause        Key = C.GLFW_KEY_PAUSE
+	KeyF1           Key = C.GLFW_KEY_F1
+	KeyF2           Key = C.GLFW_KEY_F2
+	KeyF3           Key = C.GLFW_KEY_F3
+	KeyF4           Key = C.GLFW_KEY_F4
+	KeyF5           Key = C.GLFW_KEY_F5
+	KeyF6           Key = C.GLFW_KEY_F6
+	KeyF7           Key = C.GLFW_KEY_F7
+	KeyF8           Key = C.GLFW_KEY_F8
+	KeyF9           Key = C.GLFW_KEY_F9
+	KeyF10          Key = C.GLFW_KEY_F10
+	KeyF11          Key = C.GLFW_KEY_F11
+	KeyF12          Key = C.GLFW_KEY_F12
+	KeyF13          Key = C.GLFW_KEY_F13
+	KeyF14          Key = C.GLFW_KEY_F14
+	KeyF15          Key = C.GLFW_KEY_F15
+	KeyF16          Key = C.GLFW_KEY_F16
+	KeyF17          Key = C.GLFW_KEY_F17
+	KeyF18          Key = C.GLFW_KEY_F18
+	KeyF19          Key = C.GLFW_KEY_F19
+	KeyF20          Key = C.GLFW_KEY_F20
+	KeyF21          Key = C.GLFW_KEY_F21
+	KeyF22          Key = C.GLFW_KEY_F22
+	KeyF23          Key = C.GLFW_KEY_F23
+	KeyF24          Key = C.GLFW_KEY_F24
+	KeyF25          Key = C.GLFW_KEY_F25
+	KeyKp0          Key = C.GLFW_KEY_KP_0
+	KeyKp1          Key = C.GLFW_KEY_KP_1
+	KeyKp2          Key = C.GLFW_KEY_KP_2
+	KeyKp3          Key = C.GLFW_KEY_KP_3
+	KeyKp4          Key = C.GLFW_KEY_KP_4
+	KeyKp5          Key = C.GLFW_KEY_KP_5
+	KeyKp6          Key = C.GLFW_KEY_KP_6
+	KeyKp7          Key = C.GLFW_KEY_KP_7
+	KeyKp8          Key = C.GLFW_KEY_KP_8
+	KeyKp9          Key = C.GLFW_KEY_KP_9
+	KeyKpDecimal    Key = C.GLFW_KEY_KP_DECIMAL
+	KeyKpDivide     Key = C.GLFW_KEY_KP_DIVIDE
+	KeyKpMultiply   Key = C.GLFW_KEY_KP_MULTIPLY
+	KeyKpSubtract   Key = C.GLFW_KEY_KP_SUBTRACT
+	KeyKpAdd        Key = C.GLFW_KEY_KP_ADD
+	KeyKpEnter      Key = C.GLFW_KEY_KP_ENTER
+	KeyKpEqual      Key = C.GLFW_KEY_KP_EQUAL
+	KeyLeftShift    Key = C.GLFW_KEY_LEFT_SHIFT
+	KeyLeftControl  Key = C.GLFW_KEY_LEFT_CONTROL
+	KeyLeftAlt      Key = C.GLFW_KEY_LEFT_ALT
+	KeyLeftSuper    Key = C.GLFW_KEY_LEFT_SUPER
+	KeyRightShift   Key = C.GLFW_KEY_RIGHT_SHIFT
+	KeyRightControl Key = C.GLFW_KEY_RIGHT_CONTROL
+	KeyRightAlt     Key = C.GLFW_KEY_RIGHT_ALT
+	KeyRightSuper   Key = C.GLFW_KEY_RIGHT_SUPER
+	KeyMenu         Key = C.GLFW_KEY_MENU
+	KeyLast         Key = C.GLFW_KEY_LAST
 )
+
+//Mod corresponds to a modifier key.
+type Mod int
 
 //Modifier keys
 const (
-	ModShift   = C.GLFW_MOD_SHIFT
-	ModControl = C.GLFW_MOD_CONTROL
-	ModAlt     = C.GLFW_MOD_ALT
-	ModSuper   = C.GLFW_MOD_SUPER
+	ModShift   Mod = C.GLFW_MOD_SHIFT
+	ModControl Mod = C.GLFW_MOD_CONTROL
+	ModAlt     Mod = C.GLFW_MOD_ALT
+	ModSuper   Mod = C.GLFW_MOD_SUPER
 )
+
+//MouseButton corresponds to a mouse button.
+type MouseButton int
 
 //Mouse buttons
 const (
-	MouseButton1      = C.GLFW_MOUSE_BUTTON_1
-	MouseButton2      = C.GLFW_MOUSE_BUTTON_2
-	MouseButton3      = C.GLFW_MOUSE_BUTTON_3
-	MouseButton4      = C.GLFW_MOUSE_BUTTON_4
-	MouseButton5      = C.GLFW_MOUSE_BUTTON_5
-	MouseButton6      = C.GLFW_MOUSE_BUTTON_6
-	MouseButton7      = C.GLFW_MOUSE_BUTTON_7
-	MouseButton8      = C.GLFW_MOUSE_BUTTON_8
-	MouseButtonLast   = C.GLFW_MOUSE_BUTTON_LAST
-	MouseButtonLeft   = C.GLFW_MOUSE_BUTTON_LEFT
-	MouseButtonRight  = C.GLFW_MOUSE_BUTTON_RIGHT
-	MouseButtonMiddle = C.GLFW_MOUSE_BUTTON_MIDDLE
+	MouseButton1      MouseButton = C.GLFW_MOUSE_BUTTON_1
+	MouseButton2      MouseButton = C.GLFW_MOUSE_BUTTON_2
+	MouseButton3      MouseButton = C.GLFW_MOUSE_BUTTON_3
+	MouseButton4      MouseButton = C.GLFW_MOUSE_BUTTON_4
+	MouseButton5      MouseButton = C.GLFW_MOUSE_BUTTON_5
+	MouseButton6      MouseButton = C.GLFW_MOUSE_BUTTON_6
+	MouseButton7      MouseButton = C.GLFW_MOUSE_BUTTON_7
+	MouseButton8      MouseButton = C.GLFW_MOUSE_BUTTON_8
+	MouseButtonLast   MouseButton = C.GLFW_MOUSE_BUTTON_LAST
+	MouseButtonLeft   MouseButton = C.GLFW_MOUSE_BUTTON_LEFT
+	MouseButtonRight  MouseButton = C.GLFW_MOUSE_BUTTON_RIGHT
+	MouseButtonMiddle MouseButton = C.GLFW_MOUSE_BUTTON_MIDDLE
 )
 
+//Action corresponds to a key or button action.
+type Action int
+
 const (
-	Release = C.GLFW_RELEASE //The key or button was released.
-	Press   = C.GLFW_PRESS   //The key or button was pressed.
-	Repeat  = C.GLFW_REPEAT  //The key was held down until it repeated.
+	Release Action = C.GLFW_RELEASE //The key or button was released.
+	Press   Action = C.GLFW_PRESS   //The key or button was pressed.
+	Repeat  Action = C.GLFW_REPEAT  //The key was held down until it repeated.
 )
+
+//InputMode corresponds to an input mode.
+type InputMode int
 
 //Input modes
 const (
-	Cursor             = C.GLFW_CURSOR               //See Cursor mode values
-	StickyKeys         = C.GLFW_STICKY_KEYS          //Value can be either 1 or 0
-	StickyMouseButtons = C.GLFW_STICKY_MOUSE_BUTTONS //Value can be either 1 or 0
+	Cursor             InputMode = C.GLFW_CURSOR               //See Cursor mode values
+	StickyKeys         InputMode = C.GLFW_STICKY_KEYS          //Value can be either 1 or 0
+	StickyMouseButtons InputMode = C.GLFW_STICKY_MOUSE_BUTTONS //Value can be either 1 or 0
 )
+
+//CursorMode corresponds to a cursor mode.
+type CursorMode int
 
 //Cursor mode values
 const (
-	CursorNormal   = C.GLFW_CURSOR_NORMAL
-	CursorHidden   = C.GLFW_CURSOR_HIDDEN
-	CursorDisabled = C.GLFW_CURSOR_DISABLED
+	CursorNormal   CursorMode = C.GLFW_CURSOR_NORMAL
+	CursorHidden   CursorMode = C.GLFW_CURSOR_HIDDEN
+	CursorDisabled CursorMode = C.GLFW_CURSOR_DISABLED
 )
 
 type (
-	goMouseFunc  func(*Window, int, int, int)
+	goMouseFunc  func(*Window, MouseButton, Action, Mod)
 	goPosFunc    func(*Window, float64, float64)
-	goEnterFunc  func(*Window, int)
+	goEnterFunc  func(*Window, bool)
 	goScrollFunc func(*Window, float64, float64)
-	goKeyFunc    func(*Window, int, int, int)
+	goKeyFunc    func(*Window, Key, Action, Mod)
 	goCharFunc   func(*Window, uint)
 )
 
@@ -225,7 +246,7 @@ var (
 
 //export goMouseCB
 func goMouseCB(window unsafe.Pointer, button, action, mods C.int) {
-	fMouseHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(button), int(action), int(mods))
+	fMouseHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, MouseButton(button), Action(action), Mod(mods))
 }
 
 //export goPosCB
@@ -235,7 +256,11 @@ func goPosCB(window unsafe.Pointer, xpos, ypos C.double) {
 
 //export goEnterCB
 func goEnterCB(window unsafe.Pointer, entered C.int) {
-	fEnterHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(entered))
+	var hasEntered bool
+	if entered == C.GL_TRUE {
+		hasEntered = true
+	}
+	fEnterHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, hasEntered)
 }
 
 //export goScrollCB
@@ -245,7 +270,7 @@ func goScrollCB(window unsafe.Pointer, xpos, ypos C.double) {
 
 //export goKeyCB
 func goKeyCB(window unsafe.Pointer, key, action, mods C.int) {
-	fKeyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(key), int(action), int(mods))
+	fKeyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, Key(key), Action(action), Mod(mods))
 }
 
 //export goCharCB
@@ -254,12 +279,12 @@ func goCharCB(window unsafe.Pointer, character C.uint) {
 }
 
 //GetInputMode returns the value of an input option of the window.
-func (w *Window) GetInputMode(mode int) int {
+func (w *Window) GetInputMode(mode InputMode) int {
 	return int(C.glfwGetInputMode(w.data, C.int(mode)))
 }
 
 //Sets an input option for the window.
-func (w *Window) SetInputMode(mode, value int) {
+func (w *Window) SetInputMode(mode InputMode, value int) {
 	C.glfwSetInputMode(w.data, C.int(mode), C.int(value))
 }
 
@@ -274,8 +299,8 @@ func (w *Window) SetInputMode(mode, value int) {
 //The key functions deal with physical keys, with key tokens named after their
 //use on the standard US keyboard layout. If you want to input text, use the
 //Unicode character callback instead.
-func (w *Window) GetKey(key int) int {
-	return int(C.glfwGetKey(w.data, C.int(key)))
+func (w *Window) GetKey(key Key) Action {
+	return Action(C.glfwGetKey(w.data, C.int(key)))
 }
 
 //GetMouseButton returns the last state reported for the specified mouse button.
@@ -283,8 +308,8 @@ func (w *Window) GetKey(key int) int {
 //If the StickyMouseButtons input mode is enabled, this function returns Press
 //the first time you call this function after a mouse button has been pressed,
 //even if the mouse button has already been released.
-func (w *Window) GetMouseButton(button int) int {
-	return int(C.glfwGetMouseButton(w.data, C.int(button)))
+func (w *Window) GetMouseButton(button MouseButton) Action {
+	return Action(C.glfwGetMouseButton(w.data, C.int(button)))
 }
 
 //GetCursorPosition returns the last reported position of the cursor.
@@ -325,7 +350,7 @@ func (w *Window) SetCursorPosition(xpos, ypos float64) {
 //i.e. Focused will be false and the focus callback will have already been
 //called.
 //
-//Function signature for this callback is: func(*Window, int, int, int)
+//Function signature for this callback is: func(*Window, Key, Action, Mod)
 func (w *Window) SetKeyCallback(cbfun goKeyFunc) {
 	fKeyHolder = cbfun
 	C.glfwSetKeyCallbackCB(w.data)
@@ -352,7 +377,7 @@ func (w *Window) SetCharacterCallback(cbfun goCharFunc) {
 //the window has lost focus, i.e. Focused will be false and the focus
 //callback will have already been called.
 //
-//Function signature for this callback is: func(*Window, int, int, int)
+//Function signature for this callback is: func(*Window, MouseButton, Action, Mod)
 func (w *Window) SetMouseButtonCallback(cbfun goMouseFunc) {
 	fMouseHolder = cbfun
 	C.glfwSetMouseCallbackCB(w.data)
@@ -371,7 +396,7 @@ func (w *Window) SetCursorPositionCallback(cbfun goPosFunc) {
 //SetCursorEnterCallback the cursor boundary crossing callback which is called
 //when the cursor enters or leaves the client area of the window.
 //
-//Function signature for this callback is: func(*Window, int)
+//Function signature for this callback is: func(*Window, bool)
 func (w *Window) SetCursorEnterCallback(cbfun goEnterFunc) {
 	fEnterHolder = cbfun
 	C.glfwSetEnterCallbackCB(w.data)
@@ -387,12 +412,17 @@ func (w *Window) SetScrollCallback(cbfun goScrollFunc) {
 }
 
 //GetJoystickPresent returns whether the specified joystick is present.
-func JoystickPresent(joy int) int {
-	return int(C.glfwJoystickPresent(C.int(joy)))
+func JoystickPresent(joy Joystick) bool {
+	r := C.glfwJoystickPresent(C.int(joy))
+
+	if r == C.GL_TRUE {
+		return true
+	}
+	return false
 }
 
 //GetJoystickAxes returns a slice of axis values.
-func GetJoystickAxes(joy int) []float32 {
+func GetJoystickAxes(joy Joystick) []float32 {
 	var length int
 
 	axis := C.glfwGetJoystickAxes(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
@@ -406,7 +436,7 @@ func GetJoystickAxes(joy int) []float32 {
 }
 
 //GetJoystickButtons returns a slice of button values.
-func GetJoystickButtons(joy int) []byte {
+func GetJoystickButtons(joy Joystick) []byte {
 	var length int
 
 	buttons := C.glfwGetJoystickButtons(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
@@ -420,6 +450,6 @@ func GetJoystickButtons(joy int) []byte {
 }
 
 //GetJoystickName returns the name, encoded as UTF-8, of the specified joystick.
-func GetJoystickName(joy int) string {
+func GetJoystickName(joy Joystick) string {
 	return C.GoString(C.glfwGetJoystickName(C.int(joy)))
 }
