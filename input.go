@@ -264,8 +264,8 @@ func goEnterCB(window unsafe.Pointer, entered C.int) {
 }
 
 //export goScrollCB
-func goScrollCB(window unsafe.Pointer, xpos, ypos C.double) {
-	fScrollHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, float64(xpos), float64(ypos))
+func goScrollCB(window unsafe.Pointer, xoff, yoff C.double) {
+	fScrollHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, float64(xoff), float64(yoff))
 }
 
 //export goKeyCB
