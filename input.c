@@ -16,8 +16,8 @@ void glfwScrollCB(GLFWwindow* window, double xpos, double ypos) {
 	goScrollCB(window, xpos, ypos);
 }
 
-void glfwKeyCB(GLFWwindow* window, int key, int action, int mods) {
-	goKeyCB(window, key, action, mods);
+void glfwKeyCB(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	goKeyCB(window, key, scancode, action, mods);
 }
 
 void glfwCharCB(GLFWwindow* window, unsigned int character) {
