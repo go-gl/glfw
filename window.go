@@ -69,7 +69,7 @@ const (
 
 //Values for the OpenglProfile hint.
 const (
-	OpenglNoProfile     = C.GLFW_OPENGL_NO_PROFILE
+	OpenglAnyProfile    = C.GLFW_OPENGL_ANY_PROFILE
 	OpenglCoreProfile   = C.GLFW_OPENGL_CORE_PROFILE
 	OpenglCompatProfile = C.GLFW_OPENGL_COMPAT_PROFILE
 )

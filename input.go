@@ -231,7 +231,7 @@ type (
 	goPosFunc    func(*Window, float64, float64)
 	goEnterFunc  func(*Window, bool)
 	goScrollFunc func(*Window, float64, float64)
-	goKeyFunc    func(*Window, Key, Action, Mod)
+	goKeyFunc    func(*Window, Key, int, Action, Mod)
 	goCharFunc   func(*Window, uint)
 )
 
@@ -269,8 +269,8 @@ func goScrollCB(window unsafe.Pointer, xoff, yoff C.double) {
 }
 
 //export goKeyCB
-func goKeyCB(window unsafe.Pointer, key, action, mods C.int) {
-	fKeyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, Key(key), Action(action), Mod(mods))
+func goKeyCB(window unsafe.Pointer, key, scancode, action, mods C.int) {
+	fKeyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, Key(key), int(scancode), Action(action), Mod(mods))
 }
 
 //export goCharCB
