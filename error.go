@@ -4,25 +4,29 @@ package glfw
 //void glfwSetErrorCallbackCB();
 import "C"
 
+//ErrorCode corresponds to an error code.
+type ErrorCode int
+
+//Error codes.
 const (
-	NotInitialized     = C.GLFW_NOT_INITIALIZED     //GLFW has not been initialized.
-	NoCurrentContext   = C.GLFW_NO_CURRENT_CONTEXT  //No context is current.
-	InvalidEnum        = C.GLFW_INVALID_ENUM        //One of the enum parameters for the function was given an invalid enum.
-	InvalidValue       = C.GLFW_INVALID_VALUE       //One of the parameters for the function was given an invalid value.
-	OutOfMemory        = C.GLFW_OUT_OF_MEMORY       //A memory allocation failed.
-	ApiUnavailable     = C.GLFW_API_UNAVAILABLE     //GLFW could not find support for the requested client API on the system.
-	VersionUnavailable = C.GLFW_VERSION_UNAVAILABLE //The requested client API version is not available.
-	PlatformError      = C.GLFW_PLATFORM_ERROR      //A platform-specific error occurred that does not match any of the more specific categories.
-	FormatUnavailable  = C.GLFW_FORMAT_UNAVAILABLE  //The clipboard did not contain data in the requested format.
+	NotInitialized     ErrorCode = C.GLFW_NOT_INITIALIZED     //GLFW has not been initialized.
+	NoCurrentContext   ErrorCode = C.GLFW_NO_CURRENT_CONTEXT  //No context is current.
+	InvalidEnum        ErrorCode = C.GLFW_INVALID_ENUM        //One of the enum parameters for the function was given an invalid enum.
+	InvalidValue       ErrorCode = C.GLFW_INVALID_VALUE       //One of the parameters for the function was given an invalid value.
+	OutOfMemory        ErrorCode = C.GLFW_OUT_OF_MEMORY       //A memory allocation failed.
+	ApiUnavailable     ErrorCode = C.GLFW_API_UNAVAILABLE     //GLFW could not find support for the requested client API on the system.
+	VersionUnavailable ErrorCode = C.GLFW_VERSION_UNAVAILABLE //The requested client API version is not available.
+	PlatformError      ErrorCode = C.GLFW_PLATFORM_ERROR      //A platform-specific error occurred that does not match any of the more specific categories.
+	FormatUnavailable  ErrorCode = C.GLFW_FORMAT_UNAVAILABLE  //The clipboard did not contain data in the requested format.
 )
 
-type goErrorFunc func(int, string)
+type goErrorFunc func(ErrorCode, string)
 
 var fErrorHolder goErrorFunc
 
 //export goErrorCB
 func goErrorCB(err C.int, desc *C.char) {
-	fErrorHolder(int(err), C.GoString(desc))
+	fErrorHolder(ErrorCode(err), C.GoString(desc))
 }
 
 //SetErrorCallback sets the error callback, which is called with an error code
