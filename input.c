@@ -1,19 +1,19 @@
 #include "_cgo_export.h"
 
-void glfwMouseCB(GLFWwindow* window, int button, int action, int mods) {
-	goMouseCB(window, button, action, mods);
+void glfwMouseButtonCB(GLFWwindow* window, int button, int action, int mods) {
+	goMouseButtonCB(window, button, action, mods);
 }
 
-void glfwPosCB(GLFWwindow* window, double xpos, double ypos) {
-	goPosCB(window, xpos, ypos);
+void glfwCursorPosCB(GLFWwindow* window, double xpos, double ypos) {
+	goCursorPosCB(window, xpos, ypos);
 }
 
-void glfwEnterCB(GLFWwindow* window, int entered) {
-	goEnterCB(window, entered);
+void glfwCursorEnterCB(GLFWwindow* window, int entered) {
+	goCursorEnterCB(window, entered);
 }
 
-void glfwScrollCB(GLFWwindow* window, double xpos, double ypos) {
-	goScrollCB(window, xpos, ypos);
+void glfwScrollCB(GLFWwindow* window, double xoff, double yoff) {
+	goScrollCB(window, xoff, yoff);
 }
 
 void glfwKeyCB(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -32,16 +32,16 @@ void glfwSetCharCallbackCB(GLFWwindow *window) {
 	glfwSetCharCallback(window, glfwCharCB);
 }
 
-void glfwSetMouseCallbackCB(GLFWwindow *window) {
-	glfwSetMouseButtonCallback(window, glfwMouseCB);
+void glfwSetMouseButtonCallbackCB(GLFWwindow *window) {
+	glfwSetMouseButtonCallback(window, glfwMouseButtonCB);
 }
 
-void glfwSetPosCallbackCB(GLFWwindow *window) {
-	glfwSetCursorPosCallback(window, glfwPosCB);
+void glfwSetCursorPosCallbackCB(GLFWwindow *window) {
+	glfwSetCursorPosCallback(window, glfwCursorPosCB);
 }
 
-void glfwSetEnterCallbackCB(GLFWwindow *window) {
-	glfwSetCursorEnterCallback(window, glfwEnterCB);
+void glfwSetCursorEnterCallbackCB(GLFWwindow *window) {
+	glfwSetCursorEnterCallback(window, glfwCursorEnterCB);
 }
 
 void glfwSetScrollCallbackCB(GLFWwindow *window) {

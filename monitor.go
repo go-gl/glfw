@@ -15,6 +15,15 @@ type Monitor struct {
 	data *C.GLFWmonitor
 }
 
+// MonitorEvent corresponds to a monitor configuration event.
+type MonitorEvent int
+
+// Monitor events.
+const (
+	Connected    MonitorEvent = C.GLFW_CONNECTED
+	Disconnected MonitorEvent = C.GLFW_DISCONNECTED
+)
+
 //VideoMode describes a single video mode.
 type VideoMode struct {
 	Width     int //The width, in pixels, of the video mode.
@@ -24,13 +33,11 @@ type VideoMode struct {
 	BlueBits  int //The bit depth of the blue channel of the video mode.
 }
 
-type goMonitorFunc func(*Monitor, int)
-
-var fMonitorHolder goMonitorFunc
+var fMonitorHolder func(monitor *Monitor, event MonitorEvent)
 
 //export goMonitorCB
 func goMonitorCB(monitor unsafe.Pointer, event C.int) {
-	fMonitorHolder(&Monitor{(*C.GLFWmonitor)(unsafe.Pointer(monitor))}, int(event))
+	fMonitorHolder(&Monitor{(*C.GLFWmonitor)(unsafe.Pointer(monitor))}, MonitorEvent(event))
 }
 
 //GetMonitors returns a slice of handles for all currently connected monitors.
@@ -93,9 +100,7 @@ func (m *Monitor) GetName() string {
 //SetMonitorCallback sets the monitor configuration callback, or removes the
 //currently set callback. This is called when a monitor is connected to or
 //disconnected from the system.
-//
-//Function signature for this callback is: func(*Monitor, int)
-func SetMonitorCallback(cbfun goMonitorFunc) {
+func SetMonitorCallback(cbfun func(monitor *Monitor, event MonitorEvent)) {
 	fMonitorHolder = cbfun
 	C.glfwSetMonitorCallbackCB()
 }

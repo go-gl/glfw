@@ -1,49 +1,49 @@
 #include "_cgo_export.h"
 
-void glfwPositionCB(GLFWwindow* window, int xpos, int ypos) {
-	goPositionCB(window, xpos, ypos);
+void glfwWindowPosCB(GLFWwindow* window, int xpos, int ypos) {
+	goWindowPosCB(window, xpos, ypos);
 }
 
-void glfwSizeCB(GLFWwindow* window, int width, int height) {
-	goSizeCB(window, width, height);
+void glfwWindowSizeCB(GLFWwindow* window, int width, int height) {
+	goWindowSizeCB(window, width, height);
 }
 
-void glfwCloseCB(GLFWwindow* window) {
-	goCloseCB(window);
+void glfwWindowCloseCB(GLFWwindow* window) {
+	goWindowCloseCB(window);
 }
 
-void glfwRefreshCB(GLFWwindow* window) {
-	goRefreshCB(window);
+void glfwWindowRefreshCB(GLFWwindow* window) {
+	goWindowRefreshCB(window);
 }
 
-void glfwFocusCB(GLFWwindow* window, int focused) {
-	goFocusCB(window, focused);
+void glfwWindowFocusCB(GLFWwindow* window, int focused) {
+	goWindowFocusCB(window, focused);
 }
 
-void glfwIconifyCB(GLFWwindow* window, int iconified) {
-	goIconifyCB(window, iconified);
+void glfwWindowIconifyCB(GLFWwindow* window, int iconified) {
+	goWindowIconifyCB(window, iconified);
 }
 
 void glfwSetWindowPosCallbackCB(GLFWwindow* window) {
-	glfwSetWindowPosCallback(window, glfwPositionCB);
+	glfwSetWindowPosCallback(window, glfwWindowPosCB);
 }
 
 void glfwSetWindowSizeCallbackCB(GLFWwindow* window) {
-	glfwSetWindowSizeCallback(window, glfwSizeCB);
+	glfwSetWindowSizeCallback(window, glfwWindowSizeCB);
 }
 
 void glfwSetWindowCloseCallbackCB(GLFWwindow* window) {
-	glfwSetWindowCloseCallback(window, glfwCloseCB);
+	glfwSetWindowCloseCallback(window, glfwWindowCloseCB);
 }
 
 void glfwSetWindowRefreshCallbackCB(GLFWwindow* window) {
-	glfwSetWindowRefreshCallback(window, glfwRefreshCB);
+	glfwSetWindowRefreshCallback(window, glfwWindowRefreshCB);
 }
 
 void glfwSetWindowFocusCallbackCB(GLFWwindow* window) {
-	glfwSetWindowFocusCallback(window, glfwFocusCB);
+	glfwSetWindowFocusCallback(window, glfwWindowFocusCB);
 }
 
 void glfwSetWindowIconifyCallbackCB(GLFWwindow* window) {
-	glfwSetWindowIconifyCallback(window, glfwIconifyCB);
+	glfwSetWindowIconifyCallback(window, glfwWindowIconifyCB);
 }
