@@ -84,52 +84,51 @@ type Window struct {
 	data *C.GLFWwindow
 }
 
-type (
-	goPositionFunc func(*Window, int, int)
-	goSizeFunc     func(*Window, int, int)
-	goCloseFunc    func(*Window)
-	goRefreshFunc  func(*Window)
-	goFocusFunc    func(*Window, int)
-	goIconifyFunc  func(*Window, int)
-)
-
 var (
-	fPositionHolder goPositionFunc
-	fSizeHolder     goSizeFunc
-	fCloseHolder    goCloseFunc
-	fRefreshHolder  goRefreshFunc
-	fFocusHolder    goFocusFunc
-	fIconifyHolder  goIconifyFunc
+	fWindowPosHolder     func(w *Window, xpos int, ypos int)
+	fWindowSizeHolder    func(w *Window, width int, height int)
+	fWindowCloseHolder   func(w *Window)
+	fWindowRefreshHolder func(w *Window)
+	fWindowFocusHolder   func(w *Window, focused bool)
+	fWindowIconifyHolder func(w *Window, iconified bool)
 )
 
-//export goPositionCB
-func goPositionCB(window unsafe.Pointer, xpos, ypos C.int) {
-	fPositionHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(xpos), int(ypos))
+//export goWindowPosCB
+func goWindowPosCB(window unsafe.Pointer, xpos, ypos C.int) {
+	fWindowPosHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(xpos), int(ypos))
 }
 
-//export goSizeCB
-func goSizeCB(window unsafe.Pointer, width, height C.int) {
-	fSizeHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(width), int(height))
+//export goWindowSizeCB
+func goWindowSizeCB(window unsafe.Pointer, width, height C.int) {
+	fWindowSizeHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(width), int(height))
 }
 
-//export goCloseCB
-func goCloseCB(window unsafe.Pointer) {
-	fCloseHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))})
+//export goWindowCloseCB
+func goWindowCloseCB(window unsafe.Pointer) {
+	fWindowCloseHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))})
 }
 
-//export goRefreshCB
-func goRefreshCB(window unsafe.Pointer) {
-	fRefreshHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))})
+//export goWindowRefreshCB
+func goWindowRefreshCB(window unsafe.Pointer) {
+	fWindowRefreshHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))})
 }
 
-//export goFocusCB
-func goFocusCB(window unsafe.Pointer, focused C.int) {
-	fFocusHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(focused))
+//export goWindowFocusCB
+func goWindowFocusCB(window unsafe.Pointer, focused C.int) {
+	var isFocused bool
+	if focused == C.GL_TRUE {
+		isFocused = true
+	}
+	fWindowFocusHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, isFocused)
 }
 
-//export goIconifyCB
-func goIconifyCB(window unsafe.Pointer, iconified C.int) {
-	fIconifyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(iconified))
+//export goWindowIconifyCB
+func goWindowIconifyCB(window unsafe.Pointer, iconified C.int) {
+	var isIconified bool
+	if iconified == C.GL_TRUE {
+		isIconified = true
+	}
+	fWindowIconifyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, isIconified)
 }
 
 //DefaultWindowHints resets all window hints to their default values.
@@ -343,16 +342,16 @@ func (w *Window) GetUserPointer() unsafe.Pointer {
 //SetPositionCallback sets the position callback of the window, which is called
 //when the window is moved. The callback is provided with the screen position
 //of the upper-left corner of the client area of the window.
-func (w *Window) SetPositionCallback(cbfun goPositionFunc) {
-	fPositionHolder = cbfun
+func (w *Window) SetPositionCallback(cbfun func(w *Window, xpos int, ypos int)) {
+	fWindowPosHolder = cbfun
 	C.glfwSetWindowPosCallbackCB(w.data)
 }
 
 //SetSizeCallback sets the size callback of the window, which is called when
 //the window is resized. The callback is provided with the size, in screen
 //coordinates, of the client area of the window.
-func (w *Window) SetSizeCallback(cbfun goSizeFunc) {
-	fSizeHolder = cbfun
+func (w *Window) SetSizeCallback(cbfun func(w *Window, width int, height int)) {
+	fWindowSizeHolder = cbfun
 	C.glfwSetWindowSizeCallbackCB(w.data)
 }
 
@@ -365,8 +364,8 @@ func (w *Window) SetSizeCallback(cbfun goSizeFunc) {
 //
 //Mac OS X: Selecting Quit from the application menu will trigger the close
 //callback for all windows.
-func (w *Window) SetCloseCallback(cbfun goCloseFunc) {
-	fCloseHolder = cbfun
+func (w *Window) SetCloseCallback(cbfun func(w *Window)) {
+	fWindowCloseHolder = cbfun
 	C.glfwSetWindowCloseCallbackCB(w.data)
 }
 
@@ -377,8 +376,8 @@ func (w *Window) SetCloseCallback(cbfun goCloseFunc) {
 //On compositing window systems such as Aero, Compiz or Aqua, where the window
 //contents are saved off-screen, this callback may be called only very
 //infrequently or never at all.
-func (w *Window) SetRefreshCallback(cbfun goRefreshFunc) {
-	fRefreshHolder = cbfun
+func (w *Window) SetRefreshCallback(cbfun func(w *Window)) {
+	fWindowRefreshHolder = cbfun
 	C.glfwSetWindowRefreshCallbackCB(w.data)
 }
 
@@ -388,15 +387,15 @@ func (w *Window) SetRefreshCallback(cbfun goRefreshFunc) {
 //After the focus callback is called for a window that lost focus, synthetic key
 //and mouse button release events will be generated for all such that had been
 //pressed. For more information, see SetKeyCallback and SetMouseButtonCallback.
-func (w *Window) SetFocusCallback(cbfun goFocusFunc) {
-	fFocusHolder = cbfun
+func (w *Window) SetFocusCallback(cbfun func(w *Window, focused bool)) {
+	fWindowFocusHolder = cbfun
 	C.glfwSetWindowFocusCallbackCB(w.data)
 }
 
 //SetIconifyCallback sets the iconification callback of the window, which is
 //called when the window is iconified or restored.
-func (w *Window) SetIconifyCallback(cbfun goIconifyFunc) {
-	fIconifyHolder = cbfun
+func (w *Window) SetIconifyCallback(cbfun func(w *Window, iconified bool)) {
+	fWindowIconifyHolder = cbfun
 	C.glfwSetWindowIconifyCallbackCB(w.data)
 }
 

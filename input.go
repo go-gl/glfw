@@ -3,9 +3,9 @@ package glfw
 //#include <GLFW/glfw3.h>
 //void glfwSetKeyCallbackCB(GLFWwindow *window);
 //void glfwSetCharCallbackCB(GLFWwindow *window);
-//void glfwSetMouseCallbackCB(GLFWwindow *window);
-//void glfwSetPosCallbackCB(GLFWwindow *window);
-//void glfwSetEnterCallbackCB(GLFWwindow *window);
+//void glfwSetMouseButtonCallbackCB(GLFWwindow *window);
+//void glfwSetCursorPosCallbackCB(GLFWwindow *window);
+//void glfwSetCursorEnterCallbackCB(GLFWwindow *window);
 //void glfwSetScrollCallbackCB(GLFWwindow *window);
 //float GetAxisAtIndex(float *axis, int i);
 //unsigned char GetButtonsAtIndex(unsigned char *buttons, int i);
@@ -226,41 +226,32 @@ const (
 	CursorDisabled CursorMode = C.GLFW_CURSOR_DISABLED
 )
 
-type (
-	goMouseFunc  func(*Window, MouseButton, Action, Mod)
-	goPosFunc    func(*Window, float64, float64)
-	goEnterFunc  func(*Window, bool)
-	goScrollFunc func(*Window, float64, float64)
-	goKeyFunc    func(*Window, Key, int, Action, Mod)
-	goCharFunc   func(*Window, uint)
-)
-
 var (
-	fMouseHolder  goMouseFunc
-	fPosHolder    goPosFunc
-	fEnterHolder  goEnterFunc
-	fScrollHolder goScrollFunc
-	fKeyHolder    goKeyFunc
-	fCharHolder   goCharFunc
+	fMouseButtonHolder func(w *Window, button MouseButton, action Action, mod Mod)
+	fCursorPosHolder   func(w *Window, xpos float64, ypos float64)
+	fCursorEnterHolder func(w *Window, entered bool)
+	fScrollHolder      func(w *Window, xoff float64, yoff float64)
+	fKeyHolder         func(w *Window, key Key, scancode int, action Action, mods Mod)
+	fCharHolder        func(w *Window, char uint)
 )
 
-//export goMouseCB
-func goMouseCB(window unsafe.Pointer, button, action, mods C.int) {
-	fMouseHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, MouseButton(button), Action(action), Mod(mods))
+//export goMouseButtonCB
+func goMouseButtonCB(window unsafe.Pointer, button, action, mods C.int) {
+	fMouseButtonHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, MouseButton(button), Action(action), Mod(mods))
 }
 
-//export goPosCB
-func goPosCB(window unsafe.Pointer, xpos, ypos C.double) {
-	fPosHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, float64(xpos), float64(ypos))
+//export goCursorPosCB
+func goCursorPosCB(window unsafe.Pointer, xpos, ypos C.double) {
+	fCursorPosHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, float64(xpos), float64(ypos))
 }
 
-//export goEnterCB
-func goEnterCB(window unsafe.Pointer, entered C.int) {
+//export goCursorEnterCB
+func goCursorEnterCB(window unsafe.Pointer, entered C.int) {
 	var hasEntered bool
 	if entered == C.GL_TRUE {
 		hasEntered = true
 	}
-	fEnterHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, hasEntered)
+	fCursorEnterHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, hasEntered)
 }
 
 //export goScrollCB
@@ -349,9 +340,7 @@ func (w *Window) SetCursorPosition(xpos, ypos float64) {
 //fact that the synthetic ones are generated after the window has lost focus,
 //i.e. Focused will be false and the focus callback will have already been
 //called.
-//
-//Function signature for this callback is: func(*Window, Key, Action, Mod)
-func (w *Window) SetKeyCallback(cbfun goKeyFunc) {
+func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, action Action, mods Mod)) {
 	fKeyHolder = cbfun
 	C.glfwSetKeyCallbackCB(w.data)
 }
@@ -361,9 +350,7 @@ func (w *Window) SetKeyCallback(cbfun goKeyFunc) {
 //
 //The character callback is intended for text input. If you want to know whether
 //a specific key was pressed or released, use the key callback instead.
-//
-//Function signature for this callback is: func(*Window, uint)
-func (w *Window) SetCharacterCallback(cbfun goCharFunc) {
+func (w *Window) SetCharacterCallback(cbfun func(w *Window, char uint)) {
 	fCharHolder = cbfun
 	C.glfwSetCharCallbackCB(w.data)
 }
@@ -376,37 +363,29 @@ func (w *Window) SetCharacterCallback(cbfun goCharFunc) {
 //user-generated events by the fact that the synthetic ones are generated after
 //the window has lost focus, i.e. Focused will be false and the focus
 //callback will have already been called.
-//
-//Function signature for this callback is: func(*Window, MouseButton, Action, Mod)
-func (w *Window) SetMouseButtonCallback(cbfun goMouseFunc) {
-	fMouseHolder = cbfun
-	C.glfwSetMouseCallbackCB(w.data)
+func (w *Window) SetMouseButtonCallback(cbfun func(w *Window, button MouseButton, action Action, mod Mod)) {
+	fMouseButtonHolder = cbfun
+	C.glfwSetMouseButtonCallbackCB(w.data)
 }
 
 //SetCursorPositionCallback sets the cursor position callback which is called
 //when the cursor is moved. The callback is provided with the position relative
 //to the upper-left corner of the client area of the window.
-//
-//Function signature for this callback is: func(*Window, float64, float64)
-func (w *Window) SetCursorPositionCallback(cbfun goPosFunc) {
-	fPosHolder = cbfun
-	C.glfwSetPosCallbackCB(w.data)
+func (w *Window) SetCursorPositionCallback(cbfun func(w *Window, xpos float64, ypos float64)) {
+	fCursorPosHolder = cbfun
+	C.glfwSetCursorPosCallbackCB(w.data)
 }
 
 //SetCursorEnterCallback the cursor boundary crossing callback which is called
 //when the cursor enters or leaves the client area of the window.
-//
-//Function signature for this callback is: func(*Window, bool)
-func (w *Window) SetCursorEnterCallback(cbfun goEnterFunc) {
-	fEnterHolder = cbfun
-	C.glfwSetEnterCallbackCB(w.data)
+func (w *Window) SetCursorEnterCallback(cbfun func(w *Window, entered bool)) {
+	fCursorEnterHolder = cbfun
+	C.glfwSetCursorEnterCallbackCB(w.data)
 }
 
 //SetScrollCallback sets the scroll callback which is called when a scrolling
 //device is used, such as a mouse wheel or scrolling area of a touchpad.
-//
-//Function signature for this callback is: func(*Window, float64, float64)
-func (w *Window) SetScrollCallback(cbfun goScrollFunc) {
+func (w *Window) SetScrollCallback(cbfun func(w *Window, xoff float64, yoff float64)) {
 	fScrollHolder = cbfun
 	C.glfwSetScrollCallbackCB(w.data)
 }
