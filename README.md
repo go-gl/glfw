@@ -1,11 +1,9 @@
-GLFW 3.0 (WIP) Bindings for Go
-==============================
-
-**ATTENTION:** GLFW 3.0 is still in development and the API changes occur very often. I try to stay updated with the latest changes on https://github.com/glfw/glfw _(Last update: bfb7b053c219e19b0803a00931682d6447c58b20)_
+GLFW 3.0 Bindings for Go
+========================
 
 * All the modules are implemented except "Native Acess".
 * See http://godoc.org/github.com/tapir/glfw3-go for documentation.
-* You can help by submitting examples.
+* You can help by submitting examples to http://github.com/tapir/glfw3-go-examples
 
 The library can be used as below:
 <pre>
@@ -16,7 +14,7 @@ The library can be used as below:
 		glfw "github.com/tapir/glfw3-go"
 	)
 	
-	func errorCallback(err int, desc string) {
+	func errorCallback(err glfw.ErrorCode, desc string) {
 		fmt.Printf("%v: %v\n", err, desc)
 	}
 	
