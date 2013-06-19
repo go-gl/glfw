@@ -6,7 +6,7 @@ GLFW 3.0 Bindings for Go
 * You can help by submitting examples to http://github.com/tapir/glfw3-go-examples
 
 The library can be used as below:
-<pre>
+```go
 	package main
 	
 	import (
@@ -39,4 +39,4 @@ The library can be used as below:
 			glfw.PollEvents()
 		}
 	}
-</pre>
+```
