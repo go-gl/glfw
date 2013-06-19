@@ -329,8 +329,8 @@ func (w *Window) GetMonitor() (*Monitor, error) {
 
 //GetAttribute returns an attribute of the window. There are many attributes,
 //some related to the window and others to its context.
-func (w *Window) GetAttribute(attrib int) int {
-	return int(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
+func (w *Window) GetAttribute(attrib Hint) HintValue {
+	return HintValue(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
 }
 
 //SetUserPointer sets the user-defined pointer of the window. The current value
