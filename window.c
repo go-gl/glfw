@@ -8,6 +8,10 @@ void glfwWindowSizeCB(GLFWwindow* window, int width, int height) {
 	goWindowSizeCB(window, width, height);
 }
 
+void glfwFramebufferSizeCB(GLFWwindow* window, int width, int height) {
+	goFramebufferSizeCB(window, width, height);
+}
+
 void glfwWindowCloseCB(GLFWwindow* window) {
 	goWindowCloseCB(window);
 }
@@ -30,6 +34,10 @@ void glfwSetWindowPosCallbackCB(GLFWwindow* window) {
 
 void glfwSetWindowSizeCallbackCB(GLFWwindow* window) {
 	glfwSetWindowSizeCallback(window, glfwWindowSizeCB);
+}
+
+void glfwSetFramebufferSizeCallbackCB(GLFWwindow* window) {
+	glfwSetFramebufferSizeCallback(window, glfwFramebufferSizeCB);
 }
 
 void glfwSetWindowCloseCallbackCB(GLFWwindow* window) {
