@@ -4,6 +4,7 @@ package glfw
 //#include <GLFW/glfw3.h>
 //void glfwSetWindowPosCallbackCB(GLFWwindow *window);
 //void glfwSetWindowSizeCallbackCB(GLFWwindow *window);
+//void glfwSetFramebufferSizeCallbackCB(GLFWwindow *window);
 //void glfwSetWindowCloseCallbackCB(GLFWwindow *window);
 //void glfwSetWindowRefreshCallbackCB(GLFWwindow *window);
 //void glfwSetWindowFocusCallbackCB(GLFWwindow *window);
@@ -91,12 +92,13 @@ type Window struct {
 }
 
 var (
-	fWindowPosHolder     func(w *Window, xpos int, ypos int)
-	fWindowSizeHolder    func(w *Window, width int, height int)
-	fWindowCloseHolder   func(w *Window)
-	fWindowRefreshHolder func(w *Window)
-	fWindowFocusHolder   func(w *Window, focused bool)
-	fWindowIconifyHolder func(w *Window, iconified bool)
+	fWindowPosHolder       func(w *Window, xpos int, ypos int)
+	fWindowSizeHolder      func(w *Window, width int, height int)
+	fFramebufferSizeHolder func(w *Window, width int, height int)
+	fWindowCloseHolder     func(w *Window)
+	fWindowRefreshHolder   func(w *Window)
+	fWindowFocusHolder     func(w *Window, focused bool)
+	fWindowIconifyHolder   func(w *Window, iconified bool)
 )
 
 //export goWindowPosCB
@@ -107,6 +109,11 @@ func goWindowPosCB(window unsafe.Pointer, xpos, ypos C.int) {
 //export goWindowSizeCB
 func goWindowSizeCB(window unsafe.Pointer, width, height C.int) {
 	fWindowSizeHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(width), int(height))
+}
+
+//export goFramebufferSizeCB
+func goFramebufferSizeCB(window unsafe.Pointer, width, height C.int) {
+	fFramebufferSizeHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(width), int(height))
 }
 
 //export goWindowCloseCB
@@ -288,6 +295,18 @@ func (w *Window) SetSize(width, height int) {
 	C.glfwSetWindowSize(w.data, C.int(width), C.int(height))
 }
 
+//GetFramebufferSize retrieves the size, in pixels, of the framebuffer of the
+//specified window.
+func (w *Window) GetFramebufferSize() (int, int) {
+	var (
+		width  C.int
+		height C.int
+	)
+
+	C.glfwGetFramebufferSize(w.data, &width, &height)
+	return int(width), int(height)
+}
+
 //Iconfiy iconifies/minimizes the window, if it was previously restored. If it
 //is a full screen window, the original monitor resolution is restored until the
 //window is restored. If the window is already iconified, this function does
@@ -359,6 +378,13 @@ func (w *Window) SetPositionCallback(cbfun func(w *Window, xpos int, ypos int)) 
 func (w *Window) SetSizeCallback(cbfun func(w *Window, width int, height int)) {
 	fWindowSizeHolder = cbfun
 	C.glfwSetWindowSizeCallbackCB(w.data)
+}
+
+//SetFramebufferSizeCallback sets the framebuffer resize callback of the specified
+//window, which is called when the framebuffer of the specified window is resized.
+func (w *Window) SetFramebufferSizeCallback(cbfun func(w *Window, width int, height int)) {
+	fFramebufferSizeHolder = cbfun
+	C.glfwSetFramebufferSizeCallbackCB(w.data)
 }
 
 //SetCloseCallback sets the close callback of the window, which is called when
