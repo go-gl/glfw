@@ -26,11 +26,12 @@ const (
 
 //VideoMode describes a single video mode.
 type VideoMode struct {
-	Width     int //The width, in pixels, of the video mode.
-	Height    int //The height, in pixels, of the video mode.
-	RedBits   int //The bit depth of the red channel of the video mode.
-	GreenBits int //The bit depth of the green channel of the video mode.
-	BlueBits  int //The bit depth of the blue channel of the video mode.
+	Width       int //The width, in pixels, of the video mode.
+	Height      int //The height, in pixels, of the video mode.
+	RedBits     int //The bit depth of the red channel of the video mode.
+	GreenBits   int //The bit depth of the green channel of the video mode.
+	BlueBits    int //The bit depth of the blue channel of the video mode.
+	RefreshRate int //The refresh rate, in Hz, of the video mode.
 }
 
 var fMonitorHolder func(monitor *Monitor, event MonitorEvent)
@@ -121,7 +122,7 @@ func (m *Monitor) GetVideoModes() ([]*VideoMode, error) {
 
 	for i := 0; i < length; i++ {
 		t := C.GetVidmodeAtIndex(vC, C.int(i))
-		v[i] = &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits)}
+		v[i] = &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits), int(t.refreshRate)}
 	}
 
 	return v, nil
@@ -136,5 +137,5 @@ func (m *Monitor) GetVideoMode() (*VideoMode, error) {
 	if t == nil {
 		return nil, errors.New("Can't get the video mode.")
 	}
-	return &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits)}, nil
+	return &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits), int(t.refreshRate)}, nil
 }
