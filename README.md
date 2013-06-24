@@ -1,9 +1,9 @@
-GLFW 3.0 Bindings for Go
-========================
+Go Bindings for GLFW 3
+======================
 
 * All the modules are implemented except "Native Acess".
-* See http://godoc.org/github.com/tapir/glfw3-go for documentation.
-* You can help by submitting examples to http://github.com/tapir/glfw3-go-examples
+* See http://godoc.org/github.com/go-gl/glfw3 for documentation.
+* You can help by submitting examples to http://github.com/go-gl/examples
 
 The library can be used as below:
 
@@ -12,7 +12,7 @@ package main
 
 import (
 	"fmt"
-	glfw "github.com/tapir/glfw3-go"
+	glfw "github.com/go-gl/glfw3"
 )
 
 func errorCallback(err glfw.ErrorCode, desc string) {
