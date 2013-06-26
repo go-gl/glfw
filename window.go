@@ -17,6 +17,9 @@ import (
 )
 
 //Hint corresponds to hints that can be set before creating a window.
+//
+//Hint also corresponds to the attributes of the window that can be get after
+//its creation.
 type Hint int
 
 //Window related hints.
