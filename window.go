@@ -17,6 +17,9 @@ import (
 )
 
 //Hint corresponds to hints that can be set before creating a window.
+//
+//Hint also corresponds to the attributes of the window that can be get after
+//its creation.
 type Hint int
 
 //Window related hints.
@@ -48,7 +51,7 @@ const (
 	AlphaBits       Hint = C.GLFW_ALPHA_BITS       //Specifies the desired bit depth of the default framebuffer.
 	DepthBits       Hint = C.GLFW_DEPTH_BITS       //Specifies the desired bit depth of the default framebuffer.
 	StencilBits     Hint = C.GLFW_STENCIL_BITS     //Specifies the desired bit depth of the default framebuffer.
-	AccumuRedBits   Hint = C.GLFW_ACCUM_RED_BITS   //Specifies the desired bit depth of the accumulation buffer.
+	AccumRedBits    Hint = C.GLFW_ACCUM_RED_BITS   //Specifies the desired bit depth of the accumulation buffer.
 	AccumGreenBits  Hint = C.GLFW_ACCUM_GREEN_BITS //Specifies the desired bit depth of the accumulation buffer.
 	AccumBlueBits   Hint = C.GLFW_ACCUM_BLUE_BITS  //Specifies the desired bit depth of the accumulation buffer.
 	AccumAlphaBits  Hint = C.GLFW_ACCUM_ALPHA_BITS //Specifies the desired bit depth of the accumulation buffer.
