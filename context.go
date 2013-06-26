@@ -14,6 +14,11 @@ func (w *Window) MakeContextCurrent() {
 	C.glfwMakeContextCurrent(w.data)
 }
 
+//DetachCurrentContext detaches the current context.
+func DetachCurrentContext() {
+    C.glfwMakeContextCurrent(nil)
+}
+
 //GetCurrentContext returns the window whose context is current.
 func GetCurrentContext() (*Window, error) {
 	w := C.glfwGetCurrentContext()
