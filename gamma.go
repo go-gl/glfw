@@ -1,4 +1,4 @@
-package glfw
+package glfw3
 
 //#include <GLFW/glfw3.h>
 //unsigned int GetGammaAtIndex(unsigned short *color, int i);

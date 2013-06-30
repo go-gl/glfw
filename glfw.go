@@ -1,4 +1,4 @@
-package glfw
+package glfw3
 
 //#cgo LDFLAGS: -lglfw
 //#include <GLFW/glfw3.h>
