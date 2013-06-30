@@ -1,4 +1,4 @@
-package glfw
+package glfw3
 
 //#include <GLFW/glfw3.h>
 //GLFWmonitor* GetMonitorAtIndex(GLFWmonitor **monitors, int index);

@@ -1,4 +1,4 @@
-package glfw
+package glfw3
 
 //#include <stdlib.h>
 //#include <GLFW/glfw3.h>
