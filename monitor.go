@@ -4,6 +4,8 @@ package glfw3
 //GLFWmonitor* GetMonitorAtIndex(GLFWmonitor **monitors, int index);
 //GLFWvidmode GetVidmodeAtIndex(GLFWvidmode *vidmodes, int index);
 //void glfwSetMonitorCallbackCB();
+//unsigned int GetGammaAtIndex(unsigned short *color, int i);
+//void SetGammaAtIndex(unsigned short *color, int i, unsigned short value);
 import "C"
 
 import (
@@ -15,10 +17,17 @@ type Monitor struct {
 	data *C.GLFWmonitor
 }
 
-// MonitorEvent corresponds to a monitor configuration event.
+//MonitorEvent corresponds to a monitor configuration event.
 type MonitorEvent int
 
-// Monitor events.
+//GammaRamp describes the gamma ramp for a monitor.
+type GammaRamp struct {
+	Red   []uint16 //A slice of value describing the response of the red channel.
+	Green []uint16 //A slice of value describing the response of the green channel.
+	Blue  []uint16 //A slice of value describing the response of the blue channel.
+}
+
+//Monitor events.
 const (
 	Connected    MonitorEvent = C.GLFW_CONNECTED
 	Disconnected MonitorEvent = C.GLFW_DISCONNECTED
@@ -138,4 +147,48 @@ func (m *Monitor) GetVideoMode() (*VideoMode, error) {
 		return nil, errors.New("Can't get the video mode.")
 	}
 	return &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits), int(t.refreshRate)}, nil
+}
+
+//SetGamma generates a 256-element gamma ramp from the specified exponent and then calls
+//SetGamma with it.
+func (m *Monitor) SetGamma(gamma float32) {
+	C.glfwSetGamma(m.data, C.float(gamma))
+}
+
+//GetGammaRamp retrieves the current gamma ramp of the monitor.
+func (m *Monitor) GetGammaRamp() (*GammaRamp, error) {
+	var ramp GammaRamp
+
+	rampC := C.glfwGetGammaRamp(m.data)
+	if rampC == nil {
+		return nil, errors.New("Can't get the gamma ramp.")
+	}
+	
+	length := int(rampC.size)
+	ramp.Red = make([]uint16, length)
+	ramp.Green = make([]uint16, length)
+	ramp.Blue = make([]uint16, length)
+
+	for i := 0; i < length; i++ {
+		ramp.Red[i] = uint16(C.GetGammaAtIndex(rampC.red, C.int(i)))
+		ramp.Green[i] = uint16(C.GetGammaAtIndex(rampC.green, C.int(i)))
+		ramp.Blue[i] = uint16(C.GetGammaAtIndex(rampC.blue, C.int(i)))
+	}
+
+	return &ramp, nil
+}
+
+//SetGammaRamp sets the current gamma ramp for the monitor.
+func (m *Monitor) SetGammaRamp(ramp *GammaRamp) {
+	var rampC C.GLFWgammaramp
+
+	length := len(ramp.Red)
+
+	for i := 0; i < length; i++ {
+		C.SetGammaAtIndex(rampC.red, C.int(i), C.ushort(ramp.Red[i]))
+		C.SetGammaAtIndex(rampC.green, C.int(i), C.ushort(ramp.Green[i]))
+		C.SetGammaAtIndex(rampC.blue, C.int(i), C.ushort(ramp.Blue[i]))
+	}
+
+	C.glfwSetGammaRamp(m.data, &rampC)
 }
