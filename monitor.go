@@ -156,10 +156,14 @@ func (m *Monitor) SetGamma(gamma float32) {
 }
 
 //GetGammaRamp retrieves the current gamma ramp of the monitor.
-func (m *Monitor) GetGammaRamp() *GammaRamp {
+func (m *Monitor) GetGammaRamp() (*GammaRamp, error) {
 	var ramp GammaRamp
 
 	rampC := C.glfwGetGammaRamp(m.data)
+	if rampC == nil {
+		return nil, errors.New("Can't get the gamma ramp.")
+	}
+	
 	length := int(rampC.size)
 	ramp.Red = make([]uint16, length)
 	ramp.Green = make([]uint16, length)
@@ -171,7 +175,7 @@ func (m *Monitor) GetGammaRamp() *GammaRamp {
 		ramp.Blue[i] = uint16(C.GetGammaAtIndex(rampC.blue, C.int(i)))
 	}
 
-	return &ramp
+	return &ramp, nil
 }
 
 //SetGammaRamp sets the current gamma ramp for the monitor.
