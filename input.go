@@ -47,6 +47,7 @@ type Key int
 //but re-arranged to map to 7-bit ASCII for printable keys (function keys are
 //put in the 256+ range).
 const (
+	KeyUnknown      Key = C.GLFW_KEY_UNKNOWN
 	KeySpace        Key = C.GLFW_KEY_SPACE
 	KeyApostrophe   Key = C.GLFW_KEY_APOSTROPHE
 	KeyComma        Key = C.GLFW_KEY_COMMA
