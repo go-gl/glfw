@@ -1,6 +1,10 @@
 package glfw3
 
-//#cgo LDFLAGS: -lglfw
+// Not sure about the darwin flag
+
+//#cgo windows LDFLAGS: -lglfw3 -lopengl32 -lgdi32
+//#cgo linux LDGLAGS: -lglfw
+//#cgo darwin LDFLAGS: -lglfw
 //#include <GLFW/glfw3.h>
 import "C"
 
