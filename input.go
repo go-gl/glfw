@@ -171,15 +171,15 @@ const (
 	KeyLast         Key = C.GLFW_KEY_LAST
 )
 
-//Mod corresponds to a modifier key.
-type Mod int
+//ModifierKey corresponds to a modifier key.
+type ModifierKey int
 
 //Modifier keys
 const (
-	ModShift   Mod = C.GLFW_MOD_SHIFT
-	ModControl Mod = C.GLFW_MOD_CONTROL
-	ModAlt     Mod = C.GLFW_MOD_ALT
-	ModSuper   Mod = C.GLFW_MOD_SUPER
+	ModShift   ModifierKey = C.GLFW_MOD_SHIFT
+	ModControl ModifierKey = C.GLFW_MOD_CONTROL
+	ModAlt     ModifierKey = C.GLFW_MOD_ALT
+	ModSuper   ModifierKey = C.GLFW_MOD_SUPER
 )
 
 //MouseButton corresponds to a mouse button.
@@ -231,17 +231,17 @@ const (
 )
 
 var (
-	fMouseButtonHolder func(w *Window, button MouseButton, action Action, mod Mod)
+	fMouseButtonHolder func(w *Window, button MouseButton, action Action, mod ModifierKey)
 	fCursorPosHolder   func(w *Window, xpos float64, ypos float64)
 	fCursorEnterHolder func(w *Window, entered bool)
 	fScrollHolder      func(w *Window, xoff float64, yoff float64)
-	fKeyHolder         func(w *Window, key Key, scancode int, action Action, mods Mod)
+	fKeyHolder         func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
 	fCharHolder        func(w *Window, char uint)
 )
 
 //export goMouseButtonCB
 func goMouseButtonCB(window unsafe.Pointer, button, action, mods C.int) {
-	fMouseButtonHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, MouseButton(button), Action(action), Mod(mods))
+	fMouseButtonHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, MouseButton(button), Action(action), ModifierKey(mods))
 }
 
 //export goCursorPosCB
@@ -265,7 +265,7 @@ func goScrollCB(window unsafe.Pointer, xoff, yoff C.double) {
 
 //export goKeyCB
 func goKeyCB(window unsafe.Pointer, key, scancode, action, mods C.int) {
-	fKeyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, Key(key), int(scancode), Action(action), Mod(mods))
+	fKeyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, Key(key), int(scancode), Action(action), ModifierKey(mods))
 }
 
 //export goCharCB
@@ -344,7 +344,7 @@ func (w *Window) SetCursorPosition(xpos, ypos float64) {
 //fact that the synthetic ones are generated after the window has lost focus,
 //i.e. Focused will be false and the focus callback will have already been
 //called.
-func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, action Action, mods Mod)) {
+func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, action Action, mods ModifierKey)) {
 	fKeyHolder = cbfun
 	C.glfwSetKeyCallbackCB(w.data)
 }
@@ -367,7 +367,7 @@ func (w *Window) SetCharacterCallback(cbfun func(w *Window, char uint)) {
 //user-generated events by the fact that the synthetic ones are generated after
 //the window has lost focus, i.e. Focused will be false and the focus
 //callback will have already been called.
-func (w *Window) SetMouseButtonCallback(cbfun func(w *Window, button MouseButton, action Action, mod Mod)) {
+func (w *Window) SetMouseButtonCallback(cbfun func(w *Window, button MouseButton, action Action, mod ModifierKey)) {
 	fMouseButtonHolder = cbfun
 	C.glfwSetMouseButtonCallbackCB(w.data)
 }
