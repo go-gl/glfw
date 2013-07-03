@@ -111,8 +111,12 @@ func (m *Monitor) GetName() string {
 //currently set callback. This is called when a monitor is connected to or
 //disconnected from the system.
 func SetMonitorCallback(cbfun func(monitor *Monitor, event MonitorEvent)) {
-	fMonitorHolder = cbfun
-	C.glfwSetMonitorCallbackCB()
+	if cbfun == nil {
+		C.glfwSetMonitorCallback(nil)
+	} else {
+		fMonitorHolder = cbfun
+		C.glfwSetMonitorCallbackCB()
+	}
 }
 
 //GetVideoModes returns an array of all video modes supported by the monitor.
@@ -163,7 +167,7 @@ func (m *Monitor) GetGammaRamp() (*GammaRamp, error) {
 	if rampC == nil {
 		return nil, errors.New("Can't get the gamma ramp.")
 	}
-	
+
 	length := int(rampC.size)
 	ramp.Red = make([]uint16, length)
 	ramp.Green = make([]uint16, length)

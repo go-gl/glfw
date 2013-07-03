@@ -32,6 +32,10 @@ func goErrorCB(code C.int, desc *C.char) {
 //
 //This function may be called before Init.
 func SetErrorCallback(cbfun func(code ErrorCode, desc string)) {
-	fErrorHolder = cbfun
-	C.glfwSetErrorCallbackCB()
+	if cbfun == nil {
+		C.glfwSetErrorCallback(nil)
+	} else {
+		fErrorHolder = cbfun
+		C.glfwSetErrorCallbackCB()
+	}
 }

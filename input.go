@@ -11,7 +11,10 @@ package glfw3
 //unsigned char GetButtonsAtIndex(unsigned char *buttons, int i);
 import "C"
 
-import "unsafe"
+import (
+	"errors"
+	"unsafe"
+)
 
 //Joystick corresponds to a joystick.
 type Joystick int
@@ -44,6 +47,7 @@ type Key int
 //but re-arranged to map to 7-bit ASCII for printable keys (function keys are
 //put in the 256+ range).
 const (
+	KeyUnknown      Key = C.GLFW_KEY_UNKNOWN
 	KeySpace        Key = C.GLFW_KEY_SPACE
 	KeyApostrophe   Key = C.GLFW_KEY_APOSTROPHE
 	KeyComma        Key = C.GLFW_KEY_COMMA
@@ -167,15 +171,15 @@ const (
 	KeyLast         Key = C.GLFW_KEY_LAST
 )
 
-//Mod corresponds to a modifier key.
-type Mod int
+//ModifierKey corresponds to a modifier key.
+type ModifierKey int
 
 //Modifier keys
 const (
-	ModShift   Mod = C.GLFW_MOD_SHIFT
-	ModControl Mod = C.GLFW_MOD_CONTROL
-	ModAlt     Mod = C.GLFW_MOD_ALT
-	ModSuper   Mod = C.GLFW_MOD_SUPER
+	ModShift   ModifierKey = C.GLFW_MOD_SHIFT
+	ModControl ModifierKey = C.GLFW_MOD_CONTROL
+	ModAlt     ModifierKey = C.GLFW_MOD_ALT
+	ModSuper   ModifierKey = C.GLFW_MOD_SUPER
 )
 
 //MouseButton corresponds to a mouse button.
@@ -216,28 +220,25 @@ const (
 	StickyMouseButtons InputMode = C.GLFW_STICKY_MOUSE_BUTTONS //Value can be either 1 or 0
 )
 
-//CursorMode corresponds to a cursor mode.
-type CursorMode int
-
 //Cursor mode values
 const (
-	CursorNormal   CursorMode = C.GLFW_CURSOR_NORMAL
-	CursorHidden   CursorMode = C.GLFW_CURSOR_HIDDEN
-	CursorDisabled CursorMode = C.GLFW_CURSOR_DISABLED
+	CursorNormal   int = C.GLFW_CURSOR_NORMAL
+	CursorHidden   int = C.GLFW_CURSOR_HIDDEN
+	CursorDisabled int = C.GLFW_CURSOR_DISABLED
 )
 
 var (
-	fMouseButtonHolder func(w *Window, button MouseButton, action Action, mod Mod)
+	fMouseButtonHolder func(w *Window, button MouseButton, action Action, mod ModifierKey)
 	fCursorPosHolder   func(w *Window, xpos float64, ypos float64)
 	fCursorEnterHolder func(w *Window, entered bool)
 	fScrollHolder      func(w *Window, xoff float64, yoff float64)
-	fKeyHolder         func(w *Window, key Key, scancode int, action Action, mods Mod)
+	fKeyHolder         func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
 	fCharHolder        func(w *Window, char uint)
 )
 
 //export goMouseButtonCB
 func goMouseButtonCB(window unsafe.Pointer, button, action, mods C.int) {
-	fMouseButtonHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, MouseButton(button), Action(action), Mod(mods))
+	fMouseButtonHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, MouseButton(button), Action(action), ModifierKey(mods))
 }
 
 //export goCursorPosCB
@@ -261,7 +262,7 @@ func goScrollCB(window unsafe.Pointer, xoff, yoff C.double) {
 
 //export goKeyCB
 func goKeyCB(window unsafe.Pointer, key, scancode, action, mods C.int) {
-	fKeyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, Key(key), int(scancode), Action(action), Mod(mods))
+	fKeyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, Key(key), int(scancode), Action(action), ModifierKey(mods))
 }
 
 //export goCharCB
@@ -340,9 +341,13 @@ func (w *Window) SetCursorPosition(xpos, ypos float64) {
 //fact that the synthetic ones are generated after the window has lost focus,
 //i.e. Focused will be false and the focus callback will have already been
 //called.
-func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, action Action, mods Mod)) {
-	fKeyHolder = cbfun
-	C.glfwSetKeyCallbackCB(w.data)
+func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, action Action, mods ModifierKey)) {
+	if cbfun == nil {
+		C.glfwSetKeyCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fKeyHolder = cbfun
+		C.glfwSetKeyCallbackCB(w.data)
+	}
 }
 
 //SetCharacterCallback sets the character callback which is called when a
@@ -351,8 +356,12 @@ func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, act
 //The character callback is intended for text input. If you want to know whether
 //a specific key was pressed or released, use the key callback instead.
 func (w *Window) SetCharacterCallback(cbfun func(w *Window, char uint)) {
-	fCharHolder = cbfun
-	C.glfwSetCharCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetCharCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fCharHolder = cbfun
+		C.glfwSetCharCallbackCB(w.data)
+	}
 }
 
 //SetMouseButtonCallback sets the mouse button callback which is called when a
@@ -363,31 +372,47 @@ func (w *Window) SetCharacterCallback(cbfun func(w *Window, char uint)) {
 //user-generated events by the fact that the synthetic ones are generated after
 //the window has lost focus, i.e. Focused will be false and the focus
 //callback will have already been called.
-func (w *Window) SetMouseButtonCallback(cbfun func(w *Window, button MouseButton, action Action, mod Mod)) {
-	fMouseButtonHolder = cbfun
-	C.glfwSetMouseButtonCallbackCB(w.data)
+func (w *Window) SetMouseButtonCallback(cbfun func(w *Window, button MouseButton, action Action, mod ModifierKey)) {
+	if cbfun == nil {
+		C.glfwSetMouseButtonCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fMouseButtonHolder = cbfun
+		C.glfwSetMouseButtonCallbackCB(w.data)
+	}
 }
 
 //SetCursorPositionCallback sets the cursor position callback which is called
 //when the cursor is moved. The callback is provided with the position relative
 //to the upper-left corner of the client area of the window.
 func (w *Window) SetCursorPositionCallback(cbfun func(w *Window, xpos float64, ypos float64)) {
-	fCursorPosHolder = cbfun
-	C.glfwSetCursorPosCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetCursorPosCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fCursorPosHolder = cbfun
+		C.glfwSetCursorPosCallbackCB(w.data)
+	}
 }
 
 //SetCursorEnterCallback the cursor boundary crossing callback which is called
 //when the cursor enters or leaves the client area of the window.
 func (w *Window) SetCursorEnterCallback(cbfun func(w *Window, entered bool)) {
-	fCursorEnterHolder = cbfun
-	C.glfwSetCursorEnterCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetCursorEnterCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fCursorEnterHolder = cbfun
+		C.glfwSetCursorEnterCallbackCB(w.data)
+	}
 }
 
 //SetScrollCallback sets the scroll callback which is called when a scrolling
 //device is used, such as a mouse wheel or scrolling area of a touchpad.
 func (w *Window) SetScrollCallback(cbfun func(w *Window, xoff float64, yoff float64)) {
-	fScrollHolder = cbfun
-	C.glfwSetScrollCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetScrollCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fScrollHolder = cbfun
+		C.glfwSetScrollCallbackCB(w.data)
+	}
 }
 
 //GetJoystickPresent returns whether the specified joystick is present.
@@ -401,34 +426,45 @@ func JoystickPresent(joy Joystick) bool {
 }
 
 //GetJoystickAxes returns a slice of axis values.
-func GetJoystickAxes(joy Joystick) []float32 {
+func GetJoystickAxes(joy Joystick) ([]float32, error) {
 	var length int
 
 	axis := C.glfwGetJoystickAxes(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
-	a := make([]float32, length)
+	if axis == nil {
+		return nil, errors.New("Joystick is not present.")
+	}
 
+	a := make([]float32, length)
 	for i := 0; i < length; i++ {
 		a[i] = float32(C.GetAxisAtIndex(axis, C.int(i)))
 	}
 
-	return a
+	return a, nil
 }
 
 //GetJoystickButtons returns a slice of button values.
-func GetJoystickButtons(joy Joystick) []byte {
+func GetJoystickButtons(joy Joystick) ([]byte, error) {
 	var length int
 
 	buttons := C.glfwGetJoystickButtons(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
-	b := make([]byte, length)
+	if buttons == nil {
+		return nil, errors.New("Joystick is not present.")
+	}
 
+	b := make([]byte, length)
 	for i := 0; i < length; i++ {
 		b[i] = byte(C.GetButtonsAtIndex(buttons, C.int(i)))
 	}
 
-	return b
+	return b, nil
 }
 
 //GetJoystickName returns the name, encoded as UTF-8, of the specified joystick.
-func GetJoystickName(joy Joystick) string {
-	return C.GoString(C.glfwGetJoystickName(C.int(joy)))
+func GetJoystickName(joy Joystick) (string, error) {
+	jn := C.glfwGetJoystickName(C.int(joy))
+	if jn == nil {
+		return "", errors.New("Joystick is not present.")
+	}
+
+	return C.GoString(jn), nil
 }
