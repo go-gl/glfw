@@ -163,7 +163,7 @@ func (m *Monitor) GetGammaRamp() (*GammaRamp, error) {
 	if rampC == nil {
 		return nil, errors.New("Can't get the gamma ramp.")
 	}
-	
+
 	length := int(rampC.size)
 	ramp.Red = make([]uint16, length)
 	ramp.Green = make([]uint16, length)

@@ -11,7 +11,10 @@ package glfw3
 //unsigned char GetButtonsAtIndex(unsigned char *buttons, int i);
 import "C"
 
-import "unsafe"
+import (
+	"errors"
+	"unsafe"
+)
 
 //Joystick corresponds to a joystick.
 type Joystick int
@@ -401,34 +404,45 @@ func JoystickPresent(joy Joystick) bool {
 }
 
 //GetJoystickAxes returns a slice of axis values.
-func GetJoystickAxes(joy Joystick) []float32 {
+func GetJoystickAxes(joy Joystick) ([]float32, error) {
 	var length int
 
 	axis := C.glfwGetJoystickAxes(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
-	a := make([]float32, length)
+	if axis == nil {
+		return nil, errors.New("Joystick is not present.")
+	}
 
+	a := make([]float32, length)
 	for i := 0; i < length; i++ {
 		a[i] = float32(C.GetAxisAtIndex(axis, C.int(i)))
 	}
 
-	return a
+	return a, nil
 }
 
 //GetJoystickButtons returns a slice of button values.
-func GetJoystickButtons(joy Joystick) []byte {
+func GetJoystickButtons(joy Joystick) ([]byte, error) {
 	var length int
 
 	buttons := C.glfwGetJoystickButtons(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
-	b := make([]byte, length)
+	if buttons == nil {
+		return nil, errors.New("Joystick is not present.")
+	}
 
+	b := make([]byte, length)
 	for i := 0; i < length; i++ {
 		b[i] = byte(C.GetButtonsAtIndex(buttons, C.int(i)))
 	}
 
-	return b
+	return b, nil
 }
 
 //GetJoystickName returns the name, encoded as UTF-8, of the specified joystick.
-func GetJoystickName(joy Joystick) string {
-	return C.GoString(C.glfwGetJoystickName(C.int(joy)))
+func GetJoystickName(joy Joystick) (string, error) {
+	jn := C.glfwGetJoystickName(C.int(joy))
+	if jn == nil {
+		return "", errors.New("Joystick is not present.")
+	}
+
+	return C.GoString(jn), nil
 }
