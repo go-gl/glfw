@@ -131,6 +131,8 @@ func goWindowFocusCB(window unsafe.Pointer, focused C.int) {
 	var isFocused bool
 	if focused == C.GL_TRUE {
 		isFocused = true
+	} else {
+		isFocused = false
 	}
 	fWindowFocusHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, isFocused)
 }
@@ -140,6 +142,8 @@ func goWindowIconifyCB(window unsafe.Pointer, iconified C.int) {
 	var isIconified bool
 	if iconified == C.GL_TRUE {
 		isIconified = true
+	} else {
+		isIconified = false
 	}
 	fWindowIconifyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, isIconified)
 }
