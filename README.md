@@ -1,6 +1,7 @@
 Go Bindings for GLFW 3
 ======================
 
+* This wrapper is now announced stable. There will be no API change until next major revision.
 * All the modules are implemented except "Native Acess".
 * See http://godoc.org/github.com/go-gl/glfw3 for documentation.
 * You can help by submitting examples to http://github.com/go-gl/examples

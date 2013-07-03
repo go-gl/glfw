@@ -103,8 +103,13 @@ func (m *Monitor) GetPhysicalSize() (int, int) {
 }
 
 //GetName returns a human-readable name of the monitor, encoded as UTF-8.
-func (m *Monitor) GetName() string {
-	return C.GoString(C.glfwGetMonitorName(m.data))
+func (m *Monitor) GetName() (string, error) {
+	mn := C.glfwGetMonitorName(m.data)
+	if mn == nil {
+		return "", errors.New("Can't get monitor name.")
+	}
+
+	return C.GoString(mn), nil
 }
 
 //SetMonitorCallback sets the monitor configuration callback, or removes the
