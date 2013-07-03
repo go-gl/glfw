@@ -220,14 +220,11 @@ const (
 	StickyMouseButtons InputMode = C.GLFW_STICKY_MOUSE_BUTTONS //Value can be either 1 or 0
 )
 
-//CursorMode corresponds to a cursor mode.
-type CursorMode int
-
 //Cursor mode values
 const (
-	CursorNormal   CursorMode = C.GLFW_CURSOR_NORMAL
-	CursorHidden   CursorMode = C.GLFW_CURSOR_HIDDEN
-	CursorDisabled CursorMode = C.GLFW_CURSOR_DISABLED
+	CursorNormal   int = C.GLFW_CURSOR_NORMAL
+	CursorHidden   int = C.GLFW_CURSOR_HIDDEN
+	CursorDisabled int = C.GLFW_CURSOR_DISABLED
 )
 
 var (
