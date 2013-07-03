@@ -61,33 +61,30 @@ const (
 	SrgbCapable     Hint = C.GLFW_SRGB_CAPABLE     //Specifies whether the framebuffer should be sRGB capable.
 )
 
-//HintValue corresponds to a hint value.
-type HintValue int
-
 //Values for the ClientApi hint.
 const (
-	OpenglApi   HintValue = C.GLFW_OPENGL_API
-	OpenglEsApi HintValue = C.GLFW_OPENGL_ES_API
+	OpenglApi   int = C.GLFW_OPENGL_API
+	OpenglEsApi int = C.GLFW_OPENGL_ES_API
 )
 
 //Values for the ContextRobustness hint.
 const (
-	NoRobustness        HintValue = C.GLFW_NO_ROBUSTNESS
-	NoResetNotification HintValue = C.GLFW_NO_RESET_NOTIFICATION
-	LoseContextOnReset  HintValue = C.GLFW_LOSE_CONTEXT_ON_RESET
+	NoRobustness        int = C.GLFW_NO_ROBUSTNESS
+	NoResetNotification int = C.GLFW_NO_RESET_NOTIFICATION
+	LoseContextOnReset  int = C.GLFW_LOSE_CONTEXT_ON_RESET
 )
 
 //Values for the OpenglProfile hint.
 const (
-	OpenglAnyProfile    HintValue = C.GLFW_OPENGL_ANY_PROFILE
-	OpenglCoreProfile   HintValue = C.GLFW_OPENGL_CORE_PROFILE
-	OpenglCompatProfile HintValue = C.GLFW_OPENGL_COMPAT_PROFILE
+	OpenglAnyProfile    int = C.GLFW_OPENGL_ANY_PROFILE
+	OpenglCoreProfile   int = C.GLFW_OPENGL_CORE_PROFILE
+	OpenglCompatProfile int = C.GLFW_OPENGL_COMPAT_PROFILE
 )
 
 //TRUE and FALSE values to use with hints.
 const (
-	True  HintValue = C.GL_TRUE
-	False HintValue = C.GL_FALSE
+	True  int = C.GL_TRUE
+	False int = C.GL_FALSE
 )
 
 type Window struct {
@@ -155,7 +152,7 @@ func DefaultWindowHints() {
 //Hint function sets hints for the next call to CreateWindow. The hints,
 //once set, retain their values until changed by a call to Hint or
 //DefaultHints, or until the library is terminated with Terminate.
-func WindowHint(target Hint, hint HintValue) {
+func WindowHint(target Hint, hint int) {
 	C.glfwWindowHint(C.int(target), C.int(hint))
 }
 
@@ -351,8 +348,8 @@ func (w *Window) GetMonitor() (*Monitor, error) {
 
 //GetAttribute returns an attribute of the window. There are many attributes,
 //some related to the window and others to its context.
-func (w *Window) GetAttribute(attrib Hint) HintValue {
-	return HintValue(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
+func (w *Window) GetAttribute(attrib Hint) int {
+	return int(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
 }
 
 //SetUserPointer sets the user-defined pointer of the window. The current value
