@@ -61,33 +61,30 @@ const (
 	SrgbCapable     Hint = C.GLFW_SRGB_CAPABLE     //Specifies whether the framebuffer should be sRGB capable.
 )
 
-//HintValue corresponds to a hint value.
-type HintValue int
-
 //Values for the ClientApi hint.
 const (
-	OpenglApi   HintValue = C.GLFW_OPENGL_API
-	OpenglEsApi HintValue = C.GLFW_OPENGL_ES_API
+	OpenglApi   int = C.GLFW_OPENGL_API
+	OpenglEsApi int = C.GLFW_OPENGL_ES_API
 )
 
 //Values for the ContextRobustness hint.
 const (
-	NoRobustness        HintValue = C.GLFW_NO_ROBUSTNESS
-	NoResetNotification HintValue = C.GLFW_NO_RESET_NOTIFICATION
-	LoseContextOnReset  HintValue = C.GLFW_LOSE_CONTEXT_ON_RESET
+	NoRobustness        int = C.GLFW_NO_ROBUSTNESS
+	NoResetNotification int = C.GLFW_NO_RESET_NOTIFICATION
+	LoseContextOnReset  int = C.GLFW_LOSE_CONTEXT_ON_RESET
 )
 
 //Values for the OpenglProfile hint.
 const (
-	OpenglAnyProfile    HintValue = C.GLFW_OPENGL_ANY_PROFILE
-	OpenglCoreProfile   HintValue = C.GLFW_OPENGL_CORE_PROFILE
-	OpenglCompatProfile HintValue = C.GLFW_OPENGL_COMPAT_PROFILE
+	OpenglAnyProfile    int = C.GLFW_OPENGL_ANY_PROFILE
+	OpenglCoreProfile   int = C.GLFW_OPENGL_CORE_PROFILE
+	OpenglCompatProfile int = C.GLFW_OPENGL_COMPAT_PROFILE
 )
 
 //TRUE and FALSE values to use with hints.
 const (
-	True  HintValue = C.GL_TRUE
-	False HintValue = C.GL_FALSE
+	True  int = C.GL_TRUE
+	False int = C.GL_FALSE
 )
 
 type Window struct {
@@ -155,7 +152,7 @@ func DefaultWindowHints() {
 //Hint function sets hints for the next call to CreateWindow. The hints,
 //once set, retain their values until changed by a call to Hint or
 //DefaultHints, or until the library is terminated with Terminate.
-func WindowHint(target Hint, hint HintValue) {
+func WindowHint(target Hint, hint int) {
 	C.glfwWindowHint(C.int(target), C.int(hint))
 }
 
@@ -351,8 +348,8 @@ func (w *Window) GetMonitor() (*Monitor, error) {
 
 //GetAttribute returns an attribute of the window. There are many attributes,
 //some related to the window and others to its context.
-func (w *Window) GetAttribute(attrib Hint) HintValue {
-	return HintValue(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
+func (w *Window) GetAttribute(attrib Hint) int {
+	return int(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
 }
 
 //SetUserPointer sets the user-defined pointer of the window. The current value
@@ -371,23 +368,35 @@ func (w *Window) GetUserPointer() unsafe.Pointer {
 //when the window is moved. The callback is provided with the screen position
 //of the upper-left corner of the client area of the window.
 func (w *Window) SetPositionCallback(cbfun func(w *Window, xpos int, ypos int)) {
-	fWindowPosHolder = cbfun
-	C.glfwSetWindowPosCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetWindowPosCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fWindowPosHolder = cbfun
+		C.glfwSetWindowPosCallbackCB(w.data)
+	}
 }
 
 //SetSizeCallback sets the size callback of the window, which is called when
 //the window is resized. The callback is provided with the size, in screen
 //coordinates, of the client area of the window.
 func (w *Window) SetSizeCallback(cbfun func(w *Window, width int, height int)) {
-	fWindowSizeHolder = cbfun
-	C.glfwSetWindowSizeCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetWindowSizeCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fWindowSizeHolder = cbfun
+		C.glfwSetWindowSizeCallbackCB(w.data)
+	}
 }
 
 //SetFramebufferSizeCallback sets the framebuffer resize callback of the specified
 //window, which is called when the framebuffer of the specified window is resized.
 func (w *Window) SetFramebufferSizeCallback(cbfun func(w *Window, width int, height int)) {
-	fFramebufferSizeHolder = cbfun
-	C.glfwSetFramebufferSizeCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetFramebufferSizeCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fFramebufferSizeHolder = cbfun
+		C.glfwSetFramebufferSizeCallbackCB(w.data)
+	}
 }
 
 //SetCloseCallback sets the close callback of the window, which is called when
@@ -400,8 +409,12 @@ func (w *Window) SetFramebufferSizeCallback(cbfun func(w *Window, width int, hei
 //Mac OS X: Selecting Quit from the application menu will trigger the close
 //callback for all windows.
 func (w *Window) SetCloseCallback(cbfun func(w *Window)) {
-	fWindowCloseHolder = cbfun
-	C.glfwSetWindowCloseCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetWindowCloseCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fWindowCloseHolder = cbfun
+		C.glfwSetWindowCloseCallbackCB(w.data)
+	}
 }
 
 //SetRefreshCallback sets the refresh callback of the window, which
@@ -412,8 +425,12 @@ func (w *Window) SetCloseCallback(cbfun func(w *Window)) {
 //contents are saved off-screen, this callback may be called only very
 //infrequently or never at all.
 func (w *Window) SetRefreshCallback(cbfun func(w *Window)) {
-	fWindowRefreshHolder = cbfun
-	C.glfwSetWindowRefreshCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetWindowRefreshCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fWindowRefreshHolder = cbfun
+		C.glfwSetWindowRefreshCallbackCB(w.data)
+	}
 }
 
 //SetFocusCallback sets the focus callback of the window, which is called when
@@ -423,15 +440,23 @@ func (w *Window) SetRefreshCallback(cbfun func(w *Window)) {
 //and mouse button release events will be generated for all such that had been
 //pressed. For more information, see SetKeyCallback and SetMouseButtonCallback.
 func (w *Window) SetFocusCallback(cbfun func(w *Window, focused bool)) {
-	fWindowFocusHolder = cbfun
-	C.glfwSetWindowFocusCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetWindowFocusCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fWindowFocusHolder = cbfun
+		C.glfwSetWindowFocusCallbackCB(w.data)
+	}
 }
 
 //SetIconifyCallback sets the iconification callback of the window, which is
 //called when the window is iconified or restored.
 func (w *Window) SetIconifyCallback(cbfun func(w *Window, iconified bool)) {
-	fWindowIconifyHolder = cbfun
-	C.glfwSetWindowIconifyCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetWindowIconifyCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fWindowIconifyHolder = cbfun
+		C.glfwSetWindowIconifyCallbackCB(w.data)
+	}
 }
 
 //PollEvents processes only those events that have already been received and
