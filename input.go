@@ -342,8 +342,12 @@ func (w *Window) SetCursorPosition(xpos, ypos float64) {
 //i.e. Focused will be false and the focus callback will have already been
 //called.
 func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, action Action, mods ModifierKey)) {
-	fKeyHolder = cbfun
-	C.glfwSetKeyCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetKeyCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fKeyHolder = cbfun
+		C.glfwSetKeyCallbackCB(w.data)
+	}
 }
 
 //SetCharacterCallback sets the character callback which is called when a
@@ -352,8 +356,12 @@ func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, act
 //The character callback is intended for text input. If you want to know whether
 //a specific key was pressed or released, use the key callback instead.
 func (w *Window) SetCharacterCallback(cbfun func(w *Window, char uint)) {
-	fCharHolder = cbfun
-	C.glfwSetCharCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetCharCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fCharHolder = cbfun
+		C.glfwSetCharCallbackCB(w.data)
+	}
 }
 
 //SetMouseButtonCallback sets the mouse button callback which is called when a
@@ -365,30 +373,46 @@ func (w *Window) SetCharacterCallback(cbfun func(w *Window, char uint)) {
 //the window has lost focus, i.e. Focused will be false and the focus
 //callback will have already been called.
 func (w *Window) SetMouseButtonCallback(cbfun func(w *Window, button MouseButton, action Action, mod ModifierKey)) {
-	fMouseButtonHolder = cbfun
-	C.glfwSetMouseButtonCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetMouseButtonCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fMouseButtonHolder = cbfun
+		C.glfwSetMouseButtonCallbackCB(w.data)
+	}
 }
 
 //SetCursorPositionCallback sets the cursor position callback which is called
 //when the cursor is moved. The callback is provided with the position relative
 //to the upper-left corner of the client area of the window.
 func (w *Window) SetCursorPositionCallback(cbfun func(w *Window, xpos float64, ypos float64)) {
-	fCursorPosHolder = cbfun
-	C.glfwSetCursorPosCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetCursorPosCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fCursorPosHolder = cbfun
+		C.glfwSetCursorPosCallbackCB(w.data)
+	}
 }
 
 //SetCursorEnterCallback the cursor boundary crossing callback which is called
 //when the cursor enters or leaves the client area of the window.
 func (w *Window) SetCursorEnterCallback(cbfun func(w *Window, entered bool)) {
-	fCursorEnterHolder = cbfun
-	C.glfwSetCursorEnterCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetCursorEnterCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fCursorEnterHolder = cbfun
+		C.glfwSetCursorEnterCallbackCB(w.data)
+	}
 }
 
 //SetScrollCallback sets the scroll callback which is called when a scrolling
 //device is used, such as a mouse wheel or scrolling area of a touchpad.
 func (w *Window) SetScrollCallback(cbfun func(w *Window, xoff float64, yoff float64)) {
-	fScrollHolder = cbfun
-	C.glfwSetScrollCallbackCB(w.data)
+	if cbfun == nil {
+		C.glfwSetScrollCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+	} else {
+		fScrollHolder = cbfun
+		C.glfwSetScrollCallbackCB(w.data)
+	}
 }
 
 //GetJoystickPresent returns whether the specified joystick is present.

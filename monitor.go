@@ -111,8 +111,12 @@ func (m *Monitor) GetName() string {
 //currently set callback. This is called when a monitor is connected to or
 //disconnected from the system.
 func SetMonitorCallback(cbfun func(monitor *Monitor, event MonitorEvent)) {
-	fMonitorHolder = cbfun
-	C.glfwSetMonitorCallbackCB()
+	if cbfun == nil {
+		C.glfwSetMonitorCallback(nil)
+	} else {
+		fMonitorHolder = cbfun
+		C.glfwSetMonitorCallbackCB()
+	}
 }
 
 //GetVideoModes returns an array of all video modes supported by the monitor.
