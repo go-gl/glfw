@@ -1,6 +1,16 @@
 package glfw3
 
-//#cgo LDFLAGS: -lglfw
+// Not sure about the darwin flag
+
+// Windows users: If you download the GLFW 64-bit binaries, when you copy over the contents of the lib folder make sure to rename
+// glfw3dll.a to libglfw3dll.a, it doesn't work otherwise.
+
+//#cgo windows LDFLAGS: -lglfw3dll -lopengl32 -lgdi32
+//#cgo linux LDGLAGS: -lglfw
+//#cgo darwin LDFLAGS: -lglfw
+//#ifdef _WIN32
+//  #define GLFW_DLL
+//#endif
 //#include <GLFW/glfw3.h>
 import "C"
 
