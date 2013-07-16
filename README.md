@@ -6,6 +6,8 @@ Go Bindings for GLFW 3
 * See http://godoc.org/github.com/go-gl/glfw3 for documentation.
 * You can help by submitting examples to http://github.com/go-gl/examples
 
+NOTE: Mingw64 users should rename ***glfw3dll.a*** to ***libglfw3dll.a***
+
 The library can be used as below:
 
 ```go
