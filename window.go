@@ -150,14 +150,20 @@ func goWindowIconifyCB(window unsafe.Pointer, iconified C.int) {
 
 //DefaultHints resets all window hints to their default values.
 func DefaultWindowHints() {
-	C.glfwDefaultWindowHints()
+	//  run in main thread
+	do(func() {
+		C.glfwDefaultWindowHints()
+	})
 }
 
 //Hint function sets hints for the next call to CreateWindow. The hints,
 //once set, retain their values until changed by a call to Hint or
 //DefaultHints, or until the library is terminated with Terminate.
 func WindowHint(target Hint, hint int) {
-	C.glfwWindowHint(C.int(target), C.int(hint))
+	//  run in main thread
+	do(func() {
+		C.glfwWindowHint(C.int(target), C.int(hint))
+	})
 }
 
 //CreateWindow creates a window and its associated context. Most of the options
@@ -191,8 +197,8 @@ func WindowHint(target Hint, hint int) {
 //Programming Guide provided by Apple.
 func CreateWindow(width, height int, title string, monitor *Monitor, share *Window) (*Window, error) {
 	var (
-		m *C.GLFWmonitor
-		s *C.GLFWwindow
+		m    *C.GLFWmonitor
+		s, w *C.GLFWwindow
 	)
 
 	t := C.CString(title)
@@ -206,7 +212,10 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 		s = share.data
 	}
 
-	w := C.glfwCreateWindow(C.int(width), C.int(height), t, m, s)
+	//  run in main thread
+	do(func() {
+		w = C.glfwCreateWindow(C.int(width), C.int(height), t, m, s)
+	})
 
 	if w == nil {
 		return nil, errors.New("Can't create window.")
@@ -217,45 +226,57 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 //Destroy destroys the specified window and its context. On calling this
 //function, no further callbacks will be called for that window.
 func (w *Window) Destroy() {
-	C.glfwDestroyWindow(w.data)
+	//  run in main thread
+	do(func() {
+		C.glfwDestroyWindow(w.data)
+	})
 }
 
 //ShouldClose returns the value of the close flag of the specified window.
-func (w *Window) ShouldClose() bool {
-	r := int(C.glfwWindowShouldClose(w.data))
-	if r == C.GL_FALSE {
-		return false
-	}
-	return true
+func (w *Window) ShouldClose() (res bool) {
+	//  run in main thread
+	do(func() {
+		res = C.glfwWindowShouldClose(w.data) == C.GL_TRUE
+	})
+
+	return
 }
 
 //SetShouldClose sets the value of the close flag of the window. This can be
 //used to override the user's attempt to close the window, or to signal that it
 //should be closed.
 func (w *Window) SetShouldClose(value bool) {
-	if !value {
-		C.glfwSetWindowShouldClose(w.data, C.GL_FALSE)
-	} else {
-		C.glfwSetWindowShouldClose(w.data, C.GL_TRUE)
-	}
+	//  run in main thread
+	do(func() {
+		if !value {
+			C.glfwSetWindowShouldClose(w.data, C.GL_FALSE)
+		} else {
+			C.glfwSetWindowShouldClose(w.data, C.GL_TRUE)
+		}
+	})
 }
 
 //SetTitle sets the window title, encoded as UTF-8, of the window.
 func (w *Window) SetTitle(title string) {
 	t := C.CString(title)
 	defer C.free(unsafe.Pointer(t))
-	C.glfwSetWindowTitle(w.data, t)
+
+	//  run in main thread
+	do(func() {
+		C.glfwSetWindowTitle(w.data, t)
+	})
 }
 
 //GetPosition returns the position, in screen coordinates, of the upper-left
 //corner of the client area of the window.
 func (w *Window) GetPosition() (int, int) {
-	var (
-		xpos C.int
-		ypos C.int
-	)
+	var xpos, ypos C.int
 
-	C.glfwGetWindowPos(w.data, &xpos, &ypos)
+	//  run in main thread
+	do(func() {
+		C.glfwGetWindowPos(w.data, &xpos, &ypos)
+	})
+
 	return int(xpos), int(ypos)
 }
 
@@ -272,18 +293,22 @@ func (w *Window) GetPosition() (int, int) {
 //
 //The window manager may put limits on what positions are allowed.
 func (w *Window) SetPosition(xpos, ypos int) {
-	C.glfwSetWindowPos(w.data, C.int(xpos), C.int(ypos))
+	//  run in main thread
+	do(func() {
+		C.glfwSetWindowPos(w.data, C.int(xpos), C.int(ypos))
+	})
 }
 
 //GetSize returns the size, in screen coordinates, of the client area of the
 //specified window.
 func (w *Window) GetSize() (int, int) {
-	var (
-		width  C.int
-		height C.int
-	)
+	var width, height C.int
 
-	C.glfwGetWindowSize(w.data, &width, &height)
+	//  run in main thread
+	do(func() {
+		C.glfwGetWindowSize(w.data, &width, &height)
+	})
+
 	return int(width), int(height)
 }
 
@@ -296,18 +321,22 @@ func (w *Window) GetSize() (int, int) {
 //
 //The window manager may put limits on what window sizes are allowed.
 func (w *Window) SetSize(width, height int) {
-	C.glfwSetWindowSize(w.data, C.int(width), C.int(height))
+	//  run in main thread
+	do(func() {
+		C.glfwSetWindowSize(w.data, C.int(width), C.int(height))
+	})
 }
 
 //GetFramebufferSize retrieves the size, in pixels, of the framebuffer of the
 //specified window.
 func (w *Window) GetFramebufferSize() (int, int) {
-	var (
-		width  C.int
-		height C.int
-	)
+	var width, height C.int
 
-	C.glfwGetFramebufferSize(w.data, &width, &height)
+	//  run in main thread
+	do(func() {
+		C.glfwGetFramebufferSize(w.data, &width, &height)
+	})
+
 	return int(width), int(height)
 }
 
@@ -316,7 +345,10 @@ func (w *Window) GetFramebufferSize() (int, int) {
 //window is restored. If the window is already iconified, this function does
 //nothing.
 func (w *Window) Iconify() {
-	C.glfwIconifyWindow(w.data)
+	// run in main thread
+	do(func() {
+		C.glfwIconifyWindow(w.data)
+	})
 }
 
 //Restore restores the window, if it was previously iconified/minimized. If it
@@ -324,19 +356,28 @@ func (w *Window) Iconify() {
 //the selected monitor. If the window is already restored, this function does
 //nothing.
 func (w *Window) Restore() {
-	C.glfwRestoreWindow(w.data)
+	// run in main thread
+	do(func() {
+		C.glfwRestoreWindow(w.data)
+	})
 }
 
 //Show makes the window visible, if it was previously hidden. If the window is
 //already visible or is in full screen mode, this function does nothing.
 func (w *Window) Show() {
-	C.glfwShowWindow(w.data)
+	// run in main thread
+	do(func() {
+		C.glfwShowWindow(w.data)
+	})
 }
 
 //Hide hides the window, if it was previously visible. If the window is already
 //hidden or is in full screen mode, this function does nothing.
 func (w *Window) Hide() {
-	C.glfwHideWindow(w.data)
+	// run in main thread
+	do(func() {
+		C.glfwHideWindow(w.data)
+	})
 }
 
 //GetMonitor returns the handle of the monitor that the window is in
@@ -471,7 +512,10 @@ func (w *Window) SetIconifyCallback(cbfun func(w *Window, iconified bool)) {
 //
 //This function may not be called from a callback.
 func PollEvents() {
-	C.glfwPollEvents()
+	// run in main thread
+	do(func() {
+		C.glfwPollEvents()
+	})
 }
 
 //WaitEvents puts the calling thread to sleep until at least one event has been
@@ -486,5 +530,8 @@ func PollEvents() {
 //
 //This function may not be called from a callback.
 func WaitEvents() {
-	C.glfwWaitEvents()
+	// run in main thread
+	do(func() {
+		C.glfwWaitEvents()
+	})
 }
