@@ -39,9 +39,9 @@ const (
 //bundle, if present.
 func Init() (res bool) {
 	//  run in main thread
-//	do(func() {
-		res = C.glfwInit() == C.GL_TRUE
-//	})
+	//	do(func() {
+	res = C.glfwInit() == C.GL_TRUE
+	//	})
 
 	return
 }
@@ -56,9 +56,9 @@ func Init() (res bool) {
 //this function, as it is called by Init before it returns failure.
 func Terminate() {
 	//  run in main thread
-//	do(func() {
-		C.glfwTerminate()
-//	})
+	//	do(func() {
+	C.glfwTerminate()
+	//	})
 }
 
 //GetVersion retrieves the major, minor and revision numbers of the GLFW

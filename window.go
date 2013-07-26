@@ -91,6 +91,11 @@ type Window struct {
 	data *C.GLFWwindow
 }
 
+// C returns the underlying C structure pointer
+func (w *Window) C() uintptr {
+	return uintptr(unsafe.Pointer(w.data))
+}
+
 var (
 	fWindowPosHolder       func(w *Window, xpos int, ypos int)
 	fWindowSizeHolder      func(w *Window, width int, height int)

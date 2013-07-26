@@ -13,7 +13,7 @@ func init() {
 	if !Init() {
 		panic("Failed to initialize GLFW")
 	}
-	
+
 	Inited = true
 }
 

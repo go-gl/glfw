@@ -288,8 +288,6 @@ func progInit() {
 	}
 }
 
-
-
 func theProgram() {
 	time.Sleep(100 * time.Millisecond)
 
@@ -299,7 +297,7 @@ func theProgram() {
 	if err != nil {
 		panic(err)
 	}
-		
+
 	// Set callback functions
 	window.SetFramebufferSizeCallback(reshape)
 	window.SetKeyCallback(key)
