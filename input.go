@@ -233,7 +233,7 @@ var (
 	fCursorEnterHolder func(w *Window, entered bool)
 	fScrollHolder      func(w *Window, xoff float64, yoff float64)
 	fKeyHolder         func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
-	fCharHolder        func(w *Window, char uint)
+	fCharHolder        func(w *Window, char rune)
 )
 
 //export goMouseButtonCB
@@ -267,7 +267,7 @@ func goKeyCB(window unsafe.Pointer, key, scancode, action, mods C.int) {
 
 //export goCharCB
 func goCharCB(window unsafe.Pointer, character C.uint) {
-	fCharHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, uint(character))
+	fCharHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, rune(character))
 }
 
 //GetInputMode returns the value of an input option of the window.
@@ -355,7 +355,7 @@ func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, act
 //
 //The character callback is intended for text input. If you want to know whether
 //a specific key was pressed or released, use the key callback instead.
-func (w *Window) SetCharacterCallback(cbfun func(w *Window, char uint)) {
+func (w *Window) SetCharacterCallback(cbfun func(w *Window, char rune)) {
 	if cbfun == nil {
 		C.glfwSetCharCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
 	} else {
