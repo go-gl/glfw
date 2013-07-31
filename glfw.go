@@ -37,13 +37,13 @@ const (
 //On Mac OS X, this function will change the current directory of the
 //application to the Contents/Resources subdirectory of the application's
 //bundle, if present.
-func Init() bool {
-	r := C.glfwInit()
+func Init() (res bool) {
+	//  run in main thread
+	//	do(func() {
+	res = C.glfwInit() == C.GL_TRUE
+	//	})
 
-	if r == C.GL_TRUE {
-		return true
-	}
-	return false
+	return
 }
 
 //Terminate destroys all remaining windows, frees any allocated resources and
@@ -55,7 +55,10 @@ func Init() bool {
 //before the program exits. If initialization fails, there is no need to call
 //this function, as it is called by Init before it returns failure.
 func Terminate() {
+	//  run in main thread
+	//	do(func() {
 	C.glfwTerminate()
+	//	})
 }
 
 //GetVersion retrieves the major, minor and revision numbers of the GLFW
