@@ -2,13 +2,22 @@ Go Bindings for GLFW 3
 ======================
 
 * This wrapper is now announced stable. There will be no API change until next major revision.
-* All the modules are implemented except "Native Acess".
 * See http://godoc.org/github.com/go-gl/glfw3 for documentation.
 * You can help by submitting examples to http://github.com/go-gl/examples
 
-NOTE: Mingw64 users should rename ***glfw3dll.a*** to ***libglfw3dll.a***
+Remarks
+=======
 
-The library can be used as below:
+* Mingw64 users should rename ***glfw3dll.a*** to ***libglfw3dll.a***
+* Some functions -which are marked in the documentation- can be called only from the main thread. See https://code.google.com/p/go-wiki/wiki/LockOSThread for how.
+
+Known Issues
+============
+
+*  Issue #37 -> In Windows, scroll callback function always receive 0 for xoff and yoff.
+
+Example
+=======
 
 ```go
 package main
