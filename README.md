@@ -11,11 +11,6 @@ Remarks
 * Mingw64 users should rename ***glfw3dll.a*** to ***libglfw3dll.a***
 * Some functions -which are marked in the documentation- can be called only from the main thread. See https://code.google.com/p/go-wiki/wiki/LockOSThread for how.
 
-Known Issues
-============
-
-*  Issue #37 -> In Windows, scroll callback function always receive 0 for xoff and yoff.
-
 Example
 =======
 
