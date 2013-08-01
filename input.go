@@ -243,7 +243,7 @@ func goMouseButtonCB(window unsafe.Pointer, button, action, mods C.int) {
 }
 
 //export goCursorPosCB
-func goCursorPosCB(window unsafe.Pointer, xpos, ypos C.double) {
+func goCursorPosCB(window unsafe.Pointer, xpos, ypos C.float) {
 	fCursorPosHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, float64(xpos), float64(ypos))
 }
 
@@ -257,7 +257,7 @@ func goCursorEnterCB(window unsafe.Pointer, entered C.int) {
 }
 
 //export goScrollCB
-func goScrollCB(window unsafe.Pointer, xoff, yoff C.double) {
+func goScrollCB(window unsafe.Pointer, xoff, yoff C.float) {
 	fScrollHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, float64(xoff), float64(yoff))
 }
 
