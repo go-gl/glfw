@@ -37,6 +37,9 @@ const (
 //On Mac OS X, this function will change the current directory of the
 //application to the Contents/Resources subdirectory of the application's
 //bundle, if present.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func Init() bool {
 	r := C.glfwInit()
 
@@ -54,6 +57,9 @@ func Init() bool {
 //If GLFW has been successfully initialized, this function should be called
 //before the program exits. If initialization fails, there is no need to call
 //this function, as it is called by Init before it returns failure.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func Terminate() {
 	C.glfwTerminate()
 }

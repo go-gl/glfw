@@ -149,6 +149,9 @@ func goWindowIconifyCB(window unsafe.Pointer, iconified C.int) {
 }
 
 //DefaultHints resets all window hints to their default values.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func DefaultWindowHints() {
 	C.glfwDefaultWindowHints()
 }
@@ -156,6 +159,9 @@ func DefaultWindowHints() {
 //Hint function sets hints for the next call to CreateWindow. The hints,
 //once set, retain their values until changed by a call to Hint or
 //DefaultHints, or until the library is terminated with Terminate.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func WindowHint(target Hint, hint int) {
 	C.glfwWindowHint(C.int(target), C.int(hint))
 }
@@ -189,6 +195,9 @@ func WindowHint(target Hint, hint int) {
 //Hide, Quit and About. The (minimal) about dialog uses information from the
 //application's bundle. For more information on bundles, see the Bundle
 //Programming Guide provided by Apple.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func CreateWindow(width, height int, title string, monitor *Monitor, share *Window) (*Window, error) {
 	var (
 		m *C.GLFWmonitor
@@ -216,6 +225,9 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 
 //Destroy destroys the specified window and its context. On calling this
 //function, no further callbacks will be called for that window.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func (w *Window) Destroy() {
 	C.glfwDestroyWindow(w.data)
 }
@@ -241,6 +253,9 @@ func (w *Window) SetShouldClose(value bool) {
 }
 
 //SetTitle sets the window title, encoded as UTF-8, of the window.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func (w *Window) SetTitle(title string) {
 	t := C.CString(title)
 	defer C.free(unsafe.Pointer(t))
@@ -271,6 +286,9 @@ func (w *Window) GetPosition() (int, int) {
 //confuse and annoy the user.
 //
 //The window manager may put limits on what positions are allowed.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func (w *Window) SetPosition(xpos, ypos int) {
 	C.glfwSetWindowPos(w.data, C.int(xpos), C.int(ypos))
 }
@@ -295,6 +313,9 @@ func (w *Window) GetSize() (int, int) {
 //context is unaffected, the bit depths of the framebuffer remain unchanged.
 //
 //The window manager may put limits on what window sizes are allowed.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func (w *Window) SetSize(width, height int) {
 	C.glfwSetWindowSize(w.data, C.int(width), C.int(height))
 }
@@ -315,6 +336,9 @@ func (w *Window) GetFramebufferSize() (int, int) {
 //is a full screen window, the original monitor resolution is restored until the
 //window is restored. If the window is already iconified, this function does
 //nothing.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func (w *Window) Iconify() {
 	C.glfwIconifyWindow(w.data)
 }
@@ -323,18 +347,27 @@ func (w *Window) Iconify() {
 //is a full screen window, the resolution chosen for the window is restored on
 //the selected monitor. If the window is already restored, this function does
 //nothing.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func (w *Window) Restore() {
 	C.glfwRestoreWindow(w.data)
 }
 
 //Show makes the window visible, if it was previously hidden. If the window is
 //already visible or is in full screen mode, this function does nothing.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func (w *Window) Show() {
 	C.glfwShowWindow(w.data)
 }
 
 //Hide hides the window, if it was previously visible. If the window is already
 //hidden or is in full screen mode, this function does nothing.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func (w *Window) Hide() {
 	C.glfwHideWindow(w.data)
 }
@@ -470,6 +503,9 @@ func (w *Window) SetIconifyCallback(cbfun func(w *Window, iconified bool)) {
 //This function is not required for joystick input to work.
 //
 //This function may not be called from a callback.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func PollEvents() {
 	C.glfwPollEvents()
 }
@@ -485,6 +521,9 @@ func PollEvents() {
 //callbacks.
 //
 //This function may not be called from a callback.
+//
+//This function may only be called from the main thread. See
+//https://code.google.com/p/go-wiki/wiki/LockOSThread
 func WaitEvents() {
 	C.glfwWaitEvents()
 }
