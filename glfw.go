@@ -7,7 +7,7 @@ package glfw3
 
 //#cgo windows LDFLAGS: -lglfw3dll -lopengl32 -lgdi32
 //#cgo linux LDFLAGS: -lglfw
-//#cgo darwin LDFLAGS: -lglfw
+//#cgo darwin LDFLAGS: -lglfw3 -framework Cocoa -framework OpenGL -framework IOKit
 //#ifdef _WIN32
 //  #define GLFW_DLL
 //#endif
