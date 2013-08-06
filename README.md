@@ -9,6 +9,7 @@ Remarks
 =======
 
 * Mingw64 users should rename ***glfw3dll.a*** to ***libglfw3dll.a***
+* In Windows and Linux, if you compile GLFW yourself, use <code>-DBUILD_SHARED_LIBS=on</code> with cmake in order to build the dynamic libraries.
 * Some functions -which are marked in the documentation- can be called only from the main thread. See https://code.google.com/p/go-wiki/wiki/LockOSThread for how.
 
 Example
