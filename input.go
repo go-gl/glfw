@@ -418,12 +418,7 @@ func (w *Window) SetScrollCallback(cbfun func(w *Window, xoff float64, yoff floa
 
 //GetJoystickPresent returns whether the specified joystick is present.
 func JoystickPresent(joy Joystick) bool {
-	r := C.glfwJoystickPresent(C.int(joy))
-
-	if r == C.GL_TRUE {
-		return true
-	}
-	return false
+	return glfwbool(C.glfwJoystickPresent(C.int(joy)))
 }
 
 //GetJoystickAxes returns a slice of axis values.

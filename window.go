@@ -234,11 +234,7 @@ func (w *Window) Destroy() {
 
 //ShouldClose returns the value of the close flag of the specified window.
 func (w *Window) ShouldClose() bool {
-	r := int(C.glfwWindowShouldClose(w.data))
-	if r == C.GL_FALSE {
-		return false
-	}
-	return true
+	return glfwbool(C.glfwWindowShouldClose(w.data))
 }
 
 //SetShouldClose sets the value of the close flag of the window. This can be
