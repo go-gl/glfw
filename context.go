@@ -66,10 +66,5 @@ func ExtensionSupported(extension string) bool {
 	e := C.CString(extension)
 	defer C.free(unsafe.Pointer(e))
 
-	r := C.glfwExtensionSupported(e)
-
-	if r == C.GL_FALSE {
-		return false
-	}
-	return true
+	return glfwbool(C.glfwExtensionSupported(e))
 }
