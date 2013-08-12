@@ -320,7 +320,7 @@ func (w *Window) GetCursorPosition() (float64, float64) {
 	return float64(xpos), float64(ypos)
 }
 
-//SetCursorPosition sets the position of the cursor. The specified window mus
+//SetCursorPosition sets the position of the cursor. The specified window must
 //be focused. If the window does not have focus when this function is called,
 //it fails silently.
 //
