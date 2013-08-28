@@ -47,7 +47,7 @@ var fMonitorHolder func(monitor *Monitor, event MonitorEvent)
 
 //export goMonitorCB
 func goMonitorCB(monitor unsafe.Pointer, event C.int) {
-	fMonitorHolder(&Monitor{(*C.GLFWmonitor)(unsafe.Pointer(monitor))}, MonitorEvent(event))
+	fMonitorHolder(&Monitor{(*C.GLFWmonitor)(monitor)}, MonitorEvent(event))
 }
 
 //GetMonitors returns a slice of handles for all currently connected monitors.

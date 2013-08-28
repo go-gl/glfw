@@ -103,27 +103,27 @@ var (
 
 //export goWindowPosCB
 func goWindowPosCB(window unsafe.Pointer, xpos, ypos C.int) {
-	fWindowPosHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(xpos), int(ypos))
+	fWindowPosHolder(&Window{(*C.GLFWwindow)(window)}, int(xpos), int(ypos))
 }
 
 //export goWindowSizeCB
 func goWindowSizeCB(window unsafe.Pointer, width, height C.int) {
-	fWindowSizeHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(width), int(height))
+	fWindowSizeHolder(&Window{(*C.GLFWwindow)(window)}, int(width), int(height))
 }
 
 //export goFramebufferSizeCB
 func goFramebufferSizeCB(window unsafe.Pointer, width, height C.int) {
-	fFramebufferSizeHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, int(width), int(height))
+	fFramebufferSizeHolder(&Window{(*C.GLFWwindow)(window)}, int(width), int(height))
 }
 
 //export goWindowCloseCB
 func goWindowCloseCB(window unsafe.Pointer) {
-	fWindowCloseHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))})
+	fWindowCloseHolder(&Window{(*C.GLFWwindow)(window)})
 }
 
 //export goWindowRefreshCB
 func goWindowRefreshCB(window unsafe.Pointer) {
-	fWindowRefreshHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))})
+	fWindowRefreshHolder(&Window{(*C.GLFWwindow)(window)})
 }
 
 //export goWindowFocusCB
@@ -134,7 +134,7 @@ func goWindowFocusCB(window unsafe.Pointer, focused C.int) {
 	} else {
 		isFocused = false
 	}
-	fWindowFocusHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, isFocused)
+	fWindowFocusHolder(&Window{(*C.GLFWwindow)(window)}, isFocused)
 }
 
 //export goWindowIconifyCB
@@ -145,7 +145,7 @@ func goWindowIconifyCB(window unsafe.Pointer, iconified C.int) {
 	} else {
 		isIconified = false
 	}
-	fWindowIconifyHolder(&Window{(*C.GLFWwindow)(unsafe.Pointer(window))}, isIconified)
+	fWindowIconifyHolder(&Window{(*C.GLFWwindow)(window)}, isIconified)
 }
 
 //DefaultHints resets all window hints to their default values.
@@ -402,7 +402,7 @@ func (w *Window) GetUserPointer() unsafe.Pointer {
 //of the upper-left corner of the client area of the window.
 func (w *Window) SetPositionCallback(cbfun func(w *Window, xpos int, ypos int)) {
 	if cbfun == nil {
-		C.glfwSetWindowPosCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+		C.glfwSetWindowPosCallback(w.data, nil)
 	} else {
 		fWindowPosHolder = cbfun
 		C.glfwSetWindowPosCallbackCB(w.data)
@@ -414,7 +414,7 @@ func (w *Window) SetPositionCallback(cbfun func(w *Window, xpos int, ypos int)) 
 //coordinates, of the client area of the window.
 func (w *Window) SetSizeCallback(cbfun func(w *Window, width int, height int)) {
 	if cbfun == nil {
-		C.glfwSetWindowSizeCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+		C.glfwSetWindowSizeCallback(w.data, nil)
 	} else {
 		fWindowSizeHolder = cbfun
 		C.glfwSetWindowSizeCallbackCB(w.data)
@@ -425,7 +425,7 @@ func (w *Window) SetSizeCallback(cbfun func(w *Window, width int, height int)) {
 //window, which is called when the framebuffer of the specified window is resized.
 func (w *Window) SetFramebufferSizeCallback(cbfun func(w *Window, width int, height int)) {
 	if cbfun == nil {
-		C.glfwSetFramebufferSizeCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+		C.glfwSetFramebufferSizeCallback(w.data, nil)
 	} else {
 		fFramebufferSizeHolder = cbfun
 		C.glfwSetFramebufferSizeCallbackCB(w.data)
@@ -443,7 +443,7 @@ func (w *Window) SetFramebufferSizeCallback(cbfun func(w *Window, width int, hei
 //callback for all windows.
 func (w *Window) SetCloseCallback(cbfun func(w *Window)) {
 	if cbfun == nil {
-		C.glfwSetWindowCloseCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+		C.glfwSetWindowCloseCallback(w.data, nil)
 	} else {
 		fWindowCloseHolder = cbfun
 		C.glfwSetWindowCloseCallbackCB(w.data)
@@ -459,7 +459,7 @@ func (w *Window) SetCloseCallback(cbfun func(w *Window)) {
 //infrequently or never at all.
 func (w *Window) SetRefreshCallback(cbfun func(w *Window)) {
 	if cbfun == nil {
-		C.glfwSetWindowRefreshCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+		C.glfwSetWindowRefreshCallback(w.data, nil)
 	} else {
 		fWindowRefreshHolder = cbfun
 		C.glfwSetWindowRefreshCallbackCB(w.data)
@@ -474,7 +474,7 @@ func (w *Window) SetRefreshCallback(cbfun func(w *Window)) {
 //pressed. For more information, see SetKeyCallback and SetMouseButtonCallback.
 func (w *Window) SetFocusCallback(cbfun func(w *Window, focused bool)) {
 	if cbfun == nil {
-		C.glfwSetWindowFocusCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+		C.glfwSetWindowFocusCallback(w.data, nil)
 	} else {
 		fWindowFocusHolder = cbfun
 		C.glfwSetWindowFocusCallbackCB(w.data)
@@ -485,7 +485,7 @@ func (w *Window) SetFocusCallback(cbfun func(w *Window, focused bool)) {
 //called when the window is iconified or restored.
 func (w *Window) SetIconifyCallback(cbfun func(w *Window, iconified bool)) {
 	if cbfun == nil {
-		C.glfwSetWindowIconifyCallback((*C.GLFWwindow)(unsafe.Pointer(w.data)), nil)
+		C.glfwSetWindowIconifyCallback(w.data, nil)
 	} else {
 		fWindowIconifyHolder = cbfun
 		C.glfwSetWindowIconifyCallbackCB(w.data)
