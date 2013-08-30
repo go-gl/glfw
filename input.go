@@ -249,10 +249,7 @@ func goCursorPosCB(window unsafe.Pointer, xpos, ypos C.float) {
 
 //export goCursorEnterCB
 func goCursorEnterCB(window unsafe.Pointer, entered C.int) {
-	var hasEntered bool
-	if entered == C.GL_TRUE {
-		hasEntered = true
-	}
+	hasEntered := glfwbool(entered)
 	fCursorEnterHolder(&Window{(*C.GLFWwindow)(window)}, hasEntered)
 }
 

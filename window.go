@@ -128,23 +128,13 @@ func goWindowRefreshCB(window unsafe.Pointer) {
 
 //export goWindowFocusCB
 func goWindowFocusCB(window unsafe.Pointer, focused C.int) {
-	var isFocused bool
-	if focused == C.GL_TRUE {
-		isFocused = true
-	} else {
-		isFocused = false
-	}
+	isFocused := glfwbool(focused)
 	fWindowFocusHolder(&Window{(*C.GLFWwindow)(window)}, isFocused)
 }
 
 //export goWindowIconifyCB
 func goWindowIconifyCB(window unsafe.Pointer, iconified C.int) {
-	var isIconified bool
-	if iconified == C.GL_TRUE {
-		isIconified = true
-	} else {
-		isIconified = false
-	}
+	isIconified := glfwbool(iconified)
 	fWindowIconifyHolder(&Window{(*C.GLFWwindow)(window)}, isIconified)
 }
 
