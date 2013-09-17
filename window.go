@@ -59,6 +59,7 @@ const (
 	Stereo          Hint = C.GLFW_STEREO           //Specifies whether to use stereoscopic rendering. Hard constraint.
 	Samples         Hint = C.GLFW_SAMPLES          //Specifies the desired number of samples to use for multisampling. Zero disables multisampling.
 	SrgbCapable     Hint = C.GLFW_SRGB_CAPABLE     //Specifies whether the framebuffer should be sRGB capable.
+	RefreshRate     Hint = C.GLFW_REFRESH_RATE     //specifies the desired refresh rate for full screen windows. If set to zero, the highest available refresh rate will be used. This hint is ignored for windowed mode windows.
 )
 
 //Values for the ClientApi hint.
