@@ -2,15 +2,23 @@ Go Bindings for GLFW 3
 ======================
 
 * This wrapper is now announced stable. There will be no API change until next major revision.
-* See http://godoc.org/github.com/go-gl/glfw3 for documentation.
-* You can help by submitting examples to http://github.com/go-gl/examples
+* See [here](http://godoc.org/github.com/go-gl/glfw3) for documentation.
+* You can help by submitting examples to [go-gl/examples](http://github.com/go-gl/examples).
 
 Remarks
 =======
 
-* Mingw64 users should rename ***glfw3dll.a*** to ***libglfw3dll.a***
+* Mingw64 users should rename ***glfw3dll.a*** to ***libglfw3dll.a***.
 * In Windows and Linux, if you compile GLFW yourself, use <code>-DBUILD_SHARED_LIBS=on</code> with cmake in order to build the dynamic libraries.
-* Some functions -which are marked in the documentation- can be called only from the main thread. See https://code.google.com/p/go-wiki/wiki/LockOSThread for how.
+* Some functions -which are marked in the documentation- can be called only from the main thread. Click [here](https://code.google.com/p/go-wiki/wiki/LockOSThread) for how.
+* In Mac OS, due to a bug in official Go packages, it's recommended to install Go and GLFW via [Homebrew](http://brew.sh/).
+
+```
+$ brew install go
+$ brew tap homebrew/versions
+$ brew install --build-bottle --static glfw3
+$ go get github.com/go-gl/glfw3
+```
 
 Example
 =======
