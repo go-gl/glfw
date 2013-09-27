@@ -82,7 +82,7 @@ func GetPrimaryMonitor() (*Monitor, error) {
 
 //GetPosition returns the position, in screen coordinates, of the upper-left
 //corner of the monitor.
-func (m *Monitor) GetPosition() (int, int) {
+func (m *Monitor) GetPosition() (x, y int) {
 	var xpos, ypos C.int
 
 	C.glfwGetMonitorPos(m.data, &xpos, &ypos)
@@ -95,11 +95,11 @@ func (m *Monitor) GetPosition() (int, int) {
 //Note: Some operating systems do not provide accurate information, either
 //because the monitor's EDID data is incorrect, or because the driver does not
 //report it accurately.
-func (m *Monitor) GetPhysicalSize() (int, int) {
-	var width, height C.int
+func (m *Monitor) GetPhysicalSize() (width, height int) {
+	var wi, h C.int
 
-	C.glfwGetMonitorPhysicalSize(m.data, &width, &height)
-	return int(width), int(height)
+	C.glfwGetMonitorPhysicalSize(m.data, &wi, &h)
+	return int(wi), int(h)
 }
 
 //GetName returns a human-readable name of the monitor, encoded as UTF-8.
