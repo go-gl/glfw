@@ -251,11 +251,8 @@ func (w *Window) SetTitle(title string) {
 
 //GetPosition returns the position, in screen coordinates, of the upper-left
 //corner of the client area of the window.
-func (w *Window) GetPosition() (int, int) {
-	var (
-		xpos C.int
-		ypos C.int
-	)
+func (w *Window) GetPosition() (x, y int) {
+	var xpos, ypos C.int
 
 	C.glfwGetWindowPos(w.data, &xpos, &ypos)
 	return int(xpos), int(ypos)
