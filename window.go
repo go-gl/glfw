@@ -282,14 +282,10 @@ func (w *Window) SetPosition(xpos, ypos int) {
 
 //GetSize returns the size, in screen coordinates, of the client area of the
 //specified window.
-func (w *Window) GetSize() (int, int) {
-	var (
-		width  C.int
-		height C.int
-	)
-
-	C.glfwGetWindowSize(w.data, &width, &height)
-	return int(width), int(height)
+func (w *Window) GetSize() (width, height int) {
+	var wi, h C.int
+	C.glfwGetWindowSize(w.data, &wi, &h)
+	return int(wi), int(h)
 }
 
 //SetSize sets the size, in screen coordinates, of the client area of the
@@ -309,14 +305,10 @@ func (w *Window) SetSize(width, height int) {
 
 //GetFramebufferSize retrieves the size, in pixels, of the framebuffer of the
 //specified window.
-func (w *Window) GetFramebufferSize() (int, int) {
-	var (
-		width  C.int
-		height C.int
-	)
-
-	C.glfwGetFramebufferSize(w.data, &width, &height)
-	return int(width), int(height)
+func (w *Window) GetFramebufferSize() (width, height int) {
+	var wi, h C.int
+	C.glfwGetFramebufferSize(w.data, &wi, &h)
+	return int(wi), int(h)
 }
 
 //Iconfiy iconifies/minimizes the window, if it was previously restored. If it
