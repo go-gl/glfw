@@ -25,11 +25,10 @@ func DetachCurrentContext() {
 //GetCurrentContext returns the window whose context is current.
 func GetCurrentContext() (*Window, error) {
 	w := C.glfwGetCurrentContext()
-
 	if w == nil {
 		return nil, errors.New("Current context is not set.")
 	}
-	return &Window{w}, nil
+	return windows.get(w), nil
 }
 
 //SwapBuffers swaps the front and back buffers of the window. If the
