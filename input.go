@@ -230,38 +230,38 @@ const (
 
 //export goMouseButtonCB
 func goMouseButtonCB(window unsafe.Pointer, button, action, mods C.int) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	w.fMouseButtonHolder(w, MouseButton(button), Action(action), ModifierKey(mods))
 }
 
 //export goCursorPosCB
 func goCursorPosCB(window unsafe.Pointer, xpos, ypos C.float) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	w.fCursorPosHolder(w, float64(xpos), float64(ypos))
 }
 
 //export goCursorEnterCB
 func goCursorEnterCB(window unsafe.Pointer, entered C.int) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	hasEntered := glfwbool(entered)
 	w.fCursorEnterHolder(w, hasEntered)
 }
 
 //export goScrollCB
 func goScrollCB(window unsafe.Pointer, xoff, yoff C.float) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	w.fScrollHolder(w, float64(xoff), float64(yoff))
 }
 
 //export goKeyCB
 func goKeyCB(window unsafe.Pointer, key, scancode, action, mods C.int) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	w.fKeyHolder(w, Key(key), int(scancode), Action(action), ModifierKey(mods))
 }
 
 //export goCharCB
 func goCharCB(window unsafe.Pointer, character C.uint) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	w.fCharHolder(w, uint(character))
 }
 

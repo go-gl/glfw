@@ -17,6 +17,32 @@ import (
 	"unsafe"
 )
 
+// Internal window list stuff
+type windowList struct {
+	l sync.RWMutex
+	m map[*C.GLFWwindow]*Window
+}
+
+var windows = windowList{m: map[*C.GLFWwindow]*Window{}}
+
+func (w *windowList) put(wnd *Window) {
+	w.l.Lock()
+	defer w.l.Unlock()
+	w.m[wnd.data] = wnd
+}
+
+func (w *windowList) remove(wnd *C.GLFWwindow) {
+	w.l.Lock()
+	defer w.l.Unlock()
+	delete(w.m, wnd)
+}
+
+func (w *windowList) get(wnd *C.GLFWwindow) *Window {
+	w.l.RLock()
+	defer w.l.RUnlock()
+	return w.m[wnd]
+}
+
 //Hint corresponds to hints that can be set before creating a window.
 //
 //Hint also corresponds to the attributes of the window that can be get after
@@ -92,6 +118,7 @@ const (
 type Window struct {
 	data *C.GLFWwindow
 
+	// Window
 	fPosHolder             func(w *Window, xpos int, ypos int)
 	fSizeHolder            func(w *Window, width int, height int)
 	fFramebufferSizeHolder func(w *Window, width int, height int)
@@ -100,6 +127,7 @@ type Window struct {
 	fFocusHolder           func(w *Window, focused bool)
 	fIconifyHolder         func(w *Window, iconified bool)
 
+	// Input
 	fMouseButtonHolder func(w *Window, button MouseButton, action Action, mod ModifierKey)
 	fCursorPosHolder   func(w *Window, xpos float64, ypos float64)
 	fCursorEnterHolder func(w *Window, entered bool)
@@ -108,66 +136,39 @@ type Window struct {
 	fCharHolder        func(w *Window, char uint)
 }
 
-type windowMap struct {
-	l sync.RWMutex
-	m map[*C.GLFWwindow]*Window
-}
-
-var windows = windowMap{
-	m: map[*C.GLFWwindow]*Window{},
-}
-
-func (w *windowMap) put(wnd *Window) {
-	w.l.Lock()
-	defer w.l.Unlock()
-	w.m[wnd.data] = wnd
-}
-
-func (w *windowMap) remove(wnd *Window) {
-	w.l.Lock()
-	defer w.l.Unlock()
-	delete(w.m, wnd.data)
-}
-
-func (w *windowMap) get(g *C.GLFWwindow) *Window {
-	w.l.RLock()
-	defer w.l.RUnlock()
-	return w.m[g]
-}
-
 //export goWindowPosCB
 func goWindowPosCB(window unsafe.Pointer, xpos, ypos C.int) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	w.fPosHolder(w, int(xpos), int(ypos))
 }
 
 //export goWindowSizeCB
 func goWindowSizeCB(window unsafe.Pointer, width, height C.int) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	w.fSizeHolder(w, int(width), int(height))
 }
 
 //export goFramebufferSizeCB
 func goFramebufferSizeCB(window unsafe.Pointer, width, height C.int) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	w.fFramebufferSizeHolder(w, int(width), int(height))
 }
 
 //export goWindowCloseCB
 func goWindowCloseCB(window unsafe.Pointer) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	w.fCloseHolder(w)
 }
 
 //export goWindowRefreshCB
 func goWindowRefreshCB(window unsafe.Pointer) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	w.fRefreshHolder(w)
 }
 
 //export goWindowFocusCB
 func goWindowFocusCB(window unsafe.Pointer, focused C.int) {
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	isFocused := glfwbool(focused)
 	w.fFocusHolder(w, isFocused)
 }
@@ -175,7 +176,7 @@ func goWindowFocusCB(window unsafe.Pointer, focused C.int) {
 //export goWindowIconifyCB
 func goWindowIconifyCB(window unsafe.Pointer, iconified C.int) {
 	isIconified := glfwbool(iconified)
-	w := windows.get((*C.GLFWwindow)(unsafe.Pointer(window)))
+	w := windows.get((*C.GLFWwindow)(window))
 	w.fIconifyHolder(w, isIconified)
 }
 
@@ -262,6 +263,7 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 //This function may only be called from the main thread. See
 //https://code.google.com/p/go-wiki/wiki/LockOSThread
 func (w *Window) Destroy() {
+	windows.remove(w.data)
 	C.glfwDestroyWindow(w.data)
 }
 
