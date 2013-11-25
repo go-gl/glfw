@@ -19,7 +19,7 @@ import (
 
 // Internal window list stuff
 type windowList struct {
-	l sync.RWMutex
+	l sync.Mutex
 	m map[*C.GLFWwindow]*Window
 }
 
@@ -38,8 +38,8 @@ func (w *windowList) remove(wnd *C.GLFWwindow) {
 }
 
 func (w *windowList) get(wnd *C.GLFWwindow) *Window {
-	w.l.RLock()
-	defer w.l.RUnlock()
+	w.l.Lock()
+	defer w.l.Unlock()
 	return w.m[wnd]
 }
 
