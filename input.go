@@ -307,7 +307,7 @@ func (w *Window) GetMouseButton(button MouseButton) Action {
 //The coordinate can be converted to their integer equivalents with the floor
 //function. Casting directly to an integer type works for positive coordinates,
 //but fails for negative ones.
-func (w *Window) GetCursorPosition() (float64, float64) {
+func (w *Window) GetCursorPosition() (x, y float64) {
 	var xpos, ypos C.double
 
 	C.glfwGetCursorPos(w.data, &xpos, &ypos)

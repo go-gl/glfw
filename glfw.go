@@ -64,15 +64,15 @@ func Terminate() {
 //want to ensure that you are using the minimum required version.
 //
 //This function may be called before Init.
-func GetVersion() (int, int, int) {
+func GetVersion() (major, minor, revision int) {
 	var (
-		major C.int
-		minor C.int
-		rev   C.int
+		maj C.int
+		min C.int
+		rev C.int
 	)
 
-	C.glfwGetVersion(&major, &minor, &rev)
-	return int(major), int(minor), int(rev)
+	C.glfwGetVersion(&maj, &min, &rev)
+	return int(maj), int(min), int(rev)
 }
 
 //GetVersionString returns a static string generated at compile-time according
