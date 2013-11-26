@@ -247,7 +247,6 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 	}
 
 	w := C.glfwCreateWindow(C.int(width), C.int(height), t, m, s)
-
 	if w == nil {
 		return nil, errors.New("Can't create window.")
 	}
@@ -296,7 +295,6 @@ func (w *Window) SetTitle(title string) {
 //corner of the client area of the window.
 func (w *Window) GetPosition() (x, y int) {
 	var xpos, ypos C.int
-
 	C.glfwGetWindowPos(w.data, &xpos, &ypos)
 	return int(xpos), int(ypos)
 }
