@@ -9,7 +9,6 @@ package glfw3
 import "C"
 
 import (
-	"errors"
 	"unsafe"
 )
 
