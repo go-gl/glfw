@@ -12,7 +12,6 @@ package glfw3
 import "C"
 
 import (
-	"errors"
 	"sync"
 	"unsafe"
 )
@@ -394,19 +393,22 @@ func (w *Window) Hide() {
 
 //GetMonitor returns the handle of the monitor that the window is in
 //fullscreen on.
-func (w *Window) GetMonitor() (*Monitor, error) {
+func (w *Window) GetMonitor() *Monitor {
 	m := C.glfwGetWindowMonitor(w.data)
-
 	if m == nil {
-		return nil, errors.New("Can't get the monitor.")
+		return nil
 	}
-	return &Monitor{m}, nil
+	return &Monitor{m}
 }
 
 //GetAttribute returns an attribute of the window. There are many attributes,
 //some related to the window and others to its context.
-func (w *Window) GetAttribute(attrib Hint) int {
-	return int(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
+func (w *Window) GetAttribute(attrib Hint) (int, error) {
+	r := int(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
+	if r == 0 {
+		return 0, <-lastError
+	}
+	return r, nil
 }
 
 //SetUserPointer sets the user-defined pointer of the window. The current value
