@@ -6,7 +6,7 @@ package glfw3
 // glfw3dll.a to libglfw3dll.a, it doesn't work otherwise.
 
 //#cgo windows LDFLAGS: -lglfw3dll -lopengl32 -lgdi32
-//#cgo linux LDFLAGS: -lglfw
+//#cgo linux LDFLAGS: -lglfw3 -lGL -lX11 -lXrandr -lXi
 //#cgo darwin LDFLAGS: -lglfw3 -framework Cocoa -framework OpenGL -framework IOKit
 //#ifdef _WIN32
 //  #define GLFW_DLL
