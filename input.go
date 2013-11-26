@@ -261,7 +261,7 @@ func goKeyCB(window unsafe.Pointer, key, scancode, action, mods C.int) {
 //export goCharCB
 func goCharCB(window unsafe.Pointer, character C.uint) {
 	w := windows.get((*C.GLFWwindow)(window))
-	w.fCharHolder(w, uint(character))
+	w.fCharHolder(w, rune(character))
 }
 
 //GetInputMode returns the value of an input option of the window.
@@ -348,7 +348,7 @@ func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, act
 //
 //The character callback is intended for text input. If you want to know whether
 //a specific key was pressed or released, use the key callback instead.
-func (w *Window) SetCharacterCallback(cbfun func(w *Window, char uint)) {
+func (w *Window) SetCharacterCallback(cbfun func(w *Window, char rune)) {
 	if cbfun == nil {
 		C.glfwSetCharCallback(w.data, nil)
 	} else {
