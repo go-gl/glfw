@@ -248,7 +248,7 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 
 	w := C.glfwCreateWindow(C.int(width), C.int(height), t, m, s)
 	if w == nil {
-		return nil, errors.New("Can't create window.")
+		return nil, <-lastError
 	}
 	wnd := &Window{data: w}
 	windows.put(wnd)
