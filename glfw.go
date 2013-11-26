@@ -39,8 +39,11 @@ const (
 //
 //This function may only be called from the main thread. See
 //https://code.google.com/p/go-wiki/wiki/LockOSThread
-func Init() bool {
-	return glfwbool(C.glfwInit())
+func Init() error {
+	if glfwbool(C.glfwInit()) {
+		return nil
+	}
+	return <-lastError
 }
 
 //Terminate destroys all remaining windows, frees any allocated resources and

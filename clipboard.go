@@ -27,7 +27,7 @@ func (w *Window) SetClipboardString(str string) {
 func (w *Window) GetClipboardString() (string, error) {
 	cs := C.glfwGetClipboardString(w.data)
 	if cs == nil {
-		return "", errors.New("Can't get clipboard string.")
+		return "", <-lastError
 	}
 	return C.GoString(cs), nil
 }
