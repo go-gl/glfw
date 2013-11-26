@@ -54,7 +54,6 @@ func GetMonitors() ([]*Monitor, error) {
 	var length int
 
 	mC := C.glfwGetMonitors((*C.int)(unsafe.Pointer(&length)))
-
 	if mC == nil {
 		return nil, errors.New("Can't get the monitor list.")
 	}
@@ -72,7 +71,6 @@ func GetMonitors() ([]*Monitor, error) {
 //where elements like the Windows task bar or the OS X menu bar is located.
 func GetPrimaryMonitor() (*Monitor, error) {
 	m := C.glfwGetPrimaryMonitor()
-
 	if m == nil {
 		return nil, errors.New("Can't get the primary monitor.")
 	}
@@ -83,7 +81,6 @@ func GetPrimaryMonitor() (*Monitor, error) {
 //corner of the monitor.
 func (m *Monitor) GetPosition() (x, y int) {
 	var xpos, ypos C.int
-
 	C.glfwGetMonitorPos(m.data, &xpos, &ypos)
 	return int(xpos), int(ypos)
 }
@@ -96,7 +93,6 @@ func (m *Monitor) GetPosition() (x, y int) {
 //report it accurately.
 func (m *Monitor) GetPhysicalSize() (width, height int) {
 	var wi, h C.int
-
 	C.glfwGetMonitorPhysicalSize(m.data, &wi, &h)
 	return int(wi), int(h)
 }
@@ -107,7 +103,6 @@ func (m *Monitor) GetName() (string, error) {
 	if mn == nil {
 		return "", errors.New("Can't get monitor name.")
 	}
-
 	return C.GoString(mn), nil
 }
 
@@ -150,7 +145,6 @@ func (m *Monitor) GetVideoModes() ([]*VideoMode, error) {
 //whether it is focused.
 func (m *Monitor) GetVideoMode() (*VideoMode, error) {
 	t := C.glfwGetVideoMode(m.data)
-
 	if t == nil {
 		return nil, errors.New("Can't get the video mode.")
 	}
