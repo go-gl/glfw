@@ -308,7 +308,6 @@ func (w *Window) GetMouseButton(button MouseButton) Action {
 //but fails for negative ones.
 func (w *Window) GetCursorPosition() (x, y float64) {
 	var xpos, ypos C.double
-
 	C.glfwGetCursorPos(w.data, &xpos, &ypos)
 	return float64(xpos), float64(ypos)
 }

@@ -16,7 +16,6 @@ import (
 func (w *Window) SetClipboardString(str string) {
 	cp := C.CString(str)
 	defer C.free(unsafe.Pointer(cp))
-
 	C.glfwSetClipboardString(w.data, cp)
 }
 
@@ -30,6 +29,5 @@ func (w *Window) GetClipboardString() (string, error) {
 	if cs == nil {
 		return "", errors.New("Can't get clipboard string.")
 	}
-
 	return C.GoString(cs), nil
 }
