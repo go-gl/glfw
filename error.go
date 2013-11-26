@@ -4,6 +4,10 @@ package glfw3
 //void glfwSetErrorCallbackCB();
 import "C"
 
+import (
+	"fmt"
+)
+
 //ErrorCode corresponds to an error code.
 type ErrorCode int
 
@@ -20,22 +24,31 @@ const (
 	FormatUnavailable  ErrorCode = C.GLFW_FORMAT_UNAVAILABLE  //The clipboard did not contain data in the requested format.
 )
 
-var fErrorHolder func(code ErrorCode, desc string)
+//GlfwError holds error code and description.
+type GlfwError struct {
+	Code ErrorCode
+	Desc string
+}
+
+//Holds the value of the last error
+var lastError = make(chan *GlfwError, 1)
+
+//Function that will be called back when there is an error. Updates lastError.
+var fErrorHolder = func (code ErrorCode, desc string) {
+	lastError <- &GlfwError{code, desc}
+}
 
 //export goErrorCB
 func goErrorCB(code C.int, desc *C.char) {
 	fErrorHolder(ErrorCode(code), C.GoString(desc))
 }
 
-//SetErrorCallback sets the error callback, which is called with an error code
-//and a human-readable description each time a GLFW error occurs.
-//
-//This function may be called before Init.
-func SetErrorCallback(cbfun func(code ErrorCode, desc string)) {
-	if cbfun == nil {
-		C.glfwSetErrorCallback(nil)
-	} else {
-		fErrorHolder = cbfun
-		C.glfwSetErrorCallbackCB()
-	}
+//Error prints the error code and description in a readable format.
+func (e *GlfwError) Error() string {
+	return fmt.Sprintf("Error %d: %s", e.Code, e.Desc)
+}
+
+//Set the glfw callback internally
+func init() {
+	C.glfwSetErrorCallbackCB()
 }
