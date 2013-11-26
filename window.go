@@ -250,6 +250,7 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 	if w == nil {
 		return nil, <-lastError
 	}
+
 	wnd := &Window{data: w}
 	windows.put(wnd)
 	return wnd, nil

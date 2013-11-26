@@ -34,7 +34,7 @@ type GlfwError struct {
 var lastError = make(chan *GlfwError, 1)
 
 //Function that will be called back when there is an error. Updates lastError.
-var fErrorHolder = func (code ErrorCode, desc string) {
+var fErrorHolder = func(code ErrorCode, desc string) {
 	lastError <- &GlfwError{code, desc}
 }
 
