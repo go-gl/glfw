@@ -5,7 +5,6 @@ package glfw3
 import "C"
 
 import (
-	"errors"
 	"unsafe"
 )
 
@@ -23,12 +22,12 @@ func DetachCurrentContext() {
 }
 
 //GetCurrentContext returns the window whose context is current.
-func GetCurrentContext() (*Window, error) {
+func GetCurrentContext() *Window {
 	w := C.glfwGetCurrentContext()
 	if w == nil {
-		return nil, errors.New("Current context is not set.")
+		return nil
 	}
-	return windows.get(w), nil
+	return windows.get(w)
 }
 
 //SwapBuffers swaps the front and back buffers of the window. If the
