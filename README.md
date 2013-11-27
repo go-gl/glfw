@@ -1,7 +1,7 @@
 Go Bindings for GLFW 3
 ======================
 
-* This wrapper is now announced stable. There will be no API change until next major revision.
+* **Warning:** This branch is for Go 1.2. See changelog for ***API breaking changes***.
 * See [here](http://godoc.org/github.com/go-gl/glfw3) for documentation.
 * You can help by submitting examples to [go-gl/examples](http://github.com/go-gl/examples).
 
@@ -31,15 +31,10 @@ import (
 	glfw "github.com/go-gl/glfw3"
 )
 
-func errorCallback(err glfw.ErrorCode, desc string) {
-	fmt.Printf("%v: %v\n", err, desc)
-}
-
 func main() {
-	glfw.SetErrorCallback(errorCallback)
-
-	if !glfw.Init() {
-		panic("Can't init glfw!")
+	err := glfw.Init()
+	if err != nil {
+		panic(err)
 	}
 	defer glfw.Terminate()
 
@@ -57,3 +52,17 @@ func main() {
 	}
 }
 ```
+
+Changelog
+=========
+
+* <code>SetErrorCallback</code> This function is removed. The callback is now set internally. Functions return an error with corresponding code and description (do a type assertion to GlfwError for accessing the variables).
+* <code>Init</code> Returns an error instead of bool.
+* <code>GetTime</code> Returns an error.
+* <code>GetCurrentContext</code> No longer returns an error.
+* <code>GetJoystickAxes</code> No longer returns an error.
+* <code>GetJoystickButtons</code> No longer returns an error.
+* <code>GetJoystickName</code> No longer returns an error.
+* <code>window.GetMonitor</code> No longer returns an error.
+* <code>window.GetAttribute</code> Returns an error.
+* <code>window.SetCharacterCallback</code> Accepts rune instead of uint.
