@@ -27,7 +27,6 @@ Example
 package main
 
 import (
-	"fmt"
 	glfw "github.com/go-gl/glfw3"
 )
 
