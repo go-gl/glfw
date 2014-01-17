@@ -12,7 +12,7 @@ Remarks
 * Mingw64 users should rename ***glfw3dll.a*** to ***libglfw3dll.a***.
 * In Windows and Linux, if you compile GLFW yourself, use <code>-DBUILD_SHARED_LIBS=on</code> with cmake in order to build the dynamic libraries.
 * Some functions -which are marked in the documentation- can be called only from the main thread. Click [here](https://code.google.com/p/go-wiki/wiki/LockOSThread) for how.
-* In Mac OS, due to a bug in official Go packages, it's recommended to install Go and GLFW via [Homebrew](http://brew.sh/).
+* In OS X, you can install Go and GLFW via [Homebrew](http://brew.sh/).
 
 ```
 $ brew install go
