@@ -548,3 +548,15 @@ func PollEvents() {
 func WaitEvents() {
 	C.glfwWaitEvents()
 }
+
+//PostEmptyEvent posts an empty event from the current thread to the main
+//thread event queue, causing WaitEvents to return.
+//
+//If no windows exist, this function returns immediately.  For
+//synchronization of threads in applications that do not create windows, use
+//your threading library of choice.
+//
+//This function may be called from secondary threads.
+func PostEmptyEvent() {
+	C.glfwPostEmptyEvent()
+}
