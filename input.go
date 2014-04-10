@@ -7,6 +7,7 @@ package glfw3
 //void glfwSetCursorPosCallbackCB(GLFWwindow *window);
 //void glfwSetCursorEnterCallbackCB(GLFWwindow *window);
 //void glfwSetScrollCallbackCB(GLFWwindow *window);
+//void glfwSetDropCallbackCB(GLFWwindow *window);
 //float GetAxisAtIndex(float *axis, int i);
 //unsigned char GetButtonsAtIndex(unsigned char *buttons, int i);
 import "C"
@@ -264,6 +265,18 @@ func goCharCB(window unsafe.Pointer, character C.uint) {
 	w.fCharHolder(w, rune(character))
 }
 
+//export goDropCB
+func goDropCB(window unsafe.Pointer, count C.int, names **C.char) { // TODO: The types of name can be `**C.char` or `unsafe.Pointer`, use whichever is better.
+	w := windows.get((*C.GLFWwindow)(window))
+	namesSlice := make([]string, int(count)) //                                                       // TODO: Make this better. This part is unfinished, hacky, probably not correct, and not idiomatic.
+	for i := 0; i < int(count); i++ {        //                                                       // TODO: Make this better. It should be cleaned up and vetted.
+		var x *C.char                                                                                 // TODO: Make this better.
+		p := (**C.char)(unsafe.Pointer(uintptr(unsafe.Pointer(names)) + uintptr(i)*unsafe.Sizeof(x))) // TODO: Make this better.
+		namesSlice[i] = C.GoString(*p)                                                                // TODO: Make this better.
+	}
+	w.fDropHolder(w, namesSlice)
+}
+
 //GetInputMode returns the value of an input option of the window.
 func (w *Window) GetInputMode(mode InputMode) int {
 	return int(C.glfwGetInputMode(w.data, C.int(mode)))
@@ -405,6 +418,17 @@ func (w *Window) SetScrollCallback(cbfun func(w *Window, xoff float64, yoff floa
 	} else {
 		w.fScrollHolder = cbfun
 		C.glfwSetScrollCallbackCB(w.data)
+	}
+}
+
+//SetDropCallback sets the drop callback which is called when an object
+//is dropped over the window.
+func (w *Window) SetDropCallback(cbfun func(w *Window, names []string)) {
+	if cbfun == nil {
+		C.glfwSetDropCallback(w.data, nil)
+	} else {
+		w.fDropHolder = cbfun
+		C.glfwSetDropCallbackCB(w.data)
 	}
 }
 

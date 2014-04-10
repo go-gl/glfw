@@ -24,6 +24,10 @@ void glfwCharCB(GLFWwindow* window, unsigned int character) {
 	goCharCB(window, character);
 }
 
+void glfwDropCB(GLFWwindow* window, int count, const char **names) {
+	goDropCB(window, count, (char**)names);
+}
+
 void glfwSetKeyCallbackCB(GLFWwindow *window) {
 	glfwSetKeyCallback(window, glfwKeyCB);
 }
@@ -46,6 +50,10 @@ void glfwSetCursorEnterCallbackCB(GLFWwindow *window) {
 
 void glfwSetScrollCallbackCB(GLFWwindow *window) {
 	glfwSetScrollCallback(window, glfwScrollCB);
+}
+
+void glfwSetDropCallbackCB(GLFWwindow *window) {
+	glfwSetDropCallback(window, glfwDropCB);
 }
 
 float GetAxisAtIndex(float *axis, int i) {

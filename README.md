@@ -1,7 +1,7 @@
 Go Bindings for GLFW 3
 ======================
 
-* **Warning:** This branch is not backward compatible. See changelog for ***API breaking changes***.
+* This wrapper is now announced stable. There will be no API change until next major revision.
 * See [here](http://godoc.org/github.com/go-gl/glfw3) for documentation.
 * You can help by submitting examples to [go-gl/examples](http://github.com/go-gl/examples).
 
