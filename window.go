@@ -12,6 +12,7 @@ package glfw3
 import "C"
 
 import (
+	"errors"
 	"sync"
 	"unsafe"
 )
@@ -132,7 +133,8 @@ type Window struct {
 	fCursorEnterHolder func(w *Window, entered bool)
 	fScrollHolder      func(w *Window, xoff float64, yoff float64)
 	fKeyHolder         func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
-	fCharHolder        func(w *Window, char rune)
+	fCharHolder        func(w *Window, char uint)
+	fDropHolder        func(w *Window, names []string)
 }
 
 //export goWindowPosCB
@@ -247,10 +249,10 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 	}
 
 	w := C.glfwCreateWindow(C.int(width), C.int(height), t, m, s)
-	if w == nil {
-		return nil, <-lastError
-	}
 
+	if w == nil {
+		return nil, errors.New("Can't create window.")
+	}
 	wnd := &Window{data: w}
 	windows.put(wnd)
 	return wnd, nil
@@ -296,6 +298,7 @@ func (w *Window) SetTitle(title string) {
 //corner of the client area of the window.
 func (w *Window) GetPosition() (x, y int) {
 	var xpos, ypos C.int
+
 	C.glfwGetWindowPos(w.data, &xpos, &ypos)
 	return int(xpos), int(ypos)
 }
@@ -392,22 +395,19 @@ func (w *Window) Hide() {
 
 //GetMonitor returns the handle of the monitor that the window is in
 //fullscreen on.
-func (w *Window) GetMonitor() *Monitor {
+func (w *Window) GetMonitor() (*Monitor, error) {
 	m := C.glfwGetWindowMonitor(w.data)
+
 	if m == nil {
-		return nil
+		return nil, errors.New("Can't get the monitor.")
 	}
-	return &Monitor{m}
+	return &Monitor{m}, nil
 }
 
 //GetAttribute returns an attribute of the window. There are many attributes,
 //some related to the window and others to its context.
-func (w *Window) GetAttribute(attrib Hint) (int, error) {
-	r := int(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
-	if r == 0 {
-		return 0, <-lastError
-	}
-	return r, nil
+func (w *Window) GetAttribute(attrib Hint) int {
+	return int(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
 }
 
 //SetUserPointer sets the user-defined pointer of the window. The current value
@@ -547,16 +547,4 @@ func PollEvents() {
 //https://code.google.com/p/go-wiki/wiki/LockOSThread
 func WaitEvents() {
 	C.glfwWaitEvents()
-}
-
-//PostEmptyEvent posts an empty event from the current thread to the main
-//thread event queue, causing WaitEvents to return.
-//
-//If no windows exist, this function returns immediately.  For
-//synchronization of threads in applications that do not create windows, use
-//your threading library of choice.
-//
-//This function may be called from secondary threads.
-func PostEmptyEvent() {
-	C.glfwPostEmptyEvent()
 }
