@@ -1,7 +1,7 @@
 Go Bindings for GLFW 3
 ======================
 
-* **Warning:** This branch is not backward compatible. See changelog for ***API breaking changes***.
+* ATTENTION: As of GLFW 3.1 we break API. See Changelog below.
 * See [here](http://godoc.org/github.com/go-gl/glfw3) for documentation.
 * You can help by submitting examples to [go-gl/examples](http://github.com/go-gl/examples).
 
@@ -65,3 +65,5 @@ Changelog
 * <code>window.GetMonitor</code> No longer returns an error.
 * <code>window.GetAttribute</code> Returns an error.
 * <code>window.SetCharacterCallback</code> Accepts rune instead of uint.
+* <code>window.SetDropCallback</code> added.
+* <code>PostEmptyEvent<code> added.
