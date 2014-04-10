@@ -5,7 +5,6 @@ package glfw3
 import "C"
 
 import (
-	"errors"
 	"unsafe"
 )
 
@@ -17,7 +16,6 @@ import (
 func (w *Window) SetClipboardString(str string) {
 	cp := C.CString(str)
 	defer C.free(unsafe.Pointer(cp))
-
 	C.glfwSetClipboardString(w.data, cp)
 }
 
@@ -29,8 +27,7 @@ func (w *Window) SetClipboardString(str string) {
 func (w *Window) GetClipboardString() (string, error) {
 	cs := C.glfwGetClipboardString(w.data)
 	if cs == nil {
-		return "", errors.New("Can't get clipboard string.")
+		return "", <-lastError
 	}
-
 	return C.GoString(cs), nil
 }

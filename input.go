@@ -12,7 +12,6 @@ package glfw3
 import "C"
 
 import (
-	"errors"
 	"unsafe"
 )
 
@@ -235,7 +234,7 @@ func goMouseButtonCB(window unsafe.Pointer, button, action, mods C.int) {
 }
 
 //export goCursorPosCB
-func goCursorPosCB(window unsafe.Pointer, xpos, ypos C.float) {
+func goCursorPosCB(window unsafe.Pointer, xpos, ypos C.double) {
 	w := windows.get((*C.GLFWwindow)(window))
 	w.fCursorPosHolder(w, float64(xpos), float64(ypos))
 }
@@ -248,7 +247,7 @@ func goCursorEnterCB(window unsafe.Pointer, entered C.int) {
 }
 
 //export goScrollCB
-func goScrollCB(window unsafe.Pointer, xoff, yoff C.float) {
+func goScrollCB(window unsafe.Pointer, xoff, yoff C.double) {
 	w := windows.get((*C.GLFWwindow)(window))
 	w.fScrollHolder(w, float64(xoff), float64(yoff))
 }
@@ -262,7 +261,7 @@ func goKeyCB(window unsafe.Pointer, key, scancode, action, mods C.int) {
 //export goCharCB
 func goCharCB(window unsafe.Pointer, character C.uint) {
 	w := windows.get((*C.GLFWwindow)(window))
-	w.fCharHolder(w, uint(character))
+	w.fCharHolder(w, rune(character))
 }
 
 //GetInputMode returns the value of an input option of the window.
@@ -309,7 +308,6 @@ func (w *Window) GetMouseButton(button MouseButton) Action {
 //but fails for negative ones.
 func (w *Window) GetCursorPosition() (x, y float64) {
 	var xpos, ypos C.double
-
 	C.glfwGetCursorPos(w.data, &xpos, &ypos)
 	return float64(xpos), float64(ypos)
 }
@@ -350,7 +348,7 @@ func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, act
 //
 //The character callback is intended for text input. If you want to know whether
 //a specific key was pressed or released, use the key callback instead.
-func (w *Window) SetCharacterCallback(cbfun func(w *Window, char uint)) {
+func (w *Window) SetCharacterCallback(cbfun func(w *Window, char rune)) {
 	if cbfun == nil {
 		C.glfwSetCharCallback(w.data, nil)
 	} else {
@@ -416,12 +414,12 @@ func JoystickPresent(joy Joystick) bool {
 }
 
 //GetJoystickAxes returns a slice of axis values.
-func GetJoystickAxes(joy Joystick) ([]float32, error) {
+func GetJoystickAxes(joy Joystick) []float32 {
 	var length int
 
 	axis := C.glfwGetJoystickAxes(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
 	if axis == nil {
-		return nil, errors.New("Joystick is not present.")
+		return nil
 	}
 
 	a := make([]float32, length)
@@ -429,16 +427,16 @@ func GetJoystickAxes(joy Joystick) ([]float32, error) {
 		a[i] = float32(C.GetAxisAtIndex(axis, C.int(i)))
 	}
 
-	return a, nil
+	return a
 }
 
 //GetJoystickButtons returns a slice of button values.
-func GetJoystickButtons(joy Joystick) ([]byte, error) {
+func GetJoystickButtons(joy Joystick) []byte {
 	var length int
 
 	buttons := C.glfwGetJoystickButtons(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
 	if buttons == nil {
-		return nil, errors.New("Joystick is not present.")
+		return nil
 	}
 
 	b := make([]byte, length)
@@ -446,15 +444,11 @@ func GetJoystickButtons(joy Joystick) ([]byte, error) {
 		b[i] = byte(C.GetButtonsAtIndex(buttons, C.int(i)))
 	}
 
-	return b, nil
+	return b
 }
 
 //GetJoystickName returns the name, encoded as UTF-8, of the specified joystick.
-func GetJoystickName(joy Joystick) (string, error) {
+func GetJoystickName(joy Joystick) string {
 	jn := C.glfwGetJoystickName(C.int(joy))
-	if jn == nil {
-		return "", errors.New("Joystick is not present.")
-	}
-
-	return C.GoString(jn), nil
+	return C.GoString(jn)
 }
