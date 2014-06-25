@@ -3,6 +3,7 @@ package glfw3
 //#include <GLFW/glfw3.h>
 //void glfwSetKeyCallbackCB(GLFWwindow *window);
 //void glfwSetCharCallbackCB(GLFWwindow *window);
+//void glfwSetCharModsCallbackCB(GLFWwindow *window);
 //void glfwSetMouseButtonCallbackCB(GLFWwindow *window);
 //void glfwSetCursorPosCallbackCB(GLFWwindow *window);
 //void glfwSetCursorEnterCallbackCB(GLFWwindow *window);
@@ -265,6 +266,12 @@ func goCharCB(window unsafe.Pointer, character C.uint) {
 	w.fCharHolder(w, rune(character))
 }
 
+//export goCharModsCB
+func goCharModsCB(window unsafe.Pointer, character C.uint, mods C.int) {
+	w := windows.get((*C.GLFWwindow)(window))
+	w.fCharModsHolder(w, rune(character), ModifierKey(mods))
+}
+
 //export goDropCB
 func goDropCB(window unsafe.Pointer, count C.int, names **C.char) { // TODO: The types of name can be `**C.char` or `unsafe.Pointer`, use whichever is better.
 	w := windows.get((*C.GLFWwindow)(window))
@@ -359,14 +366,42 @@ func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, act
 //SetCharacterCallback sets the character callback which is called when a
 //Unicode character is input.
 //
-//The character callback is intended for text input. If you want to know whether
-//a specific key was pressed or released, use the key callback instead.
+//The character callback is intended for Unicode text input. As it deals with
+//characters, it is keyboard layout dependent, whereas the
+//key callback is not. Characters do not map 1:1
+//to physical keys, as a key may produce zero, one or more characters. If you
+//want to know whether a specific physical key was pressed or released, see
+//the key callback instead.
+//
+//The character callback behaves as system text input normally does and will
+//not be called if modifier keys are held down that would prevent normal text
+//input on that platform, for example a Super (Command) key on OS X or Alt key
+//on Windows. There is a character with modifiers callback that receives these events.
 func (w *Window) SetCharacterCallback(cbfun func(w *Window, char rune)) {
 	if cbfun == nil {
 		C.glfwSetCharCallback(w.data, nil)
 	} else {
 		w.fCharHolder = cbfun
 		C.glfwSetCharCallbackCB(w.data)
+	}
+}
+
+//SetCharacterModsCallback sets the character with modifiers callback which is called when a
+//Unicode character is input regardless of what modifier keys are used.
+//
+//The character with modifiers callback is intended for implementing custom
+//Unicode character input. For regular Unicode text input, see the
+//character callback. Like the character callback, the character with modifiers callback
+//deals with characters and is keyboard layout dependent. Characters do not
+//map 1:1 to physical keys, as a key may produce zero, one or more characters.
+//If you want to know whether a specific physical key was pressed or released,
+//see the key callback instead.
+func (w *Window) SetCharacterModsCallback(cbfun func(w *Window, char rune, mods ModifierKey)) {
+	if cbfun == nil {
+		C.glfwSetCharModsCallback(w.data, nil)
+	} else {
+		w.fCharModsHolder = cbfun
+		C.glfwSetCharModsCallbackCB(w.data)
 	}
 }
 

@@ -133,6 +133,7 @@ type Window struct {
 	fScrollHolder      func(w *Window, xoff float64, yoff float64)
 	fKeyHolder         func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
 	fCharHolder        func(w *Window, char rune)
+	fCharModsHolder    func(w *Window, char rune, mods ModifierKey)
 	fDropHolder        func(w *Window, names []string)
 }
 

@@ -24,6 +24,10 @@ void glfwCharCB(GLFWwindow* window, unsigned int character) {
 	goCharCB(window, character);
 }
 
+void glfwCharModsCB(GLFWwindow* window, unsigned int character, int mods) {
+	goCharModsCB(window, character, mods);
+}
+
 void glfwDropCB(GLFWwindow* window, int count, const char **names) {
 	goDropCB(window, count, (char**)names);
 }
@@ -34,6 +38,10 @@ void glfwSetKeyCallbackCB(GLFWwindow *window) {
 
 void glfwSetCharCallbackCB(GLFWwindow *window) {
 	glfwSetCharCallback(window, glfwCharCB);
+}
+
+void glfwSetCharModsCallbackCB(GLFWwindow *window) {
+	glfwSetCharModsCallback(window, glfwCharModsCB);
 }
 
 void glfwSetMouseButtonCallbackCB(GLFWwindow *window) {
