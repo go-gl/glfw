@@ -66,4 +66,5 @@ Changelog
 * <code>window.GetAttribute</code> Returns an error.
 * <code>window.SetCharacterCallback</code> Accepts rune instead of uint.
 * <code>window.SetDropCallback</code> added.
+* <code>window.SetCharacterModsCallback</code> added.
 * <code>PostEmptyEvent</code> added.
