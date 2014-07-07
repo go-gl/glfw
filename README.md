@@ -10,7 +10,7 @@ Remarks
 
 * Mingw64 users should rename ***glfw3dll.a*** to ***libglfw3dll.a***.
 * In Windows and Linux, if you compile GLFW yourself, use <code>-DBUILD_SHARED_LIBS=on</code> with cmake in order to build the dynamic libraries.
-* Some functions -which are marked in the documentation- can be called only from the main thread. You may need to use [runtime.LockOSThread()](http://godoc.org/runtime#LockOSThread).
+* Some functions -which are marked in the documentation- can be called only from the main thread. You need to use [runtime.LockOSThread()](http://godoc.org/runtime#LockOSThread) to arrange that main() runs on main thread.
 * In OS X, you can install Go and GLFW via [Homebrew](http://brew.sh/).
 
 ```
@@ -27,8 +27,14 @@ Example
 package main
 
 import (
+	"runtime"
+
 	glfw "github.com/go-gl/glfw3"
 )
+
+func init() {
+	runtime.LockOSThread()
+}
 
 func main() {
 	err := glfw.Init()
