@@ -20,7 +20,9 @@ const (
 	FormatUnavailable  ErrorCode = C.GLFW_FORMAT_UNAVAILABLE  //The clipboard did not contain data in the requested format.
 )
 
-var fErrorHolder func(code ErrorCode, desc string)
+type ErrorCallback func(code ErrorCode, desc string)
+
+var fErrorHolder ErrorCallback
 
 //export goErrorCB
 func goErrorCB(code C.int, desc *C.char) {
@@ -31,11 +33,13 @@ func goErrorCB(code C.int, desc *C.char) {
 //and a human-readable description each time a GLFW error occurs.
 //
 //This function may be called before Init.
-func SetErrorCallback(cbfun func(code ErrorCode, desc string)) {
+func SetErrorCallback(cbfun ErrorCallback) ErrorCallback {
+	old := fErrorHolder
+	fErrorHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetErrorCallback(nil)
 	} else {
-		fErrorHolder = cbfun
 		C.glfwSetErrorCallbackCB()
 	}
+	return old
 }
