@@ -418,15 +418,15 @@ type PositionCallback func(w *Window, xpos int, ypos int)
 // SetPositionCallback sets the position callback of the window, which is called
 // when the window is moved. The callback is provided with the screen position
 // of the upper-left corner of the client area of the window.
-func (w *Window) SetPositionCallback(cbfun PositionCallback) PositionCallback {
-	old := w.fPosHolder
+func (w *Window) SetPositionCallback(cbfun PositionCallback) (previous PositionCallback) {
+	previous = w.fPosHolder
 	w.fPosHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetWindowPosCallback(w.data, nil)
 	} else {
 		C.glfwSetWindowPosCallbackCB(w.data)
 	}
-	return old
+	return previous
 }
 
 type SizeCallback func(w *Window, width int, height int)
@@ -434,30 +434,30 @@ type SizeCallback func(w *Window, width int, height int)
 // SetSizeCallback sets the size callback of the window, which is called when
 // the window is resized. The callback is provided with the size, in screen
 // coordinates, of the client area of the window.
-func (w *Window) SetSizeCallback(cbfun SizeCallback) SizeCallback {
-	old := w.fSizeHolder
+func (w *Window) SetSizeCallback(cbfun SizeCallback) (previous SizeCallback) {
+	previous = w.fSizeHolder
 	w.fSizeHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetWindowSizeCallback(w.data, nil)
 	} else {
 		C.glfwSetWindowSizeCallbackCB(w.data)
 	}
-	return old
+	return previous
 }
 
 type FramebufferSizeCallback func(w *Window, width int, height int)
 
 // SetFramebufferSizeCallback sets the framebuffer resize callback of the specified
 // window, which is called when the framebuffer of the specified window is resized.
-func (w *Window) SetFramebufferSizeCallback(cbfun FramebufferSizeCallback) FramebufferSizeCallback {
-	old := w.fFramebufferSizeHolder
+func (w *Window) SetFramebufferSizeCallback(cbfun FramebufferSizeCallback) (previous FramebufferSizeCallback) {
+	previous = w.fFramebufferSizeHolder
 	w.fFramebufferSizeHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetFramebufferSizeCallback(w.data, nil)
 	} else {
 		C.glfwSetFramebufferSizeCallbackCB(w.data)
 	}
-	return old
+	return previous
 }
 
 type CloseCallback func(w *Window)
@@ -471,15 +471,15 @@ type CloseCallback func(w *Window)
 //
 // Mac OS X: Selecting Quit from the application menu will trigger the close
 // callback for all windows.
-func (w *Window) SetCloseCallback(cbfun CloseCallback) CloseCallback {
-	old := w.fCloseHolder
+func (w *Window) SetCloseCallback(cbfun CloseCallback) (previous CloseCallback) {
+	previous = w.fCloseHolder
 	w.fCloseHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetWindowCloseCallback(w.data, nil)
 	} else {
 		C.glfwSetWindowCloseCallbackCB(w.data)
 	}
-	return old
+	return previous
 }
 
 type RefreshCallback func(w *Window)
@@ -491,15 +491,15 @@ type RefreshCallback func(w *Window)
 // On compositing window systems such as Aero, Compiz or Aqua, where the window
 // contents are saved off-screen, this callback may be called only very
 // infrequently or never at all.
-func (w *Window) SetRefreshCallback(cbfun RefreshCallback) RefreshCallback {
-	old := w.fRefreshHolder
+func (w *Window) SetRefreshCallback(cbfun RefreshCallback) (previous RefreshCallback) {
+	previous = w.fRefreshHolder
 	w.fRefreshHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetWindowRefreshCallback(w.data, nil)
 	} else {
 		C.glfwSetWindowRefreshCallbackCB(w.data)
 	}
-	return old
+	return previous
 }
 
 type FocusCallback func(w *Window, focused bool)
@@ -510,30 +510,30 @@ type FocusCallback func(w *Window, focused bool)
 // After the focus callback is called for a window that lost focus, synthetic key
 // and mouse button release events will be generated for all such that had been
 // pressed. For more information, see SetKeyCallback and SetMouseButtonCallback.
-func (w *Window) SetFocusCallback(cbfun FocusCallback) FocusCallback {
-	old := w.fFocusHolder
+func (w *Window) SetFocusCallback(cbfun FocusCallback) (previous FocusCallback) {
+	previous = w.fFocusHolder
 	w.fFocusHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetWindowFocusCallback(w.data, nil)
 	} else {
 		C.glfwSetWindowFocusCallbackCB(w.data)
 	}
-	return old
+	return previous
 }
 
 type IconifyCallback func(w *Window, iconified bool)
 
 // SetIconifyCallback sets the iconification callback of the window, which is
 // called when the window is iconified or restored.
-func (w *Window) SetIconifyCallback(cbfun IconifyCallback) IconifyCallback {
-	old := w.fIconifyHolder
+func (w *Window) SetIconifyCallback(cbfun IconifyCallback) (previous IconifyCallback) {
+	previous = w.fIconifyHolder
 	w.fIconifyHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetWindowIconifyCallback(w.data, nil)
 	} else {
 		C.glfwSetWindowIconifyCallbackCB(w.data)
 	}
-	return old
+	return previous
 }
 
 // PollEvents processes only those events that have already been received and
