@@ -342,6 +342,8 @@ func (w *Window) SetCursorPosition(xpos, ypos float64) {
 	C.glfwSetCursorPos(w.data, C.double(xpos), C.double(ypos))
 }
 
+type KeyCallback func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
+
 // SetKeyCallback sets the key callback which is called when a key is pressed,
 // repeated or released.
 //
@@ -354,14 +356,18 @@ func (w *Window) SetCursorPosition(xpos, ypos float64) {
 // fact that the synthetic ones are generated after the window has lost focus,
 // i.e. Focused will be false and the focus callback will have already been
 // called.
-func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, action Action, mods ModifierKey)) {
+func (w *Window) SetKeyCallback(cbfun KeyCallback) KeyCallback {
+	old := w.fKeyHolder
+	w.fKeyHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetKeyCallback(w.data, nil)
 	} else {
-		w.fKeyHolder = cbfun
 		C.glfwSetKeyCallbackCB(w.data)
 	}
+	return previous
 }
+
+type CharacterCallback func(w *Window, char rune)
 
 // SetCharacterCallback sets the character callback which is called when a
 // Unicode character is input.
@@ -377,14 +383,18 @@ func (w *Window) SetKeyCallback(cbfun func(w *Window, key Key, scancode int, act
 // not be called if modifier keys are held down that would prevent normal text
 // input on that platform, for example a Super (Command) key on OS X or Alt key
 // on Windows. There is a character with modifiers callback that receives these events.
-func (w *Window) SetCharacterCallback(cbfun func(w *Window, char rune)) {
+func (w *Window) SetCharacterCallback(cbfun CharacterCallback) CharacterCallback {
+	old := w.fCharHolder
+	w.fCharHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetCharCallback(w.data, nil)
 	} else {
-		w.fCharHolder = cbfun
 		C.glfwSetCharCallbackCB(w.data)
 	}
+	return previous
 }
+
+type CharacterModsCallback func(w *Window, char rune, mods ModifierKey)
 
 // SetCharacterModsCallback sets the character with modifiers callback which is called when a
 // Unicode character is input regardless of what modifier keys are used.
@@ -396,14 +406,18 @@ func (w *Window) SetCharacterCallback(cbfun func(w *Window, char rune)) {
 // map 1:1 to physical keys, as a key may produce zero, one or more characters.
 // If you want to know whether a specific physical key was pressed or released,
 // see the key callback instead.
-func (w *Window) SetCharacterModsCallback(cbfun func(w *Window, char rune, mods ModifierKey)) {
+func (w *Window) SetCharacterModsCallback(cbfun CharacterModsCallback)  CharacterModsCallback {
+	old := w.fCharModsHolder
+	w.fCharModsHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetCharModsCallback(w.data, nil)
 	} else {
-		w.fCharModsHolder = cbfun
 		C.glfwSetCharModsCallbackCB(w.data)
 	}
+	return previous
 }
+
+type MouseButtonCallback func(w *Window, button MouseButton, action Action, mod ModifierKey)
 
 // SetMouseButtonCallback sets the mouse button callback which is called when a
 // mouse button is pressed or released.
@@ -413,58 +427,76 @@ func (w *Window) SetCharacterModsCallback(cbfun func(w *Window, char rune, mods 
 // user-generated events by the fact that the synthetic ones are generated after
 // the window has lost focus, i.e. Focused will be false and the focus
 // callback will have already been called.
-func (w *Window) SetMouseButtonCallback(cbfun func(w *Window, button MouseButton, action Action, mod ModifierKey)) {
+func (w *Window) SetMouseButtonCallback(cbfun MouseButtonCallback) MouseButtonCallback {
+	old := w.fMouseButtonHolder
+	w.fMouseButtonHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetMouseButtonCallback(w.data, nil)
 	} else {
-		w.fMouseButtonHolder = cbfun
 		C.glfwSetMouseButtonCallbackCB(w.data)
 	}
+	return previous
 }
+
+type CursorPositionCallback func(w *Window, xpos float64, ypos float64)
 
 // SetCursorPositionCallback sets the cursor position callback which is called
 // when the cursor is moved. The callback is provided with the position relative
 // to the upper-left corner of the client area of the window.
-func (w *Window) SetCursorPositionCallback(cbfun func(w *Window, xpos float64, ypos float64)) {
+func (w *Window) SetCursorPositionCallback(cbfun CursorPositionCallback) CursorPositionCallback {
+	old := w.fCursorPosHolder
+	w.fCursorPosHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetCursorPosCallback(w.data, nil)
 	} else {
-		w.fCursorPosHolder = cbfun
 		C.glfwSetCursorPosCallbackCB(w.data)
 	}
+	return previous
 }
+
+type CursorEnterCallback func(w *Window, entered bool)
 
 // SetCursorEnterCallback the cursor boundary crossing callback which is called
 // when the cursor enters or leaves the client area of the window.
-func (w *Window) SetCursorEnterCallback(cbfun func(w *Window, entered bool)) {
+func (w *Window) SetCursorEnterCallback(cbfun CursorEnterCallback) CursorEnterCallback {
+	old := w.fCursorEnterHolder
+	w.fCursorEnterHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetCursorEnterCallback(w.data, nil)
 	} else {
-		w.fCursorEnterHolder = cbfun
 		C.glfwSetCursorEnterCallbackCB(w.data)
 	}
+	return previous
 }
+
+type ScrollCallback func(w *Window, xoff float64, yoff float64)
 
 // SetScrollCallback sets the scroll callback which is called when a scrolling
 // device is used, such as a mouse wheel or scrolling area of a touchpad.
-func (w *Window) SetScrollCallback(cbfun func(w *Window, xoff float64, yoff float64)) {
+func (w *Window) SetScrollCallback(cbfun ScrollCallback) ScrollCallback {
+	old := w.fScrollHolder
+	w.fScrollHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetScrollCallback(w.data, nil)
 	} else {
-		w.fScrollHolder = cbfun
 		C.glfwSetScrollCallbackCB(w.data)
 	}
+	return previous
 }
+
+type DropCallback func(w *Window, names []string)
 
 // SetDropCallback sets the drop callback which is called when an object
 // is dropped over the window.
-func (w *Window) SetDropCallback(cbfun func(w *Window, names []string)) {
+func (w *Window) SetDropCallback(cbfun DropCallback) (previous DropCallback) {
+	previous = w.fDropHolder
+	w.fDropHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetDropCallback(w.data, nil)
 	} else {
-		w.fDropHolder = cbfun
 		C.glfwSetDropCallbackCB(w.data)
 	}
+	return previous
 }
 
 // GetJoystickPresent returns whether the specified joystick is present.
