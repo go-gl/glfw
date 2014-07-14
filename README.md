@@ -74,3 +74,14 @@ Changelog
 * <code>window.SetDropCallback</code> added.
 * <code>window.SetCharacterModsCallback</code> added.
 * <code>PostEmptyEvent</code> added.
+* Constant <code>ApiUnavailable</code> changed to <code>APIUnavailable</code>.
+* Constant <code>ClientApi</code> changed to <code>ClientAPI</code>.
+* Constant <code>OpenglForwardCompatible</code> changed to <code>OpenGLForwardCompatible</code>.
+* Constant <code>OpenglDebugContext</code> changed to <code>OpenGLDebugContext</code>.
+* Constant <code>OpenglProfile</code> changed to <code>OpenGLProfile</code>.
+* Constant <code>SrgbCapable</code> changed to <code>SRGBCapable</code>.
+* Constant <code>OpenglApi</code> changed to <code>OpenGLAPI</code>.
+* Constant <code>OpenglEsApi</code> changed to <code>OpenGLESAPI</code>.
+* Constant <code>OpenglAnyProfile</code> changed to <code>OpenGLAnyProfile</code>.
+* Constant <code>OpenglCoreProfile</code> changed to <code>OpenGLCoreProfile</code>.
+* Constant <code>OpenglCompatProfile</code> changed to <code>OpenGLCompatProfile</code>.
