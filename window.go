@@ -59,13 +59,13 @@ const (
 
 // Context related hints.
 const (
-	ClientApi               Hint = C.GLFW_CLIENT_API            // Specifies which client API to create the context for. Hard constraint.
+	ClientAPI               Hint = C.GLFW_CLIENT_API            // Specifies which client API to create the context for. Hard constraint.
 	ContextVersionMajor     Hint = C.GLFW_CONTEXT_VERSION_MAJOR // Specifies the client API version that the created context must be compatible with.
 	ContextVersionMinor     Hint = C.GLFW_CONTEXT_VERSION_MINOR // Specifies the client API version that the created context must be compatible with.
 	ContextRobustness       Hint = C.GLFW_CONTEXT_ROBUSTNESS    // Specifies the robustness strategy to be used by the context.
-	OpenglForwardCompatible Hint = C.GLFW_OPENGL_FORWARD_COMPAT // Specifies whether the OpenGL context should be forward-compatible. Hard constraint.
-	OpenglDebugContext      Hint = C.GLFW_OPENGL_DEBUG_CONTEXT
-	OpenglProfile           Hint = C.GLFW_OPENGL_PROFILE // Specifies which OpenGL profile to create the context for. Hard constraint.
+	OpenGLForwardCompatible Hint = C.GLFW_OPENGL_FORWARD_COMPAT // Specifies whether the OpenGL context should be forward-compatible. Hard constraint.
+	OpenGLDebugContext      Hint = C.GLFW_OPENGL_DEBUG_CONTEXT
+	OpenGLProfile           Hint = C.GLFW_OPENGL_PROFILE // Specifies which OpenGL profile to create the context for. Hard constraint.
 )
 
 // Framebuffer related hints.
@@ -84,14 +84,14 @@ const (
 	AuxBuffers      Hint = C.GLFW_AUX_BUFFERS      // Specifies the desired number of auxiliary buffers.
 	Stereo          Hint = C.GLFW_STEREO           // Specifies whether to use stereoscopic rendering. Hard constraint.
 	Samples         Hint = C.GLFW_SAMPLES          // Specifies the desired number of samples to use for multisampling. Zero disables multisampling.
-	SrgbCapable     Hint = C.GLFW_SRGB_CAPABLE     // Specifies whether the framebuffer should be sRGB capable.
+	SRGBCapable     Hint = C.GLFW_SRGB_CAPABLE     // Specifies whether the framebuffer should be sRGB capable.
 	RefreshRate     Hint = C.GLFW_REFRESH_RATE     // specifies the desired refresh rate for full screen windows. If set to zero, the highest available refresh rate will be used. This hint is ignored for windowed mode windows.
 )
 
 // Values for the ClientApi hint.
 const (
-	OpenglApi   int = C.GLFW_OPENGL_API
-	OpenglEsApi int = C.GLFW_OPENGL_ES_API
+	OpenGLAPI   int = C.GLFW_OPENGL_API
+	OpenGLESAPI int = C.GLFW_OPENGL_ES_API
 )
 
 // Values for the ContextRobustness hint.
@@ -103,9 +103,9 @@ const (
 
 // Values for the OpenglProfile hint.
 const (
-	OpenglAnyProfile    int = C.GLFW_OPENGL_ANY_PROFILE
-	OpenglCoreProfile   int = C.GLFW_OPENGL_CORE_PROFILE
-	OpenglCompatProfile int = C.GLFW_OPENGL_COMPAT_PROFILE
+	OpenGLAnyProfile    int = C.GLFW_OPENGL_ANY_PROFILE
+	OpenGLCoreProfile   int = C.GLFW_OPENGL_CORE_PROFILE
+	OpenGLCompatProfile int = C.GLFW_OPENGL_COMPAT_PROFILE
 )
 
 // TRUE and FALSE values to use with hints.
