@@ -1,8 +1,5 @@
 package glfw3
 
-// Windows users: If you download the GLFW 64-bit binaries, when you copy over the contents of the lib folder make sure to rename
-// glfw3dll.a to libglfw3dll.a, it doesn't work otherwise.
-
 //#cgo windows LDFLAGS: -lglfw3dll -lopengl32 -lgdi32
 //#cgo linux LDFLAGS: -lglfw
 //#cgo darwin LDFLAGS: -lglfw3 -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
