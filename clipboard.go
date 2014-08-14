@@ -1,5 +1,7 @@
 package glfw3
 
+//#cgo darwin CFLAGS: -I/usr/local/include
+//#cgo darwin LDFLAGS: -L/usr/local/lib 
 //#include <stdlib.h>
 //#include <GLFW/glfw3.h>
 import "C"
