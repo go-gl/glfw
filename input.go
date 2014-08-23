@@ -1,6 +1,6 @@
 package glfw3
 
-//#include <GLFW/glfw3.h>
+//#include "glfw/include/GLFW/glfw3.h"
 //void glfwSetKeyCallbackCB(GLFWwindow *window);
 //void glfwSetCharCallbackCB(GLFWwindow *window);
 //void glfwSetCharModsCallbackCB(GLFWwindow *window);

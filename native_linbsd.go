@@ -4,8 +4,8 @@ package glfw3
 
 //#define GLFW_EXPOSE_NATIVE_X11
 //#define GLFW_EXPOSE_NATIVE_GLX
-//#include <GLFW/glfw3.h>
-//#include <GLFW/glfw3native.h>
+//#include "glfw/include/GLFW/glfw3.h"
+//#include "glfw/include/GLFW/glfw3native.h"
 import "C"
 
 func (w *Window) GetX11Window() C.Window {
