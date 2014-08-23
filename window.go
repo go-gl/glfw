@@ -1,7 +1,7 @@
 package glfw3
 
 //#include <stdlib.h>
-//#include <GLFW/glfw3.h>
+//#include "glfw/include/GLFW/glfw3.h"
 //void glfwSetWindowPosCallbackCB(GLFWwindow *window);
 //void glfwSetWindowSizeCallbackCB(GLFWwindow *window);
 //void glfwSetFramebufferSizeCallbackCB(GLFWwindow *window);
