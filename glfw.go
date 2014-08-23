@@ -1,6 +1,6 @@
 package glfw3
 
-//#include <GLFW/glfw3.h>
+//#include "glfw/include/GLFW/glfw3.h"
 import "C"
 
 const (
