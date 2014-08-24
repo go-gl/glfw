@@ -605,17 +605,6 @@ static Cursor createNULLCursor(void)
     return _glfwCreateCursor(&image, 0, 0);
 }
 
-// Terminate X11 display
-//
-static void terminateDisplay(void)
-{
-    if (_glfw.x11.display)
-    {
-        XCloseDisplay(_glfw.x11.display);
-        _glfw.x11.display = NULL;
-    }
-}
-
 // X error handler
 //
 static int errorHandler(Display *display, XErrorEvent* event)
@@ -730,11 +719,16 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.cursor = (Cursor) 0;
     }
 
-    free(_glfw.x11.selection.string);
+    free(_glfw.x11.clipboardString);
 
     _glfwTerminateJoysticks();
     _glfwTerminateContextAPI();
-    terminateDisplay();
+
+    if (_glfw.x11.display)
+    {
+        XCloseDisplay(_glfw.x11.display);
+        _glfw.x11.display = NULL;
+    }
 }
 
 const char* _glfwPlatformGetVersionString(void)
