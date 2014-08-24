@@ -21,7 +21,7 @@ package glfw3
 // Darwin Build Tags
 // ----------------
 // GLFW Options:
-#cgo darwin CFLAGS: -D_GLFW_COCOA -D_GLFW_NSGL
+#cgo darwin CFLAGS: -D_GLFW_COCOA -D_GLFW_NSGL -Wno-deprecated-declarations
 
 // Linker Options:
 #cgo darwin LDFLAGS: -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
