@@ -67,6 +67,7 @@ Changelog
 * <code>window.SetDropCallback</code> added.
 * <code>window.SetCharacterModsCallback</code> added.
 * <code>PostEmptyEvent</code> added.
+* Native window and context handlers added.
 * Constant <code>ApiUnavailable</code> changed to <code>APIUnavailable</code>.
 * Constant <code>ClientApi</code> changed to <code>ClientAPI</code>.
 * Constant <code>OpenglForwardCompatible</code> changed to <code>OpenGLForwardCompatible</code>.
