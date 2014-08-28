@@ -8,17 +8,8 @@ Go Bindings for GLFW 3
 Remarks
 =======
 
-* Mingw64 users should rename ***glfw3dll.a*** to ***libglfw3dll.a***.
-* In Windows and Linux, if you compile GLFW yourself, use <code>-DBUILD_SHARED_LIBS=on</code> with cmake in order to build the dynamic libraries.
 * Some functions -which are marked in the documentation- can be called only from the main thread. You need to use [runtime.LockOSThread()](http://godoc.org/runtime#LockOSThread) to arrange that main() runs on main thread.
-* In OS X, you can install Go and GLFW via [Homebrew](http://brew.sh/).
-
-```
-$ brew install go
-$ brew tap homebrew/versions
-$ brew install --build-bottle --static glfw3
-$ go get github.com/go-gl/glfw3
-```
+* Installation is easy, just `go get github.com/go-gl/glfw3` and be done (*GLFW sources are included so you don't have to build GLFW on your own*)!
 
 Example
 =======
@@ -61,6 +52,8 @@ func main() {
 Changelog
 =========
 
+* GLFW revision 5d525c4a5f9da0b8744f29affbf77d3a9580905c
+* Easy `go get` installation (GLFW source code included in-repo and compiled in so you don't have to build GLFW on your own first and you don't have to distribute shared libraries).
 * <code>SetErrorCallback</code> This function is removed. The callback is now set internally. Functions return an error with corresponding code and description (do a type assertion to GlfwError for accessing the variables).
 * <code>Init</code> Returns an error instead of bool.
 * <code>GetTime</code> Returns an error.

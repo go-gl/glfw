@@ -1,11 +1,6 @@
 package glfw3
 
-//#cgo windows LDFLAGS: -lglfw3dll -lopengl32 -lgdi32
-//#cgo windows CFLAGS: -DGLFW_DLL
-//#cgo linux LDFLAGS: -lglfw
-//#cgo darwin LDFLAGS: -lglfw3 -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
-//#cgo freebsd LDFLAGS: -lglfw3 -lGL -lXrandr -lXxf86vm -lXi
-//#include <GLFW/glfw3.h>
+//#include "glfw/include/GLFW/glfw3.h"
 import "C"
 
 const (
