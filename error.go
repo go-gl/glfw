@@ -25,21 +25,21 @@ const (
 )
 
 // GlfwError holds error code and description.
-type GlfwError struct {
+type GLFWError struct {
 	Code ErrorCode
 	Desc string
 }
 
 // Holds the value of the last error
-var lastError = make(chan *GlfwError, 1)
+var lastError = make(chan *GLFWError, 1)
 
 //export goErrorCB
 func goErrorCB(code C.int, desc *C.char) {
-	lastError <- &GlfwError{ErrorCode(code), C.GoString(desc)}
+	lastError <- &GLFWError{ErrorCode(code), C.GoString(desc)}
 }
 
 // Error prints the error code and description in a readable format.
-func (e *GlfwError) Error() string {
+func (e *GLFWError) Error() string {
 	return fmt.Sprintf("Error %d: %s", e.Code, e.Desc)
 }
 
