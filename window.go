@@ -50,11 +50,13 @@ type Hint int
 
 // Window related hints.
 const (
-	Focused   Hint = C.GLFW_FOCUSED   // Specifies whether the window will be focused.
-	Iconified Hint = C.GLFW_ICONIFIED // Specifies whether the window will be minimized.
-	Visible   Hint = C.GLFW_VISIBLE   // Specifies whether the window will be initially visible.
-	Resizable Hint = C.GLFW_RESIZABLE // Specifies whether the window will be resizable by the user.
-	Decorated Hint = C.GLFW_DECORATED // Specifies whether the window will have window decorations such as a border, a close widget, etc.
+	Focused     Hint = C.GLFW_FOCUSED      // Specifies whether the window will be focused.
+	Iconified   Hint = C.GLFW_ICONIFIED    // Specifies whether the window will be minimized.
+	Visible     Hint = C.GLFW_VISIBLE      // Specifies whether the window will be initially visible.
+	Resizable   Hint = C.GLFW_RESIZABLE    // Specifies whether the window will be resizable by the user.
+	Decorated   Hint = C.GLFW_DECORATED    // Specifies whether the window will have window decorations such as a border, a close widget, etc.
+	Floating    Hint = C.GLFW_FLOATING     // Specifies whether the window will be always-on-top.
+	AutoIconify Hint = C.GLFW_AUTO_ICONIFY // Specifies whether fullscreen windows automatically iconify (and restore the previous video mode) on focus loss.
 )
 
 // Context related hints.
