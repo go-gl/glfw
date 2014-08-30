@@ -35,7 +35,13 @@ var lastError = make(chan *GLFWError, 1)
 
 //export goErrorCB
 func goErrorCB(code C.int, desc *C.char) {
-	lastError <- &GLFWError{ErrorCode(code), C.GoString(desc)}
+    go func() {
+        select {
+        case lastError <- &GlfwError{ErrorCode(code), C.GoString(desc)}:
+        default:
+            fmt.Printf("Uncaught error: %d -> %s\n", ErrorCode(code), C.GoString(desc))
+        }
+    }()
 }
 
 // Error prints the error code and description in a readable format.
