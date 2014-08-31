@@ -13,9 +13,12 @@
 	}
 	#endif
 	
+	// _get_output_format is described at MSDN:
 	// http://msdn.microsoft.com/en-us/library/571yb472.aspx
-	#include <stdio.h>
-	#ifndef _get_output_format
+	//
+	// MinGW32 does not define it. But MinGW-W64 does. Unlike strdup above
+	// compilers don't #define _get_output_format if it exists.
+	#ifndef __MINGW64__
 	unsigned int _get_output_format(void) {
 		return 0;
 	};
