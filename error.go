@@ -31,11 +31,18 @@ type GLFWError struct {
 }
 
 // Holds the value of the last error
-var lastError = make(chan *GLFWError, 1)
+var lastError = make(chan *GLFWError)
 
 //export goErrorCB
 func goErrorCB(code C.int, desc *C.char) {
-	lastError <- &GLFWError{ErrorCode(code), C.GoString(desc)}
+	// Please see issue #86 for explanation of goroutine use
+	go func() {
+		select {
+		case lastError <- &GLFWError{ErrorCode(code), C.GoString(desc)}:
+		default:
+			fmt.Printf("Uncaught error: %d -> %s\n", ErrorCode(code), C.GoString(desc))
+		}
+	}()
 }
 
 // Error prints the error code and description in a readable format.
