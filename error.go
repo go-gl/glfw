@@ -43,7 +43,8 @@ func goErrorCB(code C.int, desc *C.char) {
 	select {
 	case lastError <- err:
 	default:
-		fmt.Printf("GLFW: Uncaught error: %d -> %s\n", err.Code, err.Desc)
+		fmt.Printf("GLFW: an uncaught error has occured: %d -> %s\n", err.Code, err.Desc)
+		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
 	}
 }
 
@@ -63,7 +64,8 @@ func init() {
 func flushErrors() {
 	select {
 	case err := <-lastError:
-		fmt.Printf("GLFW: Uncaught error: %d -> %s\n", err.Code, err.Desc)
+		fmt.Printf("GLFW: an uncaught error has occured: %d -> %s\n", err.Code, err.Desc)
+		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
 	default:
 	}
 }
