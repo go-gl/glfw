@@ -30,12 +30,22 @@ type GLFWError struct {
 	Desc string
 }
 
+// Note: There are many cryptic caveats to proper error handling here.
+// See: https://github.com/go-gl/glfw3/pull/86
+
 // Holds the value of the last error
 var lastError = make(chan *GLFWError, 1)
 
 //export goErrorCB
 func goErrorCB(code C.int, desc *C.char) {
-	lastError <- &GLFWError{ErrorCode(code), C.GoString(desc)}
+	flushErrors()
+	err := &GLFWError{ErrorCode(code), C.GoString(desc)}
+	select {
+	case lastError <- err:
+	default:
+		fmt.Printf("GLFW: An uncaught error has occured: %d -> %s\n", err.Code, err.Desc)
+		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
+	}
 }
 
 // Error prints the error code and description in a readable format.
@@ -46,4 +56,16 @@ func (e *GLFWError) Error() string {
 // Set the glfw callback internally
 func init() {
 	C.glfwSetErrorCallbackCB()
+}
+
+// flushErrors is called by Terminate before it actually calls C.glfwTerminate,
+// this ensures that any uncaught errors buffered in lastError are printed
+// before the program exits.
+func flushErrors() {
+	select {
+	case err := <-lastError:
+		fmt.Printf("GLFW: An uncaught error has occured: %d -> %s\n", err.Code, err.Desc)
+		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
+	default:
+	}
 }
