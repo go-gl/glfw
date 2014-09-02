@@ -46,6 +46,7 @@ func Init() error {
 //
 // This function may only be called from the main thread.
 func Terminate() {
+	flushErrors()
 	C.glfwTerminate()
 }
 
