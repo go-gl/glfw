@@ -38,6 +38,7 @@ var lastError = make(chan *GLFWError, 1)
 
 //export goErrorCB
 func goErrorCB(code C.int, desc *C.char) {
+	flushErrors()
 	err := &GLFWError{ErrorCode(code), C.GoString(desc)}
 	select {
 	case lastError <- err:
