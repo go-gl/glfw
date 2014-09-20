@@ -50,8 +50,13 @@
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWayland  wl
 
 
+// Wayland-specific video mode data
+//
 typedef struct _GLFWvidmodeWayland _GLFWvidmodeWayland;
 
+
+// Wayland-specific per-window data
+//
 typedef struct _GLFWwindowWayland
 {
     int                         width, height;
@@ -61,17 +66,27 @@ typedef struct _GLFWwindowWayland
     struct wl_shell_surface*    shell_surface;
     EGLSurface                  egl_surface;
     struct wl_callback*         callback;
+    _GLFWcursor*                currentCursor;
 } _GLFWwindowWayland;
 
+
+// Wayland-specific global data
+//
 typedef struct _GLFWlibraryWayland
 {
     struct wl_display*          display;
     struct wl_registry*         registry;
     struct wl_compositor*       compositor;
     struct wl_shell*            shell;
+    struct wl_shm*              shm;
     struct wl_seat*             seat;
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
+
+    struct wl_cursor_theme*     cursorTheme;
+    struct wl_cursor*           defaultCursor;
+    struct wl_surface*          cursorSurface;
+    uint32_t                    pointerSerial;
 
     _GLFWmonitor**              monitors;
     int                         monitorsCount;
@@ -90,8 +105,12 @@ typedef struct _GLFWlibraryWayland
 
     _GLFWwindow*                pointerFocus;
     _GLFWwindow*                keyboardFocus;
+
 } _GLFWlibraryWayland;
 
+
+// Wayland-specific per-monitor data
+//
 typedef struct _GLFWmonitorWayland
 {
     struct wl_output*           output;
@@ -103,17 +122,19 @@ typedef struct _GLFWmonitorWayland
 
     int                         x;
     int                         y;
+
 } _GLFWmonitorWayland;
 
+
+// Wayland-specific per-cursor data
+//
 typedef struct _GLFWcursorWayland
 {
-    int                         dummy;
+    struct wl_buffer*           buffer;
+    int                         width, height;
+    int                         xhot, yhot;
 } _GLFWcursorWayland;
 
-
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
 
 void _glfwAddOutput(uint32_t name, uint32_t version);
 

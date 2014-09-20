@@ -53,7 +53,7 @@ Changelog
 =========
 
 * Added `Floating` and `AutoIconify` window hints.
-* GLFW revision 5d525c4a5f9da0b8744f29affbf77d3a9580905c
+* GLFW revision e57b8212ceeca0c4a990d388bdf7044a579f4d9b.
 * Easy `go get` installation (GLFW source code included in-repo and compiled in so you don't have to build GLFW on your own first and you don't have to distribute shared libraries).
 * <code>SetErrorCallback</code> This function is removed. The callback is now set internally. Functions return an error with corresponding code and description (do a type assertion to GlfwError for accessing the variables).
 * <code>Init</code> Returns an error instead of bool.
