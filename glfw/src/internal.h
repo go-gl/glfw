@@ -135,7 +135,7 @@ typedef struct _GLFWcursor      _GLFWcursor;
 
 
 //========================================================================
-// Internal types
+// Platform-independent structures
 //========================================================================
 
 /*! @brief Window configuration.
@@ -152,6 +152,7 @@ struct _GLFWwndconfig
     GLboolean     resizable;
     GLboolean     visible;
     GLboolean     decorated;
+    GLboolean     focused;
     GLboolean     autoIconify;
     GLboolean     floating;
     _GLFWmonitor* monitor;
@@ -298,7 +299,6 @@ struct _GLFWmonitor
 
 /*! @brief Cursor structure
  */
-
 struct _GLFWcursor
 {
     _GLFWcursor*    next;
@@ -327,6 +327,7 @@ struct _GLFWlibrary
         int         resizable;
         int         visible;
         int         decorated;
+        int         focused;
         int         autoIconify;
         int         floating;
         int         samples;
@@ -563,6 +564,10 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window);
  */
 void _glfwPlatformShowWindow(_GLFWwindow* window);
 
+/*! @ingroup platform
+ */
+void _glfwPlatformUnhideWindow(_GLFWwindow* window);
+
 /*! @copydoc glfwHideWindow
  *  @ingroup platform
  */
@@ -627,6 +632,7 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor);
  *  @ingroup platform
  */
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
+
 
 //========================================================================
 // Event API functions

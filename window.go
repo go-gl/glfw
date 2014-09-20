@@ -50,7 +50,7 @@ type Hint int
 
 // Window related hints.
 const (
-	Focused     Hint = C.GLFW_FOCUSED      // Specifies whether the window will be focused.
+	Focused     Hint = C.GLFW_FOCUSED      // Specifies whether the window will be given input focus when created. This hint is ignored for full screen and initially hidden windows.
 	Iconified   Hint = C.GLFW_ICONIFIED    // Specifies whether the window will be minimized.
 	Visible     Hint = C.GLFW_VISIBLE      // Specifies whether the window will be initially visible.
 	Resizable   Hint = C.GLFW_RESIZABLE    // Specifies whether the window will be resizable by the user.
@@ -536,6 +536,28 @@ func (w *Window) SetIconifyCallback(cbfun IconifyCallback) (previous IconifyCall
 		C.glfwSetWindowIconifyCallbackCB(w.data)
 	}
 	return previous
+}
+
+// SetClipboardString sets the system clipboard to the specified UTF-8 encoded
+// string.
+//
+// This function may only be called from the main thread.
+func (w *Window) SetClipboardString(str string) {
+	cp := C.CString(str)
+	defer C.free(unsafe.Pointer(cp))
+	C.glfwSetClipboardString(w.data, cp)
+}
+
+// GetClipboardString returns the contents of the system clipboard, if it
+// contains or is convertible to a UTF-8 encoded string.
+//
+// This function may only be called from the main thread.
+func (w *Window) GetClipboardString() (string, error) {
+	cs := C.glfwGetClipboardString(w.data)
+	if cs == nil {
+		return "", <-lastError
+	}
+	return C.GoString(cs), nil
 }
 
 // PollEvents processes only those events that have already been received and
