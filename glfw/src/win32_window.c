@@ -29,10 +29,13 @@
 
 #include <stdlib.h>
 #include <malloc.h>
+#include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
 
 #define _GLFW_KEY_INVALID -2
+
+#define _GLFW_WNDCLASSNAME L"GLFW30"
 
 
 // Updates the cursor clip rect
@@ -387,6 +390,32 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
     return GLFW_KEY_UNKNOWN;
 }
 
+// Enter fullscreen mode
+//
+static GLboolean enterFullscreenMode(_GLFWwindow* window)
+{
+    GLFWvidmode mode;
+    GLboolean status;
+    int xpos, ypos;
+
+    status = _glfwSetVideoMode(window->monitor, &window->videoMode);
+
+    _glfwPlatformGetVideoMode(window->monitor, &mode);
+    _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
+
+    SetWindowPos(window->win32.handle, HWND_TOPMOST,
+                 xpos, ypos, mode.width, mode.height, SWP_NOCOPYBITS);
+
+    return status;
+}
+
+// Leave fullscreen mode
+//
+static void leaveFullscreenMode(_GLFWwindow* window)
+{
+    _glfwRestoreVideoMode(window->monitor);
+}
+
 // Window callback function (handles window events)
 //
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
@@ -445,7 +474,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                         _glfwPlatformIconifyWindow(window);
                     }
 
-                    _glfwRestoreVideoMode(window->monitor);
+                    leaveFullscreenMode(window);
                 }
             }
             else if (focused && _glfw.focusedWindow != window)
@@ -456,7 +485,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     _glfwPlatformApplyCursorMode(window);
 
                 if (window->monitor && window->autoIconify)
-                    _glfwSetVideoMode(window->monitor, &window->videoMode);
+                    enterFullscreenMode(window);
             }
 
             _glfwInputWindowFocus(window, focused);
@@ -838,43 +867,6 @@ static void getFullWindowSize(_GLFWwindow* window,
     *fullHeight = rect.bottom - rect.top;
 }
 
-// Registers the GLFW window class
-//
-static ATOM registerWindowClass(void)
-{
-    WNDCLASSW wc;
-    ATOM classAtom;
-
-    // Set window class parameters
-    wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-    wc.lpfnWndProc   = (WNDPROC) windowProc;
-    wc.cbClsExtra    = 0;                           // No extra class data
-    wc.cbWndExtra    = sizeof(void*) + sizeof(int); // Make room for one pointer
-    wc.hInstance     = GetModuleHandleW(NULL);
-    wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
-    wc.hbrBackground = NULL;                        // No background
-    wc.lpszMenuName  = NULL;                        // No menu
-    wc.lpszClassName = _GLFW_WNDCLASSNAME;
-
-    // Load user-provided icon if available
-    wc.hIcon = LoadIconW(GetModuleHandleW(NULL), L"GLFW_ICON");
-    if (!wc.hIcon)
-    {
-        // No user-provided icon found, load default icon
-        wc.hIcon = LoadIconW(NULL, IDI_WINLOGO);
-    }
-
-    classAtom = RegisterClassW(&wc);
-    if (!classAtom)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to register window class");
-        return 0;
-    }
-
-    return classAtom;
-}
-
 // Creates the GLFW window and rendering context
 //
 static int createWindow(_GLFWwindow* window,
@@ -892,6 +884,9 @@ static int createWindow(_GLFWwindow* window,
     {
         window->win32.dwStyle |= WS_POPUP;
 
+        // NOTE: This window placement is temporary and approximate, as the
+        //       correct position and size cannot be known until the monitor
+        //       video mode has been set
         _glfwPlatformGetMonitorPos(wndconfig->monitor, &xpos, &ypos);
         fullWidth  = wndconfig->width;
         fullHeight = wndconfig->height;
@@ -987,6 +982,52 @@ static void destroyWindow(_GLFWwindow* window)
 
 
 //////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+// Registers the GLFW window class
+//
+GLboolean _glfwRegisterWindowClass(void)
+{
+    WNDCLASSW wc;
+
+    wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+    wc.lpfnWndProc   = (WNDPROC) windowProc;
+    wc.cbClsExtra    = 0;                           // No extra class data
+    wc.cbWndExtra    = sizeof(void*) + sizeof(int); // Make room for one pointer
+    wc.hInstance     = GetModuleHandleW(NULL);
+    wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
+    wc.hbrBackground = NULL;                        // No background
+    wc.lpszMenuName  = NULL;                        // No menu
+    wc.lpszClassName = _GLFW_WNDCLASSNAME;
+
+    // Load user-provided icon if available
+    wc.hIcon = LoadIconW(GetModuleHandleW(NULL), L"GLFW_ICON");
+    if (!wc.hIcon)
+    {
+        // No user-provided icon found, load default icon
+        wc.hIcon = LoadIconW(NULL, IDI_WINLOGO);
+    }
+
+    if (!RegisterClassW(&wc))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to register window class");
+        return GL_FALSE;
+    }
+
+    return GL_TRUE;
+}
+
+// Unregisters the GLFW window class
+//
+void _glfwUnregisterWindowClass(void)
+{
+    UnregisterClassW(_GLFW_WNDCLASSNAME, GetModuleHandleW(NULL));
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
@@ -996,13 +1037,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWfbconfig* fbconfig)
 {
     int status;
-
-    if (!_glfw.win32.classAtom)
-    {
-        _glfw.win32.classAtom = registerWindowClass();
-        if (!_glfw.win32.classAtom)
-            return GL_FALSE;
-    }
 
     if (!createWindow(window, wndconfig, ctxconfig, fbconfig))
         return GL_FALSE;
@@ -1045,13 +1079,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (window->monitor)
     {
-        if (!_glfwSetVideoMode(window->monitor, &window->videoMode))
-            return GL_FALSE;
-
-        // Place the window above all topmost windows
         _glfwPlatformShowWindow(window);
-        SetWindowPos(window->win32.handle, HWND_TOPMOST, 0,0,0,0,
-                     SWP_NOMOVE | SWP_NOSIZE);
+        if (!enterFullscreenMode(window))
+            return GL_FALSE;
     }
 
     return GL_TRUE;
@@ -1059,10 +1089,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
-    destroyWindow(window);
-
     if (window->monitor)
-        _glfwRestoreVideoMode(window->monitor);
+        leaveFullscreenMode(window);
+
+    destroyWindow(window);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
@@ -1113,15 +1143,7 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
     if (window->monitor)
-    {
-        GLFWvidmode mode;
-        _glfwSetVideoMode(window->monitor, &window->videoMode);
-        _glfwPlatformGetVideoMode(window->monitor, &mode);
-
-        SetWindowPos(window->win32.handle, HWND_TOP,
-                     0, 0, mode.width, mode.height,
-                     SWP_NOMOVE);
-    }
+        enterFullscreenMode(window);
     else
     {
         int fullWidth, fullHeight;
@@ -1176,6 +1198,11 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     BringWindowToTop(window->win32.handle);
     SetForegroundWindow(window->win32.handle);
     SetFocus(window->win32.handle);
+}
+
+void _glfwPlatformUnhideWindow(_GLFWwindow* window)
+{
+    ShowWindow(window->win32.handle, SW_SHOW);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
@@ -1366,6 +1393,95 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
         else
             SetCursor(LoadCursorW(NULL, IDC_ARROW));
     }
+}
+
+void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
+{
+    WCHAR* wideString;
+    HANDLE stringHandle;
+    size_t wideSize;
+
+    wideString = _glfwCreateWideStringFromUTF8(string);
+    if (!wideString)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to convert clipboard string to "
+                        "wide string");
+        return;
+    }
+
+    wideSize = (wcslen(wideString) + 1) * sizeof(WCHAR);
+
+    stringHandle = GlobalAlloc(GMEM_MOVEABLE, wideSize);
+    if (!stringHandle)
+    {
+        free(wideString);
+
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to allocate global handle for clipboard");
+        return;
+    }
+
+    memcpy(GlobalLock(stringHandle), wideString, wideSize);
+    GlobalUnlock(stringHandle);
+
+    if (!OpenClipboard(window->win32.handle))
+    {
+        GlobalFree(stringHandle);
+        free(wideString);
+
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to open clipboard");
+        return;
+    }
+
+    EmptyClipboard();
+    SetClipboardData(CF_UNICODETEXT, stringHandle);
+    CloseClipboard();
+
+    free(wideString);
+}
+
+const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
+{
+    HANDLE stringHandle;
+
+    if (!IsClipboardFormatAvailable(CF_UNICODETEXT))
+    {
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE, NULL);
+        return NULL;
+    }
+
+    if (!OpenClipboard(window->win32.handle))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to open clipboard");
+        return NULL;
+    }
+
+    stringHandle = GetClipboardData(CF_UNICODETEXT);
+    if (!stringHandle)
+    {
+        CloseClipboard();
+
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to retrieve clipboard data");
+        return NULL;
+    }
+
+    free(_glfw.win32.clipboardString);
+    _glfw.win32.clipboardString =
+        _glfwCreateUTF8FromWideString(GlobalLock(stringHandle));
+
+    GlobalUnlock(stringHandle);
+    CloseClipboard();
+
+    if (!_glfw.win32.clipboardString)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Win32: Failed to convert wide string to UTF-8");
+        return NULL;
+    }
+
+    return _glfw.win32.clipboardString;
 }
 
 

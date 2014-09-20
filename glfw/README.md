@@ -68,6 +68,7 @@ GLFW bundles a number of dependencies in the `deps/` directory.
    `GLFW_RELEASE_BEHAVIOR_NONE` for `GL_KHR_context_flush_control` support
  - Added `GLFW_INCLUDE_ES31` for including the OpenGL ES 3.1 header
  - Added `GLFW_FLOATING` for creating always-on-top windowed mode windows
+ - Added `GLFW_FOCUSED` window hint for controlling initial input focus
  - Added *partial and experimental* support for Wayland
  - Bugfix: The debug context attribute was set from `GL_ARB_debug_output` even
            when a debug context had not been requested
@@ -87,14 +88,23 @@ GLFW bundles a number of dependencies in the `deps/` directory.
  - [Cocoa] Bugfix: Joystick enumeration took hundreds of ms on some systems
  - [Cocoa] Bugfix: The cursor was hidden when the user resized a GLFW window
  - [Win32] Enabled generation of pkg-config file for MinGW
+ - [Win32] Removed option to require explicitly linking against `winmm.dll`
  - [Win32] Bugfix: Failure to load winmm or its functions was not reported to
                    the error callback
  - [Win32] Bugfix: Some keys were reported based on the current layout instead
                    of their physical location
  - [Win32] Bugfix: Maximized hidden windows were restored by `glfwShowWindow`
  - [Win32] Bugfix: Context re-creation was not triggered by sRGB hint
+ - [Win32] Bugfix: Full screen windows were incorrectly sized and placed on some
+                   systems
+ - [Win32] Bugfix: Gamma ramp functions acted on entire desktop instead of the
+                   specified monitor
+ - [Win32] Bugfix: The wrong incorrect physical size was returned for
+                   non-primary monitors
  - [X11] Added run-time support for systems lacking the XKB extension
  - [X11] Made GLX 1.3 the minimum supported version
+ - [X11] Replaced `XRRGetScreenResources` with `XRRGetScreenResourcesCurrent`
+         for monitor property retrieval
  - [X11] Bugfix: The case of finding no usable CRTCs was not detected
  - [X11] Bugfix: Detection of broken Nvidia RandR gamma support did not verify
                  that at least one CRTC was present
@@ -159,6 +169,7 @@ skills.
  - Gerald Franz
  - GeO4d
  - Marcus Geelnard
+ - Eloi Marín Gratacós
  - Stefan Gustavson
  - Sylvain Hellegouarch
  - Matthew Henry
