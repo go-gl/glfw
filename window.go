@@ -251,7 +251,7 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 
 	w := C.glfwCreateWindow(C.int(width), C.int(height), t, m, s)
 	if w == nil {
-		return nil, <-lastError
+		return nil, fetchError()
 	}
 
 	wnd := &Window{data: w}
@@ -407,11 +407,7 @@ func (w *Window) GetMonitor() (*Monitor, error) {
 // GetAttribute returns an attribute of the window. There are many attributes,
 // some related to the window and others to its context.
 func (w *Window) GetAttribute(attrib Hint) (int, error) {
-	r := int(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
-	if r == 0 {
-		return 0, <-lastError
-	}
-	return r, nil
+	return int(C.glfwGetWindowAttrib(w.data, C.int(attrib))), fetchError()
 }
 
 // SetUserPointer sets the user-defined pointer of the window. The current value
@@ -568,7 +564,7 @@ func (w *Window) SetClipboardString(str string) error {
 func (w *Window) GetClipboardString() (string, error) {
 	cs := C.glfwGetClipboardString(w.data)
 	if cs == nil {
-		return "", <-lastError
+		return "", fetchError()
 	}
 	return C.GoString(cs), nil
 }
