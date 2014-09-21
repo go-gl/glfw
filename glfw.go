@@ -29,10 +29,8 @@ const (
 //
 // This function may only be called from the main thread.
 func Init() error {
-	if glfwbool(C.glfwInit()) {
-		return nil
-	}
-	return <-lastError
+	C.glfwInit()
+	return fetchError()
 }
 
 // Terminate destroys all remaining windows, frees any allocated resources and
