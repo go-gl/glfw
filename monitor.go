@@ -79,10 +79,10 @@ func GetPrimaryMonitor() (*Monitor, error) {
 
 // GetPosition returns the position, in screen coordinates, of the upper-left
 // corner of the monitor.
-func (m *Monitor) GetPosition() (x, y int) {
+func (m *Monitor) GetPosition() (x, y int, err error) {
 	var xpos, ypos C.int
 	C.glfwGetMonitorPos(m.data, &xpos, &ypos)
-	return int(xpos), int(ypos)
+	return int(xpos), int(ypos), fetchError()
 }
 
 // GetPhysicalSize returns the size, in millimetres, of the display area of the
@@ -91,10 +91,10 @@ func (m *Monitor) GetPosition() (x, y int) {
 // Note: Some operating systems do not provide accurate information, either
 // because the monitor's EDID data is incorrect, or because the driver does not
 // report it accurately.
-func (m *Monitor) GetPhysicalSize() (width, height int) {
+func (m *Monitor) GetPhysicalSize() (width, height int, err error) {
 	var wi, h C.int
 	C.glfwGetMonitorPhysicalSize(m.data, &wi, &h)
-	return int(wi), int(h)
+	return int(wi), int(h), fetchError()
 }
 
 // GetName returns a human-readable name of the monitor, encoded as UTF-8.
@@ -109,13 +109,14 @@ func (m *Monitor) GetName() (string, error) {
 // SetMonitorCallback sets the monitor configuration callback, or removes the
 // currently set callback. This is called when a monitor is connected to or
 // disconnected from the system.
-func SetMonitorCallback(cbfun func(monitor *Monitor, event MonitorEvent)) {
+func SetMonitorCallback(cbfun func(monitor *Monitor, event MonitorEvent)) error {
 	if cbfun == nil {
 		C.glfwSetMonitorCallback(nil)
 	} else {
 		fMonitorHolder = cbfun
 		C.glfwSetMonitorCallbackCB()
 	}
+	return fetchError()
 }
 
 // GetVideoModes returns an array of all video modes supported by the monitor.
@@ -153,8 +154,9 @@ func (m *Monitor) GetVideoMode() (*VideoMode, error) {
 
 // SetGamma generates a 256-element gamma ramp from the specified exponent and then calls
 // SetGamma with it.
-func (m *Monitor) SetGamma(gamma float32) {
+func (m *Monitor) SetGamma(gamma float32) error {
 	C.glfwSetGamma(m.data, C.float(gamma))
+	return fetchError()
 }
 
 // GetGammaRamp retrieves the current gamma ramp of the monitor.
@@ -181,7 +183,7 @@ func (m *Monitor) GetGammaRamp() (*GammaRamp, error) {
 }
 
 // SetGammaRamp sets the current gamma ramp for the monitor.
-func (m *Monitor) SetGammaRamp(ramp *GammaRamp) {
+func (m *Monitor) SetGammaRamp(ramp *GammaRamp) error {
 	var rampC C.GLFWgammaramp
 
 	length := len(ramp.Red)
@@ -193,4 +195,5 @@ func (m *Monitor) SetGammaRamp(ramp *GammaRamp) {
 	}
 
 	C.glfwSetGammaRamp(m.data, &rampC)
+	return fetchError()
 }

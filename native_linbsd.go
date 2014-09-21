@@ -8,14 +8,14 @@ package glfw3
 //#include "glfw/include/GLFW/glfw3native.h"
 import "C"
 
-func (w *Window) GetX11Window() C.Window {
-	return C.glfwGetX11Window(w.data)
+func (w *Window) GetX11Window() (C.Window, error) {
+	return C.glfwGetX11Window(w.data), fetchError()
 }
 
-func (w *Window) GetGLXContext() C.GLXContext {
-	return C.glfwGetGLXContext(w.data)
+func (w *Window) GetGLXContext() (C.GLXContext, error) {
+	return C.glfwGetGLXContext(w.data), fetchError()
 }
 
-func GetX11Display() *C.Display {
-	return C.glfwGetX11Display()
+func GetX11Display() (*C.Display, error) {
+	return C.glfwGetX11Display(), fetchError()
 }
