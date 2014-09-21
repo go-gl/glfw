@@ -62,10 +62,21 @@ func init() {
 // this ensures that any uncaught errors buffered in lastError are printed
 // before the program exits.
 func flushErrors() {
-	select {
-	case err := <-lastError:
+	err := fetchError()
+	if err != nil {
 		fmt.Printf("GLFW: An uncaught error has occured: %d -> %s\n", err.Code, err.Desc)
 		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
+	}
+}
+
+// fetchError is called by various functions to retrieve the error that might
+// have occured from a generic GLFW operation. It returns nil if no error is
+// present.
+func fetchError() *GLFWError {
+	select {
+	case err := <-lastError:
+		return err
 	default:
 	}
+	return nil
 }

@@ -12,29 +12,32 @@ import (
 // Originally GLFW 3 passes a null pointer to detach the context.
 // But since we're using receievers, DetachCurrentContext should
 // be used instead.
-func (w *Window) MakeContextCurrent() {
+func (w *Window) MakeContextCurrent() error {
 	C.glfwMakeContextCurrent(w.data)
+	return fetchError()
 }
 
 // DetachCurrentContext detaches the current context.
-func DetachCurrentContext() {
+func DetachCurrentContext() error {
 	C.glfwMakeContextCurrent(nil)
+	return fetchError()
 }
 
 // GetCurrentContext returns the window whose context is current.
-func GetCurrentContext() *Window {
+func GetCurrentContext() (*Window, error) {
 	w := C.glfwGetCurrentContext()
 	if w == nil {
-		return nil
+		return nil, fetchError()
 	}
-	return windows.get(w)
+	return windows.get(w), nil
 }
 
 // SwapBuffers swaps the front and back buffers of the window. If the
 // swap interval is greater than zero, the GPU driver waits the specified number
 // of screen updates before swapping the buffers.
-func (w *Window) SwapBuffers() {
+func (w *Window) SwapBuffers() error {
 	C.glfwSwapBuffers(w.data)
+	return fetchError()
 }
 
 // SwapInterval sets the swap interval for the current context, i.e. the number
@@ -51,8 +54,9 @@ func (w *Window) SwapBuffers() {
 //
 // Some GPU drivers do not honor the requested swap interval, either because of
 // user settings that override the request or due to bugs in the driver.
-func SwapInterval(interval int) {
+func SwapInterval(interval int) error {
 	C.glfwSwapInterval(C.int(interval))
+	return fetchError()
 }
 
 // ExtensionSupported returns whether the specified OpenGL or context creation
@@ -63,8 +67,8 @@ func SwapInterval(interval int) {
 // recommended that you cache its results if it's going to be used frequently.
 // The extension strings will not change during the lifetime of a context, so
 // there is no danger in doing this.
-func ExtensionSupported(extension string) bool {
+func ExtensionSupported(extension string) (bool, error) {
 	e := C.CString(extension)
 	defer C.free(unsafe.Pointer(e))
-	return glfwbool(C.glfwExtensionSupported(e))
+	return glfwbool(C.glfwExtensionSupported(e)), fetchError()
 }

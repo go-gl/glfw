@@ -6,10 +6,10 @@ package glfw3
 //#include "glfw/include/GLFW/glfw3native.h"
 import "C"
 
-func (w *Window) GetWin32Window() C.HWND {
-	return C.glfwGetWin32Window(w.data)
+func (w *Window) GetWin32Window() (C.HWND, error) {
+	return C.glfwGetWin32Window(w.data), fetchError()
 }
 
-func (w *Window) GetWGLContext() C.HGLRC {
-	return C.glfwGetWGLContext(w.data)
+func (w *Window) GetWGLContext() (C.HGLRC, error) {
+	return C.glfwGetWGLContext(w.data), fetchError()
 }
