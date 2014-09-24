@@ -29,10 +29,8 @@ const (
 //
 // This function may only be called from the main thread.
 func Init() error {
-	if glfwbool(C.glfwInit()) {
-		return nil
-	}
-	return <-lastError
+	C.glfwInit()
+	return fetchError()
 }
 
 // Terminate destroys all remaining windows, frees any allocated resources and
@@ -45,9 +43,11 @@ func Init() error {
 // this function, as it is called by Init before it returns failure.
 //
 // This function may only be called from the main thread.
-func Terminate() {
+func Terminate() error {
+	err := fetchError()
 	flushErrors()
 	C.glfwTerminate()
+	return err
 }
 
 // GetVersion retrieves the major, minor and revision numbers of the GLFW
