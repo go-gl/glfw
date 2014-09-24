@@ -43,7 +43,7 @@ func goErrorCB(code C.int, desc *C.char) {
 	select {
 	case lastError <- err:
 	default:
-		fmt.Printf("GLFW: An uncaught error has occured: %d -> %s\n", err.Code, err.Desc)
+		fmt.Printf("GLFW: An uncaught error has occurred: %d -> %s\n", err.Code, err.Desc)
 		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
 	}
 }
@@ -65,13 +65,13 @@ func flushErrors() {
 	e := fetchError()
 	if e != nil {
 		err := e.(*GLFWError)
-		fmt.Printf("GLFW: An uncaught error has occured: %d -> %s\n", err.Code, err.Desc)
+		fmt.Printf("GLFW: An uncaught error has occurred: %d -> %s\n", err.Code, err.Desc)
 		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
 	}
 }
 
 // fetchError is called by various functions to retrieve the error that might
-// have occured from a generic GLFW operation. It returns nil if no error is
+// have occurred from a generic GLFW operation. It returns nil if no error is
 // present.
 func fetchError() error {
 	select {
