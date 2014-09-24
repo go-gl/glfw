@@ -78,6 +78,6 @@ func fetchError() error {
 	case err := <-lastError:
 		return err
 	default:
+		return nil
 	}
-	return nil
 }
