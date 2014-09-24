@@ -62,10 +62,9 @@ func init() {
 // this ensures that any uncaught errors buffered in lastError are printed
 // before the program exits.
 func flushErrors() {
-	e := fetchError()
-	if e != nil {
-		err := e.(*GLFWError)
-		fmt.Printf("GLFW: An uncaught error has occurred: %d -> %s\n", err.Code, err.Desc)
+	err := fetchError()
+	if err != nil {
+		fmt.Println("GLFW: An uncaught error has occurred:", err)
 		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
 	}
 }
