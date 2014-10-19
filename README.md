@@ -10,6 +10,7 @@ Remarks
 
 * Some functions -which are marked in the documentation- can be called only from the main thread. You need to use [runtime.LockOSThread()](http://godoc.org/runtime#LockOSThread) to arrange that main() runs on main thread.
 * Installation is easy, just `go get github.com/go-gl/glfw3` and be done (*GLFW sources are included so you don't have to build GLFW on your own*)!
+* Go 1.4 is required on Windows (otherwise you must use MinGW v4.8.1 exactly, see [Go issue 8811](https://code.google.com/p/go/issues/detail?id=8811)).
 
 Example
 =======
