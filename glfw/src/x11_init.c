@@ -329,6 +329,30 @@ static void updateKeyCodeLUT(void)
     }
 }
 
+// Check whether the IM has a usable style
+//
+static GLboolean hasUsableInputMethodStyle(void)
+{
+    unsigned int i;
+    GLboolean found = GL_FALSE;
+    XIMStyles* styles = NULL;
+
+    if (XGetIMValues(_glfw.x11.im, XNQueryInputStyle, &styles, NULL) != NULL)
+        return GL_FALSE;
+
+    for (i = 0;  i < styles->count_styles;  i++)
+    {
+        if (styles->supported_styles[i] == (XIMPreeditNothing | XIMStatusNothing))
+        {
+            found = GL_TRUE;
+            break;
+        }
+    }
+
+    XFree(styles);
+    return found;
+}
+
 // Check whether the specified atom is supported
 //
 static Atom getSupportedAtom(Atom* supportedAtoms,
@@ -423,6 +447,8 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_ABOVE");
     _glfw.x11.NET_WM_STATE_FULLSCREEN =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
+    _glfw.x11.NET_WM_FULLSCREEN_MONITORS =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
     _glfw.x11.NET_WM_NAME =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_NAME");
     _glfw.x11.NET_WM_ICON_NAME =
@@ -507,6 +533,14 @@ static GLboolean initExtensions(void)
         }
 
         XRRFreeScreenResources(sr);
+    }
+
+    if (XineramaQueryExtension(_glfw.x11.display,
+                               &_glfw.x11.xinerama.versionMajor,
+                               &_glfw.x11.xinerama.versionMinor))
+    {
+        if (XineramaIsActive(_glfw.x11.display))
+            _glfw.x11.xinerama.available = GL_TRUE;
     }
 
     if (XQueryExtension(_glfw.x11.display,
@@ -702,6 +736,21 @@ int _glfwPlatformInit(void)
 
     _glfw.x11.cursor = createNULLCursor();
 
+    if (XSupportsLocale())
+    {
+        XSetLocaleModifiers("");
+
+        _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, 0, 0);
+        if (_glfw.x11.im)
+        {
+            if (!hasUsableInputMethodStyle())
+            {
+                XCloseIM(_glfw.x11.im);
+                _glfw.x11.im = NULL;
+            }
+        }
+    }
+
     if (!_glfwInitContextAPI())
         return GL_FALSE;
 
@@ -720,6 +769,12 @@ void _glfwPlatformTerminate(void)
     }
 
     free(_glfw.x11.clipboardString);
+
+    if (_glfw.x11.im)
+    {
+        XCloseIM(_glfw.x11.im);
+        _glfw.x11.im = NULL;
+    }
 
     _glfwTerminateJoysticks();
     _glfwTerminateContextAPI();

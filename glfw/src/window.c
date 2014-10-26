@@ -151,7 +151,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     fbconfig.accumBlueBits  = _glfw.hints.accumBlueBits;
     fbconfig.accumAlphaBits = _glfw.hints.accumAlphaBits;
     fbconfig.auxBuffers     = _glfw.hints.auxBuffers;
-    fbconfig.stereo         = _glfw.hints.stereo;
+    fbconfig.stereo         = _glfw.hints.stereo ? GL_TRUE : GL_FALSE;
     fbconfig.samples        = _glfw.hints.samples;
     fbconfig.sRGB           = _glfw.hints.sRGB;
     fbconfig.doublebuffer   = _glfw.hints.doublebuffer ? GL_TRUE : GL_FALSE;
@@ -289,6 +289,9 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.decorated   = GL_TRUE;
     _glfw.hints.focused     = GL_TRUE;
     _glfw.hints.autoIconify = GL_TRUE;
+
+    // The default is to select the highest available refresh rate
+    _glfw.hints.refreshRate = GLFW_DONT_CARE;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
