@@ -200,17 +200,22 @@ void _glfwRestoreVideoMode(_GLFWmonitor* monitor)
 
 _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
 {
-    int i, j, size = 0, found = 0;
+    int i, j, k, size = 0, found = 0;
     _GLFWmonitor** monitors = NULL;
 
     *count = 0;
 
     if (_glfw.x11.randr.available)
     {
+        int screenCount = 0;
+        XineramaScreenInfo* screens = NULL;
         XRRScreenResources* sr = XRRGetScreenResources(_glfw.x11.display,
                                                        _glfw.x11.root);
         RROutput primary = XRRGetOutputPrimary(_glfw.x11.display,
                                                _glfw.x11.root);
+
+        if (_glfw.x11.xinerama.available)
+            screens = XineramaQueryScreens(_glfw.x11.display, &screenCount);
 
         for (i = 0;  i < sr->ncrtc;  i++)
         {
@@ -240,6 +245,18 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
                 monitors[found]->x11.output = ci->outputs[j];
                 monitors[found]->x11.crtc   = oi->crtc;
 
+                for (k = 0;  k < screenCount;  k++)
+                {
+                    if (screens[k].x_org == ci->x &&
+                        screens[k].y_org == ci->y &&
+                        screens[k].width == ci->width &&
+                        screens[k].height == ci->height)
+                    {
+                        monitors[found]->x11.index = k;
+                        break;
+                    }
+                }
+
                 XRRFreeOutputInfo(oi);
 
                 if (ci->outputs[j] == primary)
@@ -252,6 +269,9 @@ _GLFWmonitor** _glfwPlatformGetMonitors(int* count)
         }
 
         XRRFreeScreenResources(sr);
+
+        if (screens)
+            XFree(screens);
 
         if (found == 0)
         {
@@ -332,12 +352,8 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 
             for (j = 0;  j < *found;  j++)
             {
-                if (result[j].width == mode.width &&
-                    result[j].height == mode.height &&
-                    result[j].refreshRate == mode.refreshRate)
-                {
+                if (_glfwCompareVideoModes(result + j, &mode) == 0)
                     break;
-                }
             }
 
             if (j < *found)
