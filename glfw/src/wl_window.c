@@ -24,6 +24,8 @@
 //
 //========================================================================
 
+#define _GNU_SOURCE
+
 #include "internal.h"
 
 #include <stdio.h>
@@ -101,43 +103,13 @@ static GLboolean createSurface(_GLFWwindow* window,
 }
 
 static int
-set_cloexec_or_close(int fd)
-{
-    long flags;
-
-    if (fd == -1)
-        return -1;
-
-    flags = fcntl(fd, F_GETFD);
-    if (flags == -1)
-        goto err;
-
-    if (fcntl(fd, F_SETFD, flags | FD_CLOEXEC) == -1)
-        goto err;
-
-    return fd;
-
-err:
-    close(fd);
-    return -1;
-}
-
-static int
-create_tmpfile_cloexec(char *tmpname)
+createTmpfileCloexec(char* tmpname)
 {
     int fd;
 
-#ifdef HAVE_MKOSTEMP
     fd = mkostemp(tmpname, O_CLOEXEC);
     if (fd >= 0)
         unlink(tmpname);
-#else
-    fd = mkstemp(tmpname);
-    if (fd >= 0) {
-        fd = set_cloexec_or_close(fd);
-        unlink(tmpname);
-    }
-#endif
 
     return fd;
 }
@@ -157,42 +129,40 @@ create_tmpfile_cloexec(char *tmpname)
  * transmitting the file descriptor over Unix sockets using the
  * SCM_RIGHTS methods.
  *
- * If the C library implements posix_fallocate(), it is used to
- * guarantee that disk space is available for the file at the
- * given size. If disk space is insufficent, errno is set to ENOSPC.
- * If posix_fallocate() is not supported, program may receive
- * SIGBUS on accessing mmap()'ed file contents instead.
+ * posix_fallocate() is used to guarantee that disk space is available
+ * for the file at the given size. If disk space is insufficent, errno
+ * is set to ENOSPC. If posix_fallocate() is not supported, program may
+ * receive SIGBUS on accessing mmap()'ed file contents instead.
  */
 int
-os_create_anonymous_file(off_t size)
+createAnonymousFile(off_t size)
 {
     static const char template[] = "/glfw-shared-XXXXXX";
-    const char *path;
-    char *name;
+    const char* path;
+    char* name;
     int fd;
     int ret;
 
     path = getenv("XDG_RUNTIME_DIR");
-    if (!path) {
+    if (!path)
+    {
         errno = ENOENT;
         return -1;
     }
 
     name = malloc(strlen(path) + sizeof(template));
-    if (!name)
-        return -1;
-
     strcpy(name, path);
     strcat(name, template);
 
-    fd = create_tmpfile_cloexec(name);
+    fd = createTmpfileCloexec(name);
 
     free(name);
 
     if (fd < 0)
         return -1;
     ret = posix_fallocate(fd, 0, size);
-    if (ret != 0) {
+    if (ret != 0)
+    {
         close(fd);
         errno = ret;
         return -1;
@@ -400,24 +370,26 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)
 {
-    struct wl_shm_pool *pool;
+    struct wl_shm_pool* pool;
     int stride = image->width * 4;
     int length = image->width * image->height * 4;
-    void *data;
+    void* data;
     int fd, i;
 
-    fd = os_create_anonymous_file(length);
-    if (fd < 0) {
+    fd = createAnonymousFile(length);
+    if (fd < 0)
+    {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Wayland: Creating a buffer file for %d B failed: %m\n",
-                    length);
+                        "Wayland: Creating a buffer file for %d B failed: %m\n",
+                        length);
         return GL_FALSE;
     }
 
     data = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (data == MAP_FAILED) {
+    if (data == MAP_FAILED)
+    {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Wayland: Cursor mmap failed: %m\n");
+                        "Wayland: Cursor mmap failed: %m\n");
         close(fd);
         return GL_FALSE;
     }
@@ -435,10 +407,11 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
         *target++ = source[3];
     }
 
-    cursor->wl.buffer = wl_shm_pool_create_buffer(pool, 0,
-                    image->width,
-                    image->height,
-                    stride, WL_SHM_FORMAT_ARGB8888);
+    cursor->wl.buffer =
+        wl_shm_pool_create_buffer(pool, 0,
+                                  image->width,
+                                  image->height,
+                                  stride, WL_SHM_FORMAT_ARGB8888);
     munmap(data, length);
     wl_shm_pool_destroy(pool);
 
@@ -456,9 +429,9 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
-    struct wl_buffer *buffer;
-    struct wl_cursor_image *image;
-    struct wl_surface *surface = _glfw.wl.cursorSurface;
+    struct wl_buffer* buffer;
+    struct wl_cursor_image* image;
+    struct wl_surface* surface = _glfw.wl.cursorSurface;
 
     if (!_glfw.wl.pointer)
         return;
@@ -479,23 +452,23 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
             if (!buffer)
                 return;
             wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
-                        surface,
-                        image->hotspot_x,
-                        image->hotspot_y);
+                                  surface,
+                                  image->hotspot_x,
+                                  image->hotspot_y);
             wl_surface_attach(surface, buffer, 0, 0);
             wl_surface_damage(surface, 0, 0,
-                        image->width, image->height);
+                              image->width, image->height);
             wl_surface_commit(surface);
         }
         else
         {
             wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
-                        surface,
-                        cursor->wl.xhot,
-                        cursor->wl.yhot);
+                                  surface,
+                                  cursor->wl.xhot,
+                                  cursor->wl.yhot);
             wl_surface_attach(surface, cursor->wl.buffer, 0, 0);
             wl_surface_damage(surface, 0, 0,
-                        cursor->wl.width, cursor->wl.height);
+                              cursor->wl.width, cursor->wl.height);
             wl_surface_commit(surface);
         }
     }

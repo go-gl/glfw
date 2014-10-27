@@ -95,19 +95,6 @@ static int translateKey(int keycode)
     return _glfw.x11.keyCodeLUT[keycode];
 }
 
-// Translates an X Window event to Unicode
-//
-static int translateChar(XKeyEvent* event)
-{
-    KeySym keysym;
-
-    // Get X11 keysym
-    XLookupString(event, NULL, 0, &keysym, NULL);
-
-    // Convert to Unicode (see x11_unicode.c)
-    return (int) _glfwKeySym2Unicode(keysym);
-}
-
 // Return the GLFW window corresponding to the specified X11 window
 //
 static _GLFWwindow* findWindowByHandle(Window handle)
@@ -437,6 +424,18 @@ static GLboolean createWindow(_GLFWwindow* window,
     XRRSelectInput(_glfw.x11.display, window->x11.handle,
                    RRScreenChangeNotifyMask);
 
+    if (_glfw.x11.im)
+    {
+        window->x11.ic = XCreateIC(_glfw.x11.im,
+                                   XNInputStyle,
+                                   XIMPreeditNothing | XIMStatusNothing,
+                                   XNClientWindow,
+                                   window->x11.handle,
+                                   XNFocusWindow,
+                                   window->x11.handle,
+                                   NULL);
+    }
+
     _glfwPlatformGetWindowPos(window, &window->x11.xpos, &window->x11.ypos);
     _glfwPlatformGetWindowSize(window, &window->x11.width, &window->x11.height);
 
@@ -716,6 +715,27 @@ static void enterFullscreenMode(_GLFWwindow* window)
                         PropModeReplace, (unsigned char*) &value, 1);
     }
 
+    if (_glfw.x11.xinerama.available && _glfw.x11.NET_WM_FULLSCREEN_MONITORS)
+    {
+        XEvent event;
+        memset(&event, 0, sizeof(event));
+
+        event.type = ClientMessage;
+        event.xclient.window = window->x11.handle;
+        event.xclient.format = 32; // Data is 32-bit longs
+        event.xclient.message_type = _glfw.x11.NET_WM_FULLSCREEN_MONITORS;
+        event.xclient.data.l[0] = window->monitor->x11.index;
+        event.xclient.data.l[1] = window->monitor->x11.index;
+        event.xclient.data.l[2] = window->monitor->x11.index;
+        event.xclient.data.l[3] = window->monitor->x11.index;
+
+        XSendEvent(_glfw.x11.display,
+                   _glfw.x11.root,
+                   False,
+                   SubstructureNotifyMask | SubstructureRedirectMask,
+                   &event);
+    }
+
     if (_glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_FULLSCREEN)
     {
         int x, y;
@@ -830,14 +850,43 @@ static void processEvent(XEvent *event)
         {
             const int key = translateKey(event->xkey.keycode);
             const int mods = translateState(event->xkey.state);
-            const int character = translateChar(&event->xkey);
+            const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
 
-            _glfwInputKey(window, key, event->xkey.keycode, GLFW_PRESS, mods);
+            if (event->xkey.keycode)
+                _glfwInputKey(window, key, event->xkey.keycode, GLFW_PRESS, mods);
 
-            if (character != -1)
+            if (window->x11.ic)
             {
-                const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
-                _glfwInputChar(window, character, mods, plain);
+                // Translate keys to characters with XIM input context
+
+                int i;
+                Status status;
+                wchar_t buffer[16];
+
+                if (XFilterEvent(event, None))
+                {
+                    // Discard intermediary (dead key) events for character input
+                    break;
+                }
+
+                const int count = XwcLookupString(window->x11.ic,
+                                                  &event->xkey,
+                                                  buffer, sizeof(buffer),
+                                                  NULL, &status);
+
+                for (i = 0;  i < count;  i++)
+                    _glfwInputChar(window, buffer[i], mods, plain);
+            }
+            else
+            {
+                // Translate keys to characters with fallback lookup table
+
+                KeySym keysym;
+                XLookupString(&event->xkey, NULL, 0, &keysym, NULL);
+
+                const long character = _glfwKeySym2Unicode(keysym);
+                if (character != -1)
+                    _glfwInputChar(window, character, mods, plain);
             }
 
             break;
@@ -900,9 +949,9 @@ static void processEvent(XEvent *event)
             else if (event->xbutton.button == Button5)
                 _glfwInputScroll(window, 0.0, -1.0);
             else if (event->xbutton.button == Button6)
-                _glfwInputScroll(window, -1.0, 0.0);
-            else if (event->xbutton.button == Button7)
                 _glfwInputScroll(window, 1.0, 0.0);
+            else if (event->xbutton.button == Button7)
+                _glfwInputScroll(window, -1.0, 0.0);
 
             else
             {
@@ -1366,6 +1415,12 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
     if (window->monitor)
         leaveFullscreenMode(window);
+
+    if (window->x11.ic)
+    {
+        XDestroyIC(window->x11.ic);
+        window->x11.ic = NULL;
+    }
 
     _glfwDestroyContext(window);
 
