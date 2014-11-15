@@ -34,8 +34,8 @@ package glfw3
 #cgo linux,wayland CFLAGS: -D_GLFW_WAYLAND -D_GLFW_EGL -D_GLFW_HAS_DLOPEN
 
 // Linker Options:
-#cgo linux,!wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm
-#cgo linux,wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm
+#cgo linux,!wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama
+#cgo linux,wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama
 
 
 // FreeBSD Build Tags
