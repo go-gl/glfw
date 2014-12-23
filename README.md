@@ -21,6 +21,9 @@ $ brew install --build-bottle --static glfw3
 $ go get github.com/go-gl/glfw3
 ```
 
+* libglfw is outdated in Ubuntu's repositories, it is recomended to compile glfw from source via [these](https://github.com/shurcooL/reusable-commands/blob/ed33ae496f36aaea735a1d183f77e833c92a9f3d/go-gl_glfw3_install.sh#L19-L32) instuctions.
+
+
 Example
 =======
 
