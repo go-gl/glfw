@@ -62,7 +62,6 @@ typedef struct _GLFWwindowNS
     id	            delegate;
     id              view;
     unsigned int    modifierFlags;
-    int             cursorInside;
 
 } _GLFWwindowNS;
 
@@ -72,10 +71,10 @@ typedef struct _GLFWwindowNS
 typedef struct _GLFWlibraryNS
 {
     CGEventSourceRef eventSource;
-    id              delegate;
     id              autoreleasePool;
     id              cursor;
 
+    short int       publicKeys[256];
     char*           clipboardString;
 
 } _GLFWlibraryNS;

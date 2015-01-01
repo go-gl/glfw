@@ -31,6 +31,8 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdint.h>
+#include <regex.h>
+
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
@@ -115,11 +117,10 @@ typedef struct _GLFWlibraryX11
     GLboolean       hasEWMH;
     // Most recent error code received by X error handler
     int             errorCode;
-
+    // Clipboard string (while the selection is owned)
     char*           clipboardString;
-
-    // LUT for mapping X11 key codes to GLFW key codes
-    int             keyCodeLUT[256];
+    // X11 keycode to GLFW key LUT
+    short int       publicKeys[256];
 
     // Window manager atoms
     Atom            WM_PROTOCOLS;
@@ -214,6 +215,14 @@ typedef struct _GLFWlibraryX11
         int         versionMajor;
         int         versionMinor;
     } xinerama;
+
+#if defined(__linux__)
+    struct {
+      int           fd;
+      int           wd;
+      regex_t       regex;
+    } inotify;
+#endif
 
 } _GLFWlibraryX11;
 
