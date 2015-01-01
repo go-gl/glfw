@@ -74,6 +74,8 @@ typedef struct _GLFWcursor      _GLFWcursor;
  #include "x11_platform.h"
 #elif defined(_GLFW_WAYLAND)
  #include "wl_platform.h"
+#elif defined(_GLFW_MIR)
+ #include "mir_platform.h"
 #else
  #error "No supported window creation API selected"
 #endif
@@ -622,6 +624,11 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
  *  @ingroup platform
  */
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
+
+/*! @copydoc glfwCreateStandardCursor
+ *  @ingroup platform
+ */
+int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape);
 
 /*! @copydoc glfwDestroyCursor
  *  @ingroup platform

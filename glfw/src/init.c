@@ -129,7 +129,7 @@ GLFWAPI int glfwInit(void)
     }
 
     _glfw.monitors = _glfwPlatformGetMonitors(&_glfw.monitorCount);
-    if (_glfw.monitors == NULL)
+    if (!_glfw.monitorCount)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "No monitors found");
         _glfwPlatformTerminate();
@@ -153,11 +153,9 @@ GLFWAPI void glfwTerminate(void)
 
     memset(&_glfw.callbacks, 0, sizeof(_glfw.callbacks));
 
-    // Close all remaining windows
     while (_glfw.windowListHead)
         glfwDestroyWindow((GLFWwindow*) _glfw.windowListHead);
 
-    // Destroy all cursors
     while (_glfw.cursorListHead)
         glfwDestroyCursor((GLFWcursor*) _glfw.cursorListHead);
 

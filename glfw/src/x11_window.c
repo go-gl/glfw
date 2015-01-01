@@ -27,6 +27,8 @@
 
 #include "internal.h"
 
+#include <X11/cursorfont.h>
+
 #include <sys/select.h>
 
 #include <string.h>
@@ -66,6 +68,29 @@ static Bool isFrameExtentsEvent(Display* display, XEvent* event, XPointer pointe
            event->xproperty.atom == _glfw.x11.NET_FRAME_EXTENTS;
 }
 
+// Translates a GLFW standard cursor to a font cursor shape
+//
+static int translateCursorShape(int shape)
+{
+    switch (shape)
+    {
+        case GLFW_ARROW_CURSOR:
+            return XC_arrow;
+        case GLFW_IBEAM_CURSOR:
+            return XC_xterm;
+        case GLFW_CROSSHAIR_CURSOR:
+            return XC_crosshair;
+        case GLFW_HAND_CURSOR:
+            return XC_hand1;
+        case GLFW_HRESIZE_CURSOR:
+            return XC_sb_h_double_arrow;
+        case GLFW_VRESIZE_CURSOR:
+            return XC_sb_v_double_arrow;
+    }
+
+    return 0;
+}
+
 // Translates an X event modifier state mask
 //
 static int translateState(int state)
@@ -86,13 +111,13 @@ static int translateState(int state)
 
 // Translates an X Window key to internal coding
 //
-static int translateKey(int keycode)
+static int translateKey(int scancode)
 {
-    // Use the pre-filled LUT (see updateKeyCodeLUT() in x11_init.c)
-    if (keycode < 0 || keycode > 255)
+    // Use the pre-filled LUT (see createKeyTables() in x11_init.c)
+    if (scancode < 0 || scancode > 255)
         return GLFW_KEY_UNKNOWN;
 
-    return _glfw.x11.keyCodeLUT[keycode];
+    return _glfw.x11.publicKeys[scancode];
 }
 
 // Return the GLFW window corresponding to the specified X11 window
@@ -777,14 +802,16 @@ static void enterFullscreenMode(_GLFWwindow* window)
     {
         // In override-redirect mode we have divorced ourselves from the
         // window manager, so we need to do everything manually
-
+        int xpos, ypos;
         GLFWvidmode mode;
+
+        _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
         _glfwPlatformGetVideoMode(window->monitor, &mode);
 
         XRaiseWindow(_glfw.x11.display, window->x11.handle);
         XSetInputFocus(_glfw.x11.display, window->x11.handle,
                        RevertToParent, CurrentTime);
-        XMoveWindow(_glfw.x11.display, window->x11.handle, 0, 0);
+        XMoveWindow(_glfw.x11.display, window->x11.handle, xpos, ypos);
         XResizeWindow(_glfw.x11.display, window->x11.handle,
                       mode.width, mode.height);
     }
@@ -1729,8 +1756,28 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               int xhot, int yhot)
 {
     cursor->x11.handle = _glfwCreateCursor(image, xhot, yhot);
-    if (cursor->x11.handle == None)
+    if (!cursor->x11.handle)
         return GL_FALSE;
+
+    return GL_TRUE;
+}
+
+int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
+{
+    const unsigned int native = translateCursorShape(shape);
+    if (!native)
+    {
+        _glfwInputError(GLFW_INVALID_ENUM, "X11: Invalid standard cursor");
+        return GL_FALSE;
+    }
+
+    cursor->x11.handle = XCreateFontCursor(_glfw.x11.display, native);
+    if (!cursor->x11.handle)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Failed to create standard cursor");
+        return GL_FALSE;
+    }
 
     return GL_TRUE;
 }
