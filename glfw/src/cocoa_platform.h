@@ -63,6 +63,11 @@ typedef struct _GLFWwindowNS
     id              view;
     unsigned int    modifierFlags;
 
+    // The total sum of the distances the cursor has been warped
+    // since the last cursor motion event was processed
+    // This is kept to counteract Cocoa doing the same internally
+    double          warpDeltaX, warpDeltaY;
+
 } _GLFWwindowNS;
 
 
@@ -71,6 +76,7 @@ typedef struct _GLFWwindowNS
 typedef struct _GLFWlibraryNS
 {
     CGEventSourceRef eventSource;
+    id              delegate;
     id              autoreleasePool;
     id              cursor;
 
