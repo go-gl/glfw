@@ -369,9 +369,9 @@ func (w *Window) SetKeyCallback(cbfun KeyCallback) (previous KeyCallback, err er
 	return previous, fetchError()
 }
 
-type CharacterCallback func(w *Window, char rune)
+type CharCallback func(w *Window, char rune)
 
-// SetCharacterCallback sets the character callback which is called when a
+// SetCharCallback sets the character callback which is called when a
 // Unicode character is input.
 //
 // The character callback is intended for Unicode text input. As it deals with
@@ -385,7 +385,7 @@ type CharacterCallback func(w *Window, char rune)
 // not be called if modifier keys are held down that would prevent normal text
 // input on that platform, for example a Super (Command) key on OS X or Alt key
 // on Windows. There is a character with modifiers callback that receives these events.
-func (w *Window) SetCharacterCallback(cbfun CharacterCallback) (previous CharacterCallback, err error) {
+func (w *Window) SetCharCallback(cbfun CharCallback) (previous CharCallback, err error) {
 	previous = w.fCharHolder
 	w.fCharHolder = cbfun
 	if cbfun == nil {
@@ -396,9 +396,9 @@ func (w *Window) SetCharacterCallback(cbfun CharacterCallback) (previous Charact
 	return previous, fetchError()
 }
 
-type CharacterModsCallback func(w *Window, char rune, mods ModifierKey)
+type CharModsCallback func(w *Window, char rune, mods ModifierKey)
 
-// SetCharacterModsCallback sets the character with modifiers callback which is called when a
+// SetCharModsCallback sets the character with modifiers callback which is called when a
 // Unicode character is input regardless of what modifier keys are used.
 //
 // The character with modifiers callback is intended for implementing custom
@@ -408,7 +408,7 @@ type CharacterModsCallback func(w *Window, char rune, mods ModifierKey)
 // map 1:1 to physical keys, as a key may produce zero, one or more characters.
 // If you want to know whether a specific physical key was pressed or released,
 // see the key callback instead.
-func (w *Window) SetCharacterModsCallback(cbfun CharacterModsCallback) (previous CharacterModsCallback, err error) {
+func (w *Window) SetCharModsCallback(cbfun CharModsCallback) (previous CharModsCallback, err error) {
 	previous = w.fCharModsHolder
 	w.fCharModsHolder = cbfun
 	if cbfun == nil {

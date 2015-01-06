@@ -55,6 +55,8 @@ Changelog
 
 The revision of GLFW C library used is listed in [GLFW_C_REVISION.txt](GLFW_C_REVISION.txt) file.
 
+* Method <code>window.SetCharacterCallback</code> renamed to <code>window.SetCharCallback</code>.
+* Method <code>window.SetCharacterModsCallback</code> renamed to <code>window.SetCharModsCallback</code>.
 * Added `Floating` and `AutoIconify` window hints.
 * Easy `go get` installation (GLFW source code included in-repo and compiled in so you don't have to build GLFW on your own first and you don't have to distribute shared libraries).
 * <code>SetErrorCallback</code> This function is removed. The callback is now set internally. Functions return an error with corresponding code and description (do a type assertion to GlfwError for accessing the variables).
@@ -66,9 +68,9 @@ The revision of GLFW C library used is listed in [GLFW_C_REVISION.txt](GLFW_C_RE
 * <code>GetJoystickName</code> No longer returns an error.
 * <code>window.GetMonitor</code> No longer returns an error.
 * <code>window.GetAttribute</code> Returns an error.
-* <code>window.SetCharacterCallback</code> Accepts rune instead of uint.
+* <code>window.SetCharCallback</code> Accepts rune instead of uint.
 * <code>window.SetDropCallback</code> added.
-* <code>window.SetCharacterModsCallback</code> added.
+* <code>window.SetCharModsCallback</code> added.
 * <code>PostEmptyEvent</code> added.
 * Native window and context handlers added.
 * Constant <code>ApiUnavailable</code> changed to <code>APIUnavailable</code>.
