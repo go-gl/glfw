@@ -239,7 +239,7 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
     // as (0, 0)
 
     _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Wayland: Window position retreival not supported");
+                    "Wayland: Window position retrieval not supported");
 }
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
@@ -370,6 +370,12 @@ void _glfwPlatformWaitEvents(void)
 void _glfwPlatformPostEmptyEvent(void)
 {
     wl_display_sync(_glfw.wl.display);
+}
+
+void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformGetCursorPos not implemented yet\n");
 }
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
