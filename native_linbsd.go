@@ -4,6 +4,7 @@ package glfw3
 
 //#define GLFW_EXPOSE_NATIVE_X11
 //#define GLFW_EXPOSE_NATIVE_GLX
+//#include <X11/extensions/Xrandr.h>
 //#include "glfw/include/GLFW/glfw3.h"
 //#include "glfw/include/GLFW/glfw3native.h"
 import "C"
