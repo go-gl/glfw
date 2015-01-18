@@ -202,7 +202,7 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
     return _glfw.win32.publicKeys[HIWORD(lParam) & 0x1FF];
 }
 
-// Enter fullscreen mode
+// Enter full screen mode
 //
 static GLboolean enterFullscreenMode(_GLFWwindow* window)
 {
@@ -221,7 +221,7 @@ static GLboolean enterFullscreenMode(_GLFWwindow* window)
     return status;
 }
 
-// Leave fullscreen mode
+// Leave full screen mode
 //
 static void leaveFullscreenMode(_GLFWwindow* window)
 {
@@ -280,7 +280,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 {
                     if (window->monitor)
                     {
-                        // We are running in fullscreen mode, so disallow
+                        // We are running in full screen mode, so disallow
                         // screen saver and screen blanking
                         return 0;
                     }
@@ -483,21 +483,23 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
-            if (wParam == SIZE_MINIMIZED)
-                _glfwInputWindowIconify(window, GL_TRUE);
-            else if (wParam == SIZE_RESTORED)
-                _glfwInputWindowIconify(window, GL_FALSE);
-
             if (_glfw.focusedWindow == window)
             {
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                     updateClipRect(window);
             }
 
-            if (wParam == SIZE_MINIMIZED)
+            if (!window->win32.iconified && wParam == SIZE_MINIMIZED)
+            {
+                window->win32.iconified = GL_TRUE;
                 _glfwInputWindowIconify(window, GL_TRUE);
-            else if (wParam == SIZE_RESTORED)
+            }
+            else if (window->win32.iconified &&
+                     (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED))
+            {
+                window->win32.iconified = GL_FALSE;
                 _glfwInputWindowIconify(window, GL_FALSE);
+            }
 
             _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
             _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
@@ -669,8 +671,8 @@ static int createWindow(_GLFWwindow* window,
         ypos = CW_USEDEFAULT;
 
         getFullWindowSize(window,
-                        wndconfig->width, wndconfig->height,
-                        &fullWidth, &fullHeight);
+                          wndconfig->width, wndconfig->height,
+                          &fullWidth, &fullHeight);
     }
 
     wideTitle = _glfwCreateWideStringFromUTF8(wndconfig->title);
