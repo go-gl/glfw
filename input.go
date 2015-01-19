@@ -229,9 +229,9 @@ type InputMode int
 
 // Input modes
 const (
-	Cursor             InputMode = C.GLFW_CURSOR               // See Cursor mode values
-	StickyKeys         InputMode = C.GLFW_STICKY_KEYS          // Value can be either 1 or 0
-	StickyMouseButtons InputMode = C.GLFW_STICKY_MOUSE_BUTTONS // Value can be either 1 or 0
+	CursorMode             InputMode = C.GLFW_CURSOR               // See Cursor mode values
+	StickyKeysMode         InputMode = C.GLFW_STICKY_KEYS          // Value can be either 1 or 0
+	StickyMouseButtonsMode InputMode = C.GLFW_STICKY_MOUSE_BUTTONS // Value can be either 1 or 0
 )
 
 // Cursor mode values
