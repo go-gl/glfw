@@ -29,6 +29,31 @@ const (
 	FormatUnavailable  ErrorCode = C.GLFW_FORMAT_UNAVAILABLE  // The clipboard did not contain data in the requested format.
 )
 
+func (e ErrorCode) String() string {
+	switch e {
+	case notInitialized:
+		return "NotInitialized"
+	case noCurrentContext:
+		return "NoCurrentContext"
+	case invalidEnum:
+		return "InvalidEnum"
+	case invalidValue:
+		return "InvalidValue"
+	case outOfMemory:
+		return "OutOfMemory"
+	case APIUnavailable:
+		return "APIUnavailable"
+	case VersionUnavailable:
+		return "VersionUnavailable"
+	case PlatformError:
+		return "PlatformError"
+	case FormatUnavailable:
+		return "FormatUnavailable"
+	default:
+		return fmt.Sprintf("ErrorCode(%d)", e)
+	}
+}
+
 // Error holds error code and description.
 type Error struct {
 	Code ErrorCode
@@ -37,7 +62,7 @@ type Error struct {
 
 // Error prints the error code and description in a readable format.
 func (e *Error) Error() string {
-	return fmt.Sprintf("Error %d: %s", e.Code, e.Desc)
+	return fmt.Sprintf("%s: %s", e.Code.String(), e.Desc)
 }
 
 // Note: There are many cryptic caveats to proper error handling here.
