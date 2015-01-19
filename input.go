@@ -368,6 +368,8 @@ func (w *Window) SetCursorPosition(xpos, ypos float64) error {
 //
 // The pixels are 32-bit little-endian RGBA, i.e. eight bits per channel. They are arranged
 // canonically as packed sequential rows, starting from the top-left corner.
+// 
+// All non-RGBA images will be converted to RGBA.
 //
 // The cursor hotspot is specified in pixels, relative to the upper-left corner of the cursor image.
 // Like all other coordinate systems in GLFW, the X-axis points to the right and the Y-axis points down.
