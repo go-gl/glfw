@@ -95,7 +95,6 @@ const (
 	KeyZ            Key = C.GLFW_KEY_Z
 	KeyLeftBracket  Key = C.GLFW_KEY_LEFT_BRACKET
 	KeyBackslash    Key = C.GLFW_KEY_BACKSLASH
-	KeyBracket      Key = C.GLFW_KEY_RIGHT_BRACKET // Kept for backward compatbility
 	KeyRightBracket Key = C.GLFW_KEY_RIGHT_BRACKET
 	KeyGraveAccent  Key = C.GLFW_KEY_GRAVE_ACCENT
 	KeyWorld1       Key = C.GLFW_KEY_WORLD_1
