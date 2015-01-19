@@ -75,7 +75,12 @@ func flushErrors() {
 func fetchError() error {
 	select {
 	case err := <-lastError:
-		return err
+		switch err.Code {
+		case OutOfMemory, InvalidEnum, InvalidValue, NotInitialized, NoCurrentContext:
+			panic(err)
+		default:
+			return err
+		}
 	default:
 		return nil
 	}
