@@ -65,6 +65,7 @@ const (
 	ContextVersionMajor     Hint = C.GLFW_CONTEXT_VERSION_MAJOR // Specifies the client API version that the created context must be compatible with.
 	ContextVersionMinor     Hint = C.GLFW_CONTEXT_VERSION_MINOR // Specifies the client API version that the created context must be compatible with.
 	ContextRobustness       Hint = C.GLFW_CONTEXT_ROBUSTNESS    // Specifies the robustness strategy to be used by the context.
+	ContextReleaseBehavior  Hint = C.GLFW_CONTEXT_RELEASE_BEHAVIOR
 	OpenGLForwardCompatible Hint = C.GLFW_OPENGL_FORWARD_COMPAT // Specifies whether the OpenGL context should be forward-compatible. Hard constraint.
 	OpenGLDebugContext      Hint = C.GLFW_OPENGL_DEBUG_CONTEXT
 	OpenGLProfile           Hint = C.GLFW_OPENGL_PROFILE // Specifies which OpenGL profile to create the context for. Hard constraint.
@@ -87,10 +88,11 @@ const (
 	Stereo          Hint = C.GLFW_STEREO           // Specifies whether to use stereoscopic rendering. Hard constraint.
 	Samples         Hint = C.GLFW_SAMPLES          // Specifies the desired number of samples to use for multisampling. Zero disables multisampling.
 	SRGBCapable     Hint = C.GLFW_SRGB_CAPABLE     // Specifies whether the framebuffer should be sRGB capable.
-	RefreshRate     Hint = C.GLFW_REFRESH_RATE     // specifies the desired refresh rate for full screen windows. If set to zero, the highest available refresh rate will be used. This hint is ignored for windowed mode windows.
+	RefreshRate     Hint = C.GLFW_REFRESH_RATE     // Specifies the desired refresh rate for full screen windows. If set to zero, the highest available refresh rate will be used. This hint is ignored for windowed mode windows.
+	DoubleBuffer    Hint = C.GLFW_DOUBLEBUFFER     // Use double buffer or not
 )
 
-// Values for the ClientApi hint.
+// Values for the ClientAPI hint.
 const (
 	OpenGLAPI   int = C.GLFW_OPENGL_API
 	OpenGLESAPI int = C.GLFW_OPENGL_ES_API
@@ -103,17 +105,25 @@ const (
 	LoseContextOnReset  int = C.GLFW_LOSE_CONTEXT_ON_RESET
 )
 
-// Values for the OpenglProfile hint.
+// Values for ContextReleaseBehaviour hint.
+const (
+	AnyReleaseBehavior   int = C.GLFW_ANY_RELEASE_BEHAVIOR
+	ReleaseBehaviorFlush int = C.GLFW_RELEASE_BEHAVIOR_FLUSH
+	ReleaseBehaviorNone  int = C.GLFW_RELEASE_BEHAVIOR_NONE
+)
+
+// Values for the OpenGLProfile hint.
 const (
 	OpenGLAnyProfile    int = C.GLFW_OPENGL_ANY_PROFILE
 	OpenGLCoreProfile   int = C.GLFW_OPENGL_CORE_PROFILE
 	OpenGLCompatProfile int = C.GLFW_OPENGL_COMPAT_PROFILE
 )
 
-// TRUE and FALSE values to use with hints.
+// Other values
 const (
-	True  int = C.GL_TRUE
-	False int = C.GL_FALSE
+	True     int = C.GL_TRUE
+	False    int = C.GL_FALSE
+	DontCare int = C.GLFW_DONT_CARE
 )
 
 type Window struct {
@@ -351,7 +361,19 @@ func (w *Window) SetSize(width, height int) error {
 func (w *Window) GetFramebufferSize() (width, height int, err error) {
 	var wi, h C.int
 	C.glfwGetFramebufferSize(w.data, &wi, &h)
-	return int(wi), int(h), fetchError()
+	return int(wi), int(h), fetchError() // FIXME: width and height are allowed to be NULL in C API
+}
+
+// GetFrameSize retrieves the size, in screen coordinates, of each edge of the frame
+// of the specified window. This size includes the title bar, if the window has one.
+// The size of the frame may vary depending on the window-related hints used to create it.
+//
+// Because this function retrieves the size of each window frame edge and not the offset
+// along a particular coordinate axis, the retrieved values will always be zero or positive.
+func (w *Window) GetFrameSize() (left, top, right, bottom int, err error) {
+	var l, t, r, b C.int
+	C.glfwGetWindowFrameSize(w.data, &l, &t, &r, &b)
+	return int(l), int(t), int(r), int(b), fetchError() // FIXME: left, top, right and bottom are allowed to be NULL in C API
 }
 
 // Iconfiy iconifies/minimizes the window, if it was previously restored. If it
