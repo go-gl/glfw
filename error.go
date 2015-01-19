@@ -29,8 +29,8 @@ const (
 	FormatUnavailable  ErrorCode = C.GLFW_FORMAT_UNAVAILABLE  // The clipboard did not contain data in the requested format.
 )
 
-// GLFWError holds error code and description.
-type GLFWError struct {
+// Error holds error code and description.
+type Error struct {
 	Code ErrorCode
 	Desc string
 }
@@ -39,12 +39,12 @@ type GLFWError struct {
 // See: https://github.com/go-gl/glfw3/pull/86
 
 // Holds the value of the last error.
-var lastError = make(chan *GLFWError, 1)
+var lastError = make(chan *Error, 1)
 
 //export goErrorCB
 func goErrorCB(code C.int, desc *C.char) {
 	flushErrors()
-	err := &GLFWError{ErrorCode(code), C.GoString(desc)}
+	err := &Error{ErrorCode(code), C.GoString(desc)}
 	select {
 	case lastError <- err:
 	default:
@@ -54,7 +54,7 @@ func goErrorCB(code C.int, desc *C.char) {
 }
 
 // Error prints the error code and description in a readable format.
-func (e *GLFWError) Error() string {
+func (e *Error) Error() string {
 	return fmt.Sprintf("Error %d: %s", e.Code, e.Desc)
 }
 
