@@ -203,6 +203,19 @@ const (
 	MouseButtonMiddle MouseButton = C.GLFW_MOUSE_BUTTON_MIDDLE
 )
 
+// StandardCursor corresponds to a standard cursor icon.
+type StandardCursor int
+
+// Standard cursors
+const (
+	ArrowCursor     StandardCursor = C.GLFW_ARROW_CURSOR
+	IBeamCursor     StandardCursor = C.GLFW_IBEAM_CURSOR
+	CrosshairCursor StandardCursor = C.GLFW_CROSSHAIR_CURSOR
+	HandCursor      StandardCursor = C.GLFW_HAND_CURSOR
+	HResizeCursor   StandardCursor = C.GLFW_HRESIZE_CURSOR
+	VResizeCursor   StandardCursor = C.GLFW_VRESIZE_CURSOR
+)
+
 // Action corresponds to a key or button action.
 type Action int
 
@@ -228,6 +241,14 @@ const (
 	CursorHidden   int = C.GLFW_CURSOR_HIDDEN
 	CursorDisabled int = C.GLFW_CURSOR_DISABLED
 )
+
+type Cursor struct {
+	data *C.GLFWcursor
+}
+
+type Image struct {
+	data *C.GLFWimage
+}
 
 //export goMouseButtonCB
 func goMouseButtonCB(window unsafe.Pointer, button, action, mods C.int) {
@@ -275,8 +296,8 @@ func goCharModsCB(window unsafe.Pointer, character C.uint, mods C.int) {
 //export goDropCB
 func goDropCB(window unsafe.Pointer, count C.int, names **C.char) { // TODO: The types of name can be `**C.char` or `unsafe.Pointer`, use whichever is better.
 	w := windows.get((*C.GLFWwindow)(window))
-	namesSlice := make([]string, int(count)) //                                                       // TODO: Make this better. This part is unfinished, hacky, probably not correct, and not idiomatic.
-	for i := 0; i < int(count); i++ {        //                                                       // TODO: Make this better. It should be cleaned up and vetted.
+	namesSlice := make([]string, int(count)) // TODO: Make this better. This part is unfinished, hacky, probably not correct, and not idiomatic.
+	for i := 0; i < int(count); i++ {        // TODO: Make this better. It should be cleaned up and vetted.
 		var x *C.char                                                                                 // TODO: Make this better.
 		p := (**C.char)(unsafe.Pointer(uintptr(unsafe.Pointer(names)) + uintptr(i)*unsafe.Sizeof(x))) // TODO: Make this better.
 		namesSlice[i] = C.GoString(*p)                                                                // TODO: Make this better.
@@ -341,6 +362,47 @@ func (w *Window) GetCursorPosition() (x, y float64, err error) {
 // unbounded and limited only by the minimum and maximum values of a double.
 func (w *Window) SetCursorPosition(xpos, ypos float64) error {
 	C.glfwSetCursorPos(w.data, C.double(xpos), C.double(ypos))
+	return fetchError()
+}
+
+// Creates a new custom cursor image that can be set for a window with SetCursor.
+// The cursor can be destroyed with Destroy. Any remaining cursors are destroyed by Terminate.
+//
+// The pixels are 32-bit little-endian RGBA, i.e. eight bits per channel. They are arranged
+// canonically as packed sequential rows, starting from the top-left corner.
+//
+// The cursor hotspot is specified in pixels, relative to the upper-left corner of the cursor image.
+// Like all other coordinate systems in GLFW, the X-axis points to the right and the Y-axis points down.
+func CreateCursor(image *Image, xhot, yhot int) (*Cursor, error) {
+	c := C.glfwCreateCursor(image.data, C.int(xhot), C.int(yhot))
+	return &Cursor{c}, fetchError()
+}
+
+// Returns a cursor with a standard shape, that can be set for a window with SetCursor.
+func CreateStandardCursor(shape int) (*Cursor, error) {
+	c := C.glfwCreateStandardCursor(C.int(shape))
+	return &Cursor{c}, fetchError()
+}
+
+// This function destroys a cursor previously created with CreateCursor.
+// Any remaining cursors will be destroyed by Terminate.
+func (c *Cursor) Destroy() error {
+	C.glfwDestroyCursor(c.data)
+	return fetchError()
+}
+
+// This function sets the cursor image to be used when the cursor is over the client area
+// of the specified window. The set cursor will only be visible when the cursor mode of the
+// window is CursorNormal.
+//
+// On some platforms, the set cursor may not be visible unless the window also has input focus.
+func (w *Window) SetCursor(c *Cursor) error {
+	if c == nil {
+		C.glfwSetCursor(w.data, nil)
+	} else {
+		C.glfwSetCursor(w.data, c.data)
+	}
+
 	return fetchError()
 }
 
