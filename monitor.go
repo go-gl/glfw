@@ -33,7 +33,7 @@ const (
 )
 
 // VideoMode describes a single video mode.
-type VideoMode struct {
+type VidMode struct {
 	Width       int // The width, in pixels, of the video mode.
 	Height      int // The height, in pixels, of the video mode.
 	RedBits     int // The bit depth of the red channel of the video mode.
@@ -123,7 +123,7 @@ func SetMonitorCallback(cbfun func(monitor *Monitor, event MonitorEvent)) error 
 // The returned array is sorted in ascending order, first by color bit depth
 // (the sum of all channel depths) and then by resolution area (the product of
 // width and height).
-func (m *Monitor) GetVideoModes() ([]*VideoMode, error) {
+func (m *Monitor) GetVideoModes() ([]*VidMode, error) {
 	var length int
 
 	vC := C.glfwGetVideoModes(m.data, (*C.int)(unsafe.Pointer(&length)))
@@ -131,11 +131,11 @@ func (m *Monitor) GetVideoModes() ([]*VideoMode, error) {
 		return nil, fetchError()
 	}
 
-	v := make([]*VideoMode, length)
+	v := make([]*VidMode, length)
 
 	for i := 0; i < length; i++ {
 		t := C.GetVidmodeAtIndex(vC, C.int(i))
-		v[i] = &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits), int(t.refreshRate)}
+		v[i] = &VidMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits), int(t.refreshRate)}
 	}
 
 	return v, nil
@@ -144,12 +144,12 @@ func (m *Monitor) GetVideoModes() ([]*VideoMode, error) {
 // GetVideoMode returns the current video mode of the monitor. If you
 // are using a full screen window, the return value will therefore depend on
 // whether it is focused.
-func (m *Monitor) GetVideoMode() (*VideoMode, error) {
+func (m *Monitor) GetVideoMode() (*VidMode, error) {
 	t := C.glfwGetVideoMode(m.data)
 	if t == nil {
 		return nil, fetchError()
 	}
-	return &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits), int(t.refreshRate)}, nil
+	return &VidMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits), int(t.refreshRate)}, nil
 }
 
 // SetGamma generates a 256-element gamma ramp from the specified exponent and then calls
