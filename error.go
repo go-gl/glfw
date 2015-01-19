@@ -106,7 +106,7 @@ func fetchError() error {
 	select {
 	case err := <-lastError:
 		switch err.Code {
-		case outOfMemory, invalidEnum, invalidValue, notInitialized, noCurrentContext:
+		case notInitialized, noCurrentContext, invalidEnum, invalidValue, outOfMemory:
 			panic(err)
 		default:
 			return err
