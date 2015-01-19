@@ -19,13 +19,13 @@ const (
 	invalidEnum      ErrorCode = C.GLFW_INVALID_ENUM       // One of the enum parameters for the function was given an invalid enum.
 	invalidValue     ErrorCode = C.GLFW_INVALID_VALUE      // One of the parameters for the function was given an invalid value.
 	outOfMemory      ErrorCode = C.GLFW_OUT_OF_MEMORY      // A memory allocation failed.
+	platformError    ErrorCode = C.GLFW_PLATFORM_ERROR     // A platform-specific error occurred that does not match any of the more specific categories.
 )
 
 // Error codes.
 const (
 	APIUnavailable     ErrorCode = C.GLFW_API_UNAVAILABLE     // GLFW could not find support for the requested client API on the system.
 	VersionUnavailable ErrorCode = C.GLFW_VERSION_UNAVAILABLE // The requested client API version is not available.
-	PlatformError      ErrorCode = C.GLFW_PLATFORM_ERROR      // A platform-specific error occurred that does not match any of the more specific categories.
 	FormatUnavailable  ErrorCode = C.GLFW_FORMAT_UNAVAILABLE  // The clipboard did not contain data in the requested format.
 )
 
@@ -41,12 +41,12 @@ func (e ErrorCode) String() string {
 		return "InvalidValue"
 	case outOfMemory:
 		return "OutOfMemory"
+	case platformError:
+		return "PlatformError"
 	case APIUnavailable:
 		return "APIUnavailable"
 	case VersionUnavailable:
 		return "VersionUnavailable"
-	case PlatformError:
-		return "PlatformError"
 	case FormatUnavailable:
 		return "FormatUnavailable"
 	default:
@@ -106,7 +106,7 @@ func fetchError() error {
 	select {
 	case err := <-lastError:
 		switch err.Code {
-		case notInitialized, noCurrentContext, invalidEnum, invalidValue, outOfMemory:
+		case notInitialized, noCurrentContext, invalidEnum, invalidValue, outOfMemory, platformError:
 			panic(err)
 		default:
 			return err
