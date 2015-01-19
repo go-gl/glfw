@@ -79,7 +79,7 @@ func GetPrimaryMonitor() (*Monitor, error) {
 
 // GetPosition returns the position, in screen coordinates, of the upper-left
 // corner of the monitor.
-func (m *Monitor) GetPosition() (x, y int, err error) {
+func (m *Monitor) GetPos() (x, y int, err error) {
 	var xpos, ypos C.int
 	C.glfwGetMonitorPos(m.data, &xpos, &ypos)
 	return int(xpos), int(ypos), fetchError()
