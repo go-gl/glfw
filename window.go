@@ -296,7 +296,7 @@ func (w *Window) SetTitle(title string) error {
 	return fetchError()
 }
 
-// GetPosition returns the position, in screen coordinates, of the upper-left
+// GetPos returns the position, in screen coordinates, of the upper-left
 // corner of the client area of the window.
 func (w *Window) GetPos() (x, y int, err error) {
 	var xpos, ypos C.int
@@ -304,7 +304,7 @@ func (w *Window) GetPos() (x, y int, err error) {
 	return int(xpos), int(ypos), fetchError()
 }
 
-// SetPosition sets the position, in screen coordinates, of the upper-left corner
+// SetPos sets the position, in screen coordinates, of the upper-left corner
 // of the client area of the window.
 //
 // If it is a full screen window, this function does nothing.
@@ -404,7 +404,7 @@ func (w *Window) GetMonitor() (*Monitor, error) {
 	return &Monitor{m}, nil
 }
 
-// GetAttribute returns an attribute of the window. There are many attributes,
+// GetAttrib returns an attribute of the window. There are many attributes,
 // some related to the window and others to its context.
 func (w *Window) GetAttrib(attrib Hint) (int, error) {
 	return int(C.glfwGetWindowAttrib(w.data, C.int(attrib))), fetchError()
@@ -423,12 +423,12 @@ func (w *Window) GetUserPointer() (unsafe.Pointer, error) {
 	return C.glfwGetWindowUserPointer(w.data), fetchError()
 }
 
-type PositionCallback func(w *Window, xpos int, ypos int)
+type PosCallback func(w *Window, xpos int, ypos int)
 
-// SetPositionCallback sets the position callback of the window, which is called
+// SetPosCallback sets the position callback of the window, which is called
 // when the window is moved. The callback is provided with the screen position
 // of the upper-left corner of the client area of the window.
-func (w *Window) SetPosCallback(cbfun PositionCallback) (previous PositionCallback, err error) {
+func (w *Window) SetPosCallback(cbfun PosCallback) (previous PosCallback, err error) {
 	previous = w.fPosHolder
 	w.fPosHolder = cbfun
 	if cbfun == nil {

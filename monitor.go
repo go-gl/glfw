@@ -32,7 +32,7 @@ const (
 	Disconnected MonitorEvent = C.GLFW_DISCONNECTED
 )
 
-// VideoMode describes a single video mode.
+// VidMode describes a single video mode.
 type VidMode struct {
 	Width       int // The width, in pixels, of the video mode.
 	Height      int // The height, in pixels, of the video mode.
@@ -77,7 +77,7 @@ func GetPrimaryMonitor() (*Monitor, error) {
 	return &Monitor{m}, nil
 }
 
-// GetPosition returns the position, in screen coordinates, of the upper-left
+// GetPos returns the position, in screen coordinates, of the upper-left
 // corner of the monitor.
 func (m *Monitor) GetPos() (x, y int, err error) {
 	var xpos, ypos C.int
