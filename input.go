@@ -14,6 +14,7 @@ package glfw3
 import "C"
 
 import (
+	"image"
 	"unsafe"
 )
 
@@ -245,9 +246,7 @@ type Cursor struct {
 	data *C.GLFWcursor
 }
 
-type Image struct {
-	data *C.GLFWimage
-}
+type Image *image.NRGBA
 
 //export goMouseButtonCB
 func goMouseButtonCB(window unsafe.Pointer, button, action, mods C.int) {
@@ -372,8 +371,12 @@ func (w *Window) SetCursorPos(xpos, ypos float64) error {
 //
 // The cursor hotspot is specified in pixels, relative to the upper-left corner of the cursor image.
 // Like all other coordinate systems in GLFW, the X-axis points to the right and the Y-axis points down.
-func CreateCursor(image *Image, xhot, yhot int) (*Cursor, error) {
-	c := C.glfwCreateCursor(image.data, C.int(xhot), C.int(yhot))
+func CreateCursor(image Image, xhot, yhot int) (*Cursor, error) {
+	var img C.GLFWimage
+	img.width = C.int(image.Rect.Max.X)
+	img.height = C.int(image.Rect.Max.Y)
+	img.pixels = (*C.uchar)(&image.Pix[0])
+	c := C.glfwCreateCursor(&img, C.int(xhot), C.int(yhot))
 	return &Cursor{c}, fetchError()
 }
 
