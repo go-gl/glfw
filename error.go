@@ -35,6 +35,11 @@ type Error struct {
 	Desc string
 }
 
+// Error prints the error code and description in a readable format.
+func (e *Error) Error() string {
+	return fmt.Sprintf("Error %d: %s", e.Code, e.Desc)
+}
+
 // Note: There are many cryptic caveats to proper error handling here.
 // See: https://github.com/go-gl/glfw3/pull/86
 
@@ -51,11 +56,6 @@ func goErrorCB(code C.int, desc *C.char) {
 		fmt.Println("GLFW: An uncaught error has occurred:", err)
 		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
 	}
-}
-
-// Error prints the error code and description in a readable format.
-func (e *Error) Error() string {
-	return fmt.Sprintf("Error %d: %s", e.Code, e.Desc)
 }
 
 // Set the glfw callback internally
