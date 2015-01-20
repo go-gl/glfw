@@ -318,7 +318,7 @@ func (w *Window) GetMouseButton(button MouseButton) (Action, error) {
 	return Action(C.glfwGetMouseButton(w.data, C.int(button))), fetchError()
 }
 
-// GetCursorPosition returns the last reported position of the cursor.
+// GetCursorPos returns the last reported position of the cursor.
 //
 // If the cursor is disabled (with CursorDisabled) then the cursor position is
 // unbounded and limited only by the minimum and maximum values of a double.
@@ -326,19 +326,19 @@ func (w *Window) GetMouseButton(button MouseButton) (Action, error) {
 // The coordinate can be converted to their integer equivalents with the floor
 // function. Casting directly to an integer type works for positive coordinates,
 // but fails for negative ones.
-func (w *Window) GetCursorPosition() (x, y float64, err error) {
+func (w *Window) GetCursorPos() (x, y float64, err error) {
 	var xpos, ypos C.double
 	C.glfwGetCursorPos(w.data, &xpos, &ypos)
 	return float64(xpos), float64(ypos), fetchError()
 }
 
-// SetCursorPosition sets the position of the cursor. The specified window must
+// SetCursorPos sets the position of the cursor. The specified window must
 // be focused. If the window does not have focus when this function is called,
 // it fails silently.
 //
 // If the cursor is disabled (with CursorDisabled) then the cursor position is
 // unbounded and limited only by the minimum and maximum values of a double.
-func (w *Window) SetCursorPosition(xpos, ypos float64) error {
+func (w *Window) SetCursorPos(xpos, ypos float64) error {
 	C.glfwSetCursorPos(w.data, C.double(xpos), C.double(ypos))
 	return fetchError()
 }
@@ -439,12 +439,12 @@ func (w *Window) SetMouseButtonCallback(cbfun MouseButtonCallback) (previous Mou
 	return previous, fetchError()
 }
 
-type CursorPositionCallback func(w *Window, xpos float64, ypos float64)
+type CursorPosCallback func(w *Window, xpos float64, ypos float64)
 
-// SetCursorPositionCallback sets the cursor position callback which is called
+// SetCursorPosCallback sets the cursor position callback which is called
 // when the cursor is moved. The callback is provided with the position relative
 // to the upper-left corner of the client area of the window.
-func (w *Window) SetCursorPositionCallback(cbfun CursorPositionCallback) (previous CursorPositionCallback, err error) {
+func (w *Window) SetCursorPosCallback(cbfun CursorPosCallback) (previous CursorPosCallback, err error) {
 	previous = w.fCursorPosHolder
 	w.fCursorPosHolder = cbfun
 	if cbfun == nil {
