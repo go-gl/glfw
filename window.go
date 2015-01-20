@@ -361,7 +361,7 @@ func (w *Window) SetSize(width, height int) error {
 func (w *Window) GetFramebufferSize() (width, height int, err error) {
 	var wi, h C.int
 	C.glfwGetFramebufferSize(w.data, &wi, &h)
-	return int(wi), int(h), fetchError() // FIXME: width and height are allowed to be NULL in C API
+	return int(wi), int(h), fetchError()
 }
 
 // GetFrameSize retrieves the size, in screen coordinates, of each edge of the frame
@@ -373,7 +373,7 @@ func (w *Window) GetFramebufferSize() (width, height int, err error) {
 func (w *Window) GetFrameSize() (left, top, right, bottom int, err error) {
 	var l, t, r, b C.int
 	C.glfwGetWindowFrameSize(w.data, &l, &t, &r, &b)
-	return int(l), int(t), int(r), int(b), fetchError() // FIXME: left, top, right and bottom are allowed to be NULL in C API
+	return int(l), int(t), int(r), int(b), fetchError()
 }
 
 // Iconfiy iconifies/minimizes the window, if it was previously restored. If it
