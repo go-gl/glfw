@@ -8,11 +8,15 @@ import "C"
 
 // See: https://github.com/go-gl/glfw3/issues/82
 /*
-func (w *Window) GetCocoaWindow() (C.id, error) {
-	return C.glfwGetCocoaWindow(w.data), fetchError()
+func (w *Window) GetCocoaWindow() C.id {
+	ret := C.glfwGetCocoaWindow(w.data)
+	panicError()
+	return ret
 }
 
-func (w *Window) GetNSGLContext() (C.id, error) {
-	return C.glfwGetNSGLContext(w.data), fetchError()
+func (w *Window) GetNSGLContext() C.id {
+	ret := C.glfwGetNSGLContext(w.data)
+	panicError()
+	return ret
 }
 */

@@ -137,18 +137,53 @@ func flushErrors() {
 	}
 }
 
-// fetchError is called by various functions to retrieve the error that might
-// have occurred from a generic GLFW operation. It returns nil if no error is
-// present.
-func fetchError() error {
-	select {
-	case err := <-lastError:
-		switch err.Code {
-		case notInitialized, noCurrentContext, invalidEnum, invalidValue, outOfMemory, platformError:
-			panic(err)
-		default:
+// acceptError fetches the next error from the error channel, it accepts only
+// errors with one of the given error codes. If any other error is encountered,
+// a panic will occur.
+func acceptError(codes ...ErrorCode) error {
+	// Grab the next error, if there is one.
+	err := fetchError()
+	if err == nil {
+		return nil
+	}
+
+	// Only if the error has the specific error code accepted by the caller, do
+	// we return the error.
+	for _, code := range codes {
+		if err.Code == code {
 			return err
 		}
+	}
+
+	// The error isn't accepted by the caller. If the error code is not a code
+	// defined in the GLFW C documentation as a programmer error, then the
+	// caller should have accepted it. This is effectively a bug in this
+	// package.
+	switch err.Code {
+	case notInitialized, noCurrentContext, invalidEnum, invalidValue, outOfMemory, platformError:
+		panic(err)
+	default:
+		fmt.Println("GLFW: A invalid error was not accepted by the caller:", err)
+		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
+		panic(err)
+	}
+}
+
+// panicError is a helper used by functions which expect no errors (except
+// programmer errors) to occur. It will panic if it finds any such error.
+func panicError() {
+	err := acceptError()
+	if err != nil {
+		panic(err)
+	}
+}
+
+// fetchError fetches the next error from the error channel, it does not block
+// and returns nil if there is no error present.
+func fetchError() *Error {
+	select {
+	case err := <-lastError:
+		return err
 	default:
 		return nil
 	}
