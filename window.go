@@ -61,14 +61,14 @@ const (
 
 // Context related hints.
 const (
-	ClientAPI               Hint = C.GLFW_CLIENT_API            // Specifies which client API to create the context for. Hard constraint.
-	ContextVersionMajor     Hint = C.GLFW_CONTEXT_VERSION_MAJOR // Specifies the client API version that the created context must be compatible with.
-	ContextVersionMinor     Hint = C.GLFW_CONTEXT_VERSION_MINOR // Specifies the client API version that the created context must be compatible with.
-	ContextRobustness       Hint = C.GLFW_CONTEXT_ROBUSTNESS    // Specifies the robustness strategy to be used by the context.
-	ContextReleaseBehavior  Hint = C.GLFW_CONTEXT_RELEASE_BEHAVIOR
-	OpenGLForwardCompatible Hint = C.GLFW_OPENGL_FORWARD_COMPAT // Specifies whether the OpenGL context should be forward-compatible. Hard constraint.
-	OpenGLDebugContext      Hint = C.GLFW_OPENGL_DEBUG_CONTEXT
-	OpenGLProfile           Hint = C.GLFW_OPENGL_PROFILE // Specifies which OpenGL profile to create the context for. Hard constraint.
+	ClientAPI               Hint = C.GLFW_CLIENT_API               // Specifies which client API to create the context for. Hard constraint.
+	ContextVersionMajor     Hint = C.GLFW_CONTEXT_VERSION_MAJOR    // Specifies the client API version that the created context must be compatible with.
+	ContextVersionMinor     Hint = C.GLFW_CONTEXT_VERSION_MINOR    // Specifies the client API version that the created context must be compatible with.
+	ContextRobustness       Hint = C.GLFW_CONTEXT_ROBUSTNESS       // Specifies the robustness strategy to be used by the context.
+	ContextReleaseBehavior  Hint = C.GLFW_CONTEXT_RELEASE_BEHAVIOR // Specifies the release behavior to be used by the context.
+	OpenGLForwardCompatible Hint = C.GLFW_OPENGL_FORWARD_COMPAT    // Specifies whether the OpenGL context should be forward-compatible. Hard constraint.
+	OpenGLDebugContext      Hint = C.GLFW_OPENGL_DEBUG_CONTEXT     // Specifies whether to create a debug OpenGL context, which may have additional error and performance issue reporting functionality. If OpenGL ES is requested, this hint is ignored.
+	OpenGLProfile           Hint = C.GLFW_OPENGL_PROFILE           // Specifies which OpenGL profile to create the context for. Hard constraint.
 )
 
 // Framebuffer related hints.
@@ -89,7 +89,7 @@ const (
 	Samples         Hint = C.GLFW_SAMPLES          // Specifies the desired number of samples to use for multisampling. Zero disables multisampling.
 	SRGBCapable     Hint = C.GLFW_SRGB_CAPABLE     // Specifies whether the framebuffer should be sRGB capable.
 	RefreshRate     Hint = C.GLFW_REFRESH_RATE     // Specifies the desired refresh rate for full screen windows. If set to zero, the highest available refresh rate will be used. This hint is ignored for windowed mode windows.
-	DoubleBuffer    Hint = C.GLFW_DOUBLEBUFFER     // Use double buffer or not
+	DoubleBuffer    Hint = C.GLFW_DOUBLEBUFFER     // Specifies whether the framebuffer should be double buffered. You nearly always want to use double buffering. This is a hard constraint.
 )
 
 // Values for the ClientAPI hint.
@@ -105,7 +105,7 @@ const (
 	LoseContextOnReset  int = C.GLFW_LOSE_CONTEXT_ON_RESET
 )
 
-// Values for ContextReleaseBehaviour hint.
+// Values for ContextReleaseBehavior hint.
 const (
 	AnyReleaseBehavior   int = C.GLFW_ANY_RELEASE_BEHAVIOR
 	ReleaseBehaviorFlush int = C.GLFW_RELEASE_BEHAVIOR_FLUSH
@@ -119,7 +119,7 @@ const (
 	OpenGLCompatProfile int = C.GLFW_OPENGL_COMPAT_PROFILE
 )
 
-// Other values
+// Other values.
 const (
 	True     int = C.GL_TRUE
 	False    int = C.GL_FALSE
