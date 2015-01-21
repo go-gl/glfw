@@ -558,6 +558,7 @@ func (w *Window) SetCursorEnterCallback(cbfun CursorEnterCallback) (previous Cur
 	} else {
 		C.glfwSetCursorEnterCallbackCB(w.data)
 	}
+	panicError()
 	return previous
 }
 
