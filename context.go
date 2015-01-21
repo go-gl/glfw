@@ -15,14 +15,12 @@ import (
 func (w *Window) MakeContextCurrent() {
 	C.glfwMakeContextCurrent(w.data)
 	panicError()
-	return
 }
 
 // DetachCurrentContext detaches the current context.
 func DetachCurrentContext() {
 	C.glfwMakeContextCurrent(nil)
 	panicError()
-	return
 }
 
 // GetCurrentContext returns the window whose context is current.
@@ -41,7 +39,6 @@ func GetCurrentContext() *Window {
 func (w *Window) SwapBuffers() {
 	C.glfwSwapBuffers(w.data)
 	panicError()
-	return
 }
 
 // SwapInterval sets the swap interval for the current context, i.e. the number
@@ -61,7 +58,6 @@ func (w *Window) SwapBuffers() {
 func SwapInterval(interval int) {
 	C.glfwSwapInterval(C.int(interval))
 	panicError()
-	return
 }
 
 // ExtensionSupported returns whether the specified OpenGL or context creation

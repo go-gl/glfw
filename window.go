@@ -597,7 +597,6 @@ func (w *Window) SetClipboardString(str string) {
 	defer C.free(unsafe.Pointer(cp))
 	C.glfwSetClipboardString(w.data, cp)
 	panicError()
-	return
 }
 
 // GetClipboardString returns the contents of the system clipboard, if it

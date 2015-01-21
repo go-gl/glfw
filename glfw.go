@@ -46,7 +46,6 @@ func Init() error {
 func Terminate() {
 	flushErrors()
 	C.glfwTerminate()
-	return
 }
 
 // GetVersion retrieves the major, minor and revision numbers of the GLFW
