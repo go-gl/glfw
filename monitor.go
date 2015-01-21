@@ -122,7 +122,6 @@ func SetMonitorCallback(cbfun func(monitor *Monitor, event MonitorEvent)) {
 		C.glfwSetMonitorCallbackCB()
 	}
 	panicError()
-	return
 }
 
 // GetVideoModes returns an array of all video modes supported by the monitor.
@@ -165,7 +164,6 @@ func (m *Monitor) GetVideoMode() *VidMode {
 func (m *Monitor) SetGamma(gamma float32) {
 	C.glfwSetGamma(m.data, C.float(gamma))
 	panicError()
-	return
 }
 
 // GetGammaRamp retrieves the current gamma ramp of the monitor.
@@ -206,5 +204,4 @@ func (m *Monitor) SetGammaRamp(ramp *GammaRamp) {
 
 	C.glfwSetGammaRamp(m.data, &rampC)
 	panicError()
-	return
 }
