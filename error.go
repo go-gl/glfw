@@ -163,7 +163,7 @@ func acceptError(codes ...ErrorCode) error {
 	case notInitialized, noCurrentContext, invalidEnum, invalidValue, outOfMemory, platformError:
 		panic(err)
 	default:
-		fmt.Println("GLFW: A invalid error was not accepted by the caller:", err)
+		fmt.Println("GLFW: An invalid error was not accepted by the caller:", err)
 		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
 		panic(err)
 	}
