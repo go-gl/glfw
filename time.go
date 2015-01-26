@@ -9,8 +9,10 @@ import "C"
 // The resolution of the timer is system dependent, but is usually on the order
 // of a few micro- or nanoseconds. It uses the highest-resolution monotonic time
 // source on each supported platform.
-func GetTime() (float64, error) {
-	return float64(C.glfwGetTime()), fetchError()
+func GetTime() float64 {
+	ret := float64(C.glfwGetTime())
+	panicError()
+	return ret
 }
 
 // SetTime sets the value of the GLFW timer. It then continues to count up from
@@ -19,7 +21,7 @@ func GetTime() (float64, error) {
 // The resolution of the timer is system dependent, but is usually on the order
 // of a few micro- or nanoseconds. It uses the highest-resolution monotonic time
 // source on each supported platform.
-func SetTime(time float64) error {
+func SetTime(time float64) {
 	C.glfwSetTime(C.double(time))
-	return fetchError()
+	panicError()
 }

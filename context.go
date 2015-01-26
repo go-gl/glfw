@@ -12,32 +12,33 @@ import (
 // Originally GLFW 3 passes a null pointer to detach the context.
 // But since we're using receievers, DetachCurrentContext should
 // be used instead.
-func (w *Window) MakeContextCurrent() error {
+func (w *Window) MakeContextCurrent() {
 	C.glfwMakeContextCurrent(w.data)
-	return fetchError()
+	panicError()
 }
 
 // DetachCurrentContext detaches the current context.
-func DetachCurrentContext() error {
+func DetachCurrentContext() {
 	C.glfwMakeContextCurrent(nil)
-	return fetchError()
+	panicError()
 }
 
 // GetCurrentContext returns the window whose context is current.
-func GetCurrentContext() (*Window, error) {
+func GetCurrentContext() *Window {
 	w := C.glfwGetCurrentContext()
+	panicError()
 	if w == nil {
-		return nil, fetchError()
+		return nil
 	}
-	return windows.get(w), nil
+	return windows.get(w)
 }
 
 // SwapBuffers swaps the front and back buffers of the window. If the
 // swap interval is greater than zero, the GPU driver waits the specified number
 // of screen updates before swapping the buffers.
-func (w *Window) SwapBuffers() error {
+func (w *Window) SwapBuffers() {
 	C.glfwSwapBuffers(w.data)
-	return fetchError()
+	panicError()
 }
 
 // SwapInterval sets the swap interval for the current context, i.e. the number
@@ -54,9 +55,9 @@ func (w *Window) SwapBuffers() error {
 //
 // Some GPU drivers do not honor the requested swap interval, either because of
 // user settings that override the request or due to bugs in the driver.
-func SwapInterval(interval int) error {
+func SwapInterval(interval int) {
 	C.glfwSwapInterval(C.int(interval))
-	return fetchError()
+	panicError()
 }
 
 // ExtensionSupported returns whether the specified OpenGL or context creation
@@ -67,8 +68,10 @@ func SwapInterval(interval int) error {
 // recommended that you cache its results if it's going to be used frequently.
 // The extension strings will not change during the lifetime of a context, so
 // there is no danger in doing this.
-func ExtensionSupported(extension string) (bool, error) {
+func ExtensionSupported(extension string) bool {
 	e := C.CString(extension)
 	defer C.free(unsafe.Pointer(e))
-	return glfwbool(C.glfwExtensionSupported(e)), fetchError()
+	ret := glfwbool(C.glfwExtensionSupported(e))
+	panicError()
+	return ret
 }
