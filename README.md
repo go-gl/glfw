@@ -95,7 +95,6 @@ func main() {
 * Removed error code `PlatformError`.
 * Removed `KeyBracket`.
 * Renamed `Window.SetCharacterCallback` to `Window.SetCharCallback`.
-* Renamed `Window.SetCharacterModsCallback` to `Window.SetCharModsCallback`.
 * Renamed `Window.GetCursorPosition` to `GetCursorPos`.
 * Renamed `Window.SetCursorPosition` to `SetCursorPos`.
 * Renamed `CursorPositionCallback` to `CursorPosCallback`.
