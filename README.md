@@ -115,7 +115,7 @@ func main() {
 * Renamed `OpenglForwardCompatible` to `OpenGLForwardCompatible`.
 * Renamed `OpenglDebugContext` to `OpenGLDebugContext`.
 * Renamed `OpenglProfile` to `OpenGLProfile`.
-* Renamed `SrgbCapable` ranamed to `SRGBCapable`.
+* Renamed `SrgbCapable` to `SRGBCapable`.
 * Renamed `OpenglApi` to `OpenGLAPI`.
 * Renamed `OpenglEsApi` to `OpenGLESAPI`.
 * Renamed `OpenglAnyProfile` to `OpenGLAnyProfile`.
