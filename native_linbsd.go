@@ -1,22 +1,27 @@
-//+build linux freebsd
+// +build linux freebsd
 
 package glfw3
 
 //#define GLFW_EXPOSE_NATIVE_X11
 //#define GLFW_EXPOSE_NATIVE_GLX
-//#include <X11/extensions/Xrandr.h>
-//#include <GLFW/glfw3.h>
-//#include <GLFW/glfw3native.h>
+//#include "glfw/include/GLFW/glfw3.h"
+//#include "glfw/include/GLFW/glfw3native.h"
 import "C"
 
 func (w *Window) GetX11Window() C.Window {
-	return C.glfwGetX11Window(w.data)
+	ret := C.glfwGetX11Window(w.data)
+	panicError()
+	return ret
 }
 
 func (w *Window) GetGLXContext() C.GLXContext {
-	return C.glfwGetGLXContext(w.data)
+	ret := C.glfwGetGLXContext(w.data)
+	panicError()
+	return ret
 }
 
 func GetX11Display() *C.Display {
-	return C.glfwGetX11Display()
+	ret := C.glfwGetX11Display()
+	panicError()
+	return ret
 }
