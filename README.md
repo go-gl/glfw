@@ -1,7 +1,7 @@
 # Go Bindings for GLFW 3.1
 
 * **ATTENTION:** As of GLFW 3.1 we break API. See Changelog below.
-* See [here](http://godoc.org/github.com/go-gl/glfw3) for documentation.
+* See [here](http://godoc.org/github.com/go-gl/glfw/3.1/glfw) for documentation.
 * You can help by submitting examples to [go-gl/examples](http://github.com/go-gl/examples).
 
 ## Installation
