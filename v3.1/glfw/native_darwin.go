@@ -1,4 +1,4 @@
-package glfw3
+package glfw
 
 //#define GLFW_EXPOSE_NATIVE_COCOA
 //#define GLFW_EXPOSE_NATIVE_NSGL

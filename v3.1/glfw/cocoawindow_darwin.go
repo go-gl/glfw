@@ -1,4 +1,4 @@
-package glfw3
+package glfw
 
 /*
 #cgo CFLAGS: -x objective-c

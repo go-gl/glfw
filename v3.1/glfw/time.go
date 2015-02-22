@@ -1,4 +1,4 @@
-package glfw3
+package glfw
 
 //#include "glfw/include/GLFW/glfw3.h"
 import "C"

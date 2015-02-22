@@ -1,6 +1,6 @@
 //+build linux freebsd
 
-package glfw3
+package glfw
 
 //#define GLFW_EXPOSE_NATIVE_X11
 //#define GLFW_EXPOSE_NATIVE_GLX

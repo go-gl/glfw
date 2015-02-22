@@ -1,4 +1,4 @@
-package glfw3
+package glfw
 
 /*
 // Standard OpenGL client is used on 386 and amd64 architectures, except when

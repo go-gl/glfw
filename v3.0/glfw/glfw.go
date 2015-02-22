@@ -1,4 +1,4 @@
-package glfw3
+package glfw
 
 // Not sure about the darwin flag
 
