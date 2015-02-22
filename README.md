@@ -1,12 +1,12 @@
 # Go Bindings for GLFW 3.1
 
 * **ATTENTION:** As of GLFW 3.1 we break API. See Changelog below.
-* See [here](http://godoc.org/github.com/go-gl/glfw/3.1/glfw) for documentation.
+* See [here](http://godoc.org/github.com/go-gl/glfw/v3.1/glfw) for documentation.
 * You can help by submitting examples to [go-gl/examples](http://github.com/go-gl/examples).
 
 ## Installation
 
-* Installation is easy, just `go get github.com/go-gl/glfw3` and be done (*GLFW sources are included so you don't have to build GLFW on your own*)!
+* Installation is easy, just `go get github.com/go-gl/glfw/v3.1/glfw` and be done (*GLFW sources are included so you don't have to build GLFW on your own*)!
 * Go 1.4 is required on Windows (otherwise you must use MinGW v4.8.1 exactly, see [Go issue 8811](https://code.google.com/p/go/issues/detail?id=8811)).
 
 ## Usage
@@ -16,7 +16,7 @@ package main
 
 import (
 	"runtime"
-	glfw "github.com/go-gl/glfw3"
+	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 func init() {
