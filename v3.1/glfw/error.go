@@ -6,6 +6,7 @@ import "C"
 
 import (
 	"fmt"
+	"log"
 )
 
 // ErrorCode corresponds to an error code.
@@ -140,6 +141,11 @@ func flushErrors() {
 // acceptError fetches the next error from the error channel, it accepts only
 // errors with one of the given error codes. If any other error is encountered,
 // a panic will occur.
+//
+// Platform errors are always printed, for information why please see:
+//
+//  https://github.com/go-gl/glfw/issues/127
+//
 func acceptError(codes ...ErrorCode) error {
 	// Grab the next error, if there is one.
 	err := fetchError()
@@ -160,7 +166,10 @@ func acceptError(codes ...ErrorCode) error {
 	// caller should have accepted it. This is effectively a bug in this
 	// package.
 	switch err.Code {
-	case notInitialized, noCurrentContext, invalidEnum, invalidValue, outOfMemory, platformError:
+	case platformError:
+		log.Println(err)
+		return nil
+	case notInitialized, noCurrentContext, invalidEnum, invalidValue, outOfMemory:
 		panic(err)
 	default:
 		fmt.Println("GLFW: An invalid error was not accepted by the caller:", err)
