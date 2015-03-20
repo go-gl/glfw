@@ -584,7 +584,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             int i;
 
             const int count = DragQueryFileW(hDrop, 0xffffffff, NULL, 0);
-            char** names = calloc(count, sizeof(char*));
+            char** paths = calloc(count, sizeof(char*));
 
             // Move the mouse to the position of the drop
             DragQueryPoint(hDrop, &pt);
@@ -596,16 +596,16 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
 
                 DragQueryFileW(hDrop, i, buffer, length + 1);
-                names[i] = _glfwCreateUTF8FromWideString(buffer);
+                paths[i] = _glfwCreateUTF8FromWideString(buffer);
 
                 free(buffer);
             }
 
-            _glfwInputDrop(window, count, (const char**) names);
+            _glfwInputDrop(window, count, (const char**) paths);
 
             for (i = 0;  i < count;  i++)
-                free(names[i]);
-            free(names);
+                free(paths[i]);
+            free(paths);
 
             DragFinish(hDrop);
             return 0;
@@ -679,7 +679,7 @@ static int createWindow(_GLFWwindow* window,
     if (!wideTitle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to convert title to wide string");
+                        "Win32: Failed to convert window title to UTF-16");
         return GL_FALSE;
     }
 
@@ -862,7 +862,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     if (!wideTitle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to convert title to wide string");
+                        "Win32: Failed to convert window title to UTF-16");
         return;
     }
 
@@ -1168,18 +1168,12 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    LPCWSTR native = translateCursorShape(shape);
-    if (!native)
-    {
-        _glfwInputError(GLFW_INVALID_ENUM, "Win32: Invalid standard cursor");
-        return GL_FALSE;
-    }
-
-    cursor->win32.handle = CopyCursor(LoadCursorW(NULL, native));
+    cursor->win32.handle =
+        CopyCursor(LoadCursorW(NULL, translateCursorShape(shape)));
     if (!cursor->win32.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to retrieve shared cursor");
+                        "Win32: Failed to create standard cursor");
         return GL_FALSE;
     }
 
@@ -1219,8 +1213,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
     if (!wideString)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to convert clipboard string to "
-                        "wide string");
+                        "Win32: Failed to convert string to UTF-16");
         return;
     }
 
@@ -1259,12 +1252,6 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
     HANDLE stringHandle;
 
-    if (!IsClipboardFormatAvailable(CF_UNICODETEXT))
-    {
-        _glfwInputError(GLFW_FORMAT_UNAVAILABLE, NULL);
-        return NULL;
-    }
-
     if (!OpenClipboard(window->win32.handle))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to open clipboard");
@@ -1276,8 +1263,8 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     {
         CloseClipboard();
 
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to retrieve clipboard data");
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
+                        "Win32: Failed to convert clipboard to string");
         return NULL;
     }
 

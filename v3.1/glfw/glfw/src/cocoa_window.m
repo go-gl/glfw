@@ -592,17 +592,17 @@ static int translateKey(unsigned int key)
     if (count)
     {
         NSEnumerator* e = [files objectEnumerator];
-        char** names = calloc(count, sizeof(char*));
+        char** paths = calloc(count, sizeof(char*));
         int i;
 
         for (i = 0;  i < count;  i++)
-            names[i] = strdup([[e nextObject] UTF8String]);
+            paths[i] = strdup([[e nextObject] UTF8String]);
 
-        _glfwInputDrop(window, count, (const char**) names);
+        _glfwInputDrop(window, count, (const char**) paths);
 
         for (i = 0;  i < count;  i++)
-            free(names[i]);
-        free(names);
+            free(paths[i]);
+        free(paths);
     }
 
     return YES;
@@ -990,7 +990,10 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    [window->ns.object setContentSize:NSMakeSize(width, height)];
+    if (window->monitor)
+        enterFullscreenMode(window);
+    else
+        [window->ns.object setContentSize:NSMakeSize(width, height)];
 }
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
@@ -1208,7 +1211,8 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
     cursor->ns.object = getStandardCursor(shape);
     if (!cursor->ns.object)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Cocoa: Invalid standard cursor");
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to retrieve standard cursor");
         return GL_FALSE;
     }
 
@@ -1252,7 +1256,8 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 
     if (![[pasteboard types] containsObject:NSStringPboardType])
     {
-        _glfwInputError(GLFW_FORMAT_UNAVAILABLE, NULL);
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
+                        "Cocoa: Failed to retrieve string from pasteboard");
         return NULL;
     }
 

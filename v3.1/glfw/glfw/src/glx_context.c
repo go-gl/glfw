@@ -175,7 +175,7 @@ int _glfwInitContextAPI(void)
     _glfw.glx.libGL = dlopen("libGL.so.1", RTLD_LAZY | RTLD_GLOBAL);
     if (!_glfw.glx.libGL)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "GLX: Failed to find libGL");
+        _glfwInputError(GLFW_API_UNAVAILABLE, "GLX: Failed to find libGL");
         return GL_FALSE;
     }
 #endif
@@ -320,8 +320,7 @@ int _glfwCreateContext(_GLFWwindow* window,
             !_glfw.glx.EXT_create_context_es2_profile)
         {
             _glfwInputError(GLFW_API_UNAVAILABLE,
-                            "GLX: OpenGL ES requested but "
-                            "GLX_EXT_create_context_es2_profile is unavailable");
+                            "GLX: OpenGL ES requested but GLX_EXT_create_context_es2_profile is unavailable");
             return GL_FALSE;
         }
     }
@@ -331,8 +330,7 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (!_glfw.glx.ARB_create_context)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "GLX: Forward compatibility requested but "
-                            "GLX_ARB_create_context_profile is unavailable");
+                            "GLX: Forward compatibility requested but GLX_ARB_create_context_profile is unavailable");
             return GL_FALSE;
         }
     }
@@ -343,8 +341,7 @@ int _glfwCreateContext(_GLFWwindow* window,
             !_glfw.glx.ARB_create_context_profile)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "GLX: An OpenGL profile requested but "
-                            "GLX_ARB_create_context_profile is unavailable");
+                            "GLX: An OpenGL profile requested but GLX_ARB_create_context_profile is unavailable");
             return GL_FALSE;
         }
     }
@@ -360,9 +357,6 @@ int _glfwCreateContext(_GLFWwindow* window,
             if (ctxconfig->forward)
                 flags |= GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
 
-            if (ctxconfig->debug)
-                flags |= GLX_CONTEXT_DEBUG_BIT_ARB;
-
             if (ctxconfig->profile)
             {
                 if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
@@ -373,6 +367,9 @@ int _glfwCreateContext(_GLFWwindow* window,
         }
         else
             mask |= GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
+
+        if (ctxconfig->debug)
+            flags |= GLX_CONTEXT_DEBUG_BIT_ARB;
 
         if (ctxconfig->robustness)
         {
@@ -454,7 +451,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (!window->glx.context)
     {
-        _glfwInputXError(GLFW_PLATFORM_ERROR, "GLX: Failed to create context");
+        _glfwInputXError(GLFW_VERSION_UNAVAILABLE, "GLX: Failed to create context");
         return GL_FALSE;
     }
 

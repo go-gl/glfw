@@ -479,11 +479,13 @@ static GLboolean initExtensions(void)
                                            "_MOTIF_WM_HINTS",
                                            False);
 
+#if defined(_GLFW_HAS_XF86VM)
     // Check for XF86VidMode extension
     _glfw.x11.vidmode.available =
         XF86VidModeQueryExtension(_glfw.x11.display,
                                   &_glfw.x11.vidmode.eventBase,
                                   &_glfw.x11.vidmode.errorBase);
+#endif /*_GLFW_HAS_XF86VM*/
 
     // Check for RandR extension
     _glfw.x11.randr.available =
@@ -535,6 +537,7 @@ static GLboolean initExtensions(void)
             _glfw.x11.xinerama.available = GL_TRUE;
     }
 
+#if defined(_GLFW_HAS_XINPUT)
     if (XQueryExtension(_glfw.x11.display,
                         "XInputExtension",
                         &_glfw.x11.xi.majorOpcode,
@@ -551,6 +554,7 @@ static GLboolean initExtensions(void)
             _glfw.x11.xi.available = GL_TRUE;
         }
     }
+#endif /*_GLFW_HAS_XINPUT*/
 
     // Check if Xkb is supported on this display
     _glfw.x11.xkb.versionMajor = 1;
@@ -583,7 +587,7 @@ static GLboolean initExtensions(void)
     detectEWMH();
 
     // Find or create string format atoms
-    _glfw.x11._NULL = XInternAtom(_glfw.x11.display, "NULL", False);
+    _glfw.x11.NULL_ = XInternAtom(_glfw.x11.display, "NULL", False);
     _glfw.x11.UTF8_STRING =
         XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
     _glfw.x11.COMPOUND_STRING =
@@ -710,6 +714,8 @@ Cursor _glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
 
 int _glfwPlatformInit(void)
 {
+    // HACK: If the current locale is C, apply the environment's locale
+    //       This is done because the C locale breaks character input
     if (strcmp(setlocale(LC_CTYPE, NULL), "C") == 0)
         setlocale(LC_CTYPE, "");
 
@@ -718,7 +724,7 @@ int _glfwPlatformInit(void)
     _glfw.x11.display = XOpenDisplay(NULL);
     if (!_glfw.x11.display)
     {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "X11: Failed to open X display");
+        _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to open X display");
         return GL_FALSE;
     }
 
