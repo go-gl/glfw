@@ -7,7 +7,7 @@
 
 	#ifndef strdup
 	char *strdup (const char *str) {
-		char *new = malloc(strlen(str));
+		char *new = malloc(strlen(str) + 1);
 		strcpy(new, str);
 		return new;
 	}
