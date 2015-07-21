@@ -1,17 +1,20 @@
-# Go Bindings for GLFW 3.1
-
-* **ATTENTION:** As of GLFW 3.1 we break API. See Changelog below.
-* See [here](http://godoc.org/github.com/go-gl/glfw/v3.1/glfw) for documentation.
-* You can help by submitting examples to [go-gl/examples](http://github.com/go-gl/examples).
+# GLFW 3.1 for Go [![GoDoc](https://godoc.org/github.com/go-gl/glfw/v3.1/glfw?status.svg)](https://godoc.org/github.com/go-gl/glfw/v3.1/glfw)
 
 ## Installation
 
-* Installation is easy, just `go get github.com/go-gl/glfw/v3.1/glfw` and be done (*GLFW sources are included so you don't have to build GLFW on your own*)!
-* Go 1.4 is required on Windows (otherwise you must use MinGW v4.8.1 exactly, see [Go issue 8811](https://code.google.com/p/go/issues/detail?id=8811)).
+* GLFW C library source is included and built automatically as part of the Go package. But you need to make sure you have dependencies of GLFW:
+	* On OS X, you need Xcode for required headers and libraries.
+	* On Ubuntu/Debian-like Linux distributions, you need `libgl1-mesa-dev` and `xorg-dev` packages.
+	* See [here](http://www.glfw.org/docs/latest/compile.html#compile_deps) for full details.
+* Go 1.4+ is required on Windows (otherwise you must use MinGW v4.8.1 exactly, see [Go issue 8811](https://github.com/golang/go/issues/8811)).
+
+```
+go get -u github.com/go-gl/glfw/v3.1/glfw
+```
 
 ## Usage
 
-```go
+```Go
 package main
 
 import (
@@ -40,7 +43,7 @@ func main() {
 	window.MakeContextCurrent()
 
 	for !window.ShouldClose() {
-		// Do OpenGL stuff
+		// Do OpenGL stuff.
 		window.SwapBuffers()
 		glfw.PollEvents()
 	}
