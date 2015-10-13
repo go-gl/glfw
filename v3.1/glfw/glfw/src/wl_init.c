@@ -35,7 +35,6 @@
 #include <wayland-client.h>
 #include <wayland-cursor.h>
 
-#include "xkb_unicode.h"
 
 static void pointerHandleEnter(void* data,
                                struct wl_pointer* pointer,
@@ -85,6 +84,11 @@ static void pointerHandleMotion(void* data,
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: GLFW_CURSOR_DISABLED not supported");
         return;
+    }
+    else
+    {
+        window->wl.cursorPosX = wl_fixed_to_double(sx);
+        window->wl.cursorPosY = wl_fixed_to_double(sy);
     }
 
     _glfwInputCursorMotion(window,
@@ -616,15 +620,18 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_NUMBER " Wayland EGL "
+    return _GLFW_VERSION_NUMBER " Wayland EGL"
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
+#else
+        " gettimeofday"
+#endif
+#if defined(__linux__)
+        " /dev/js"
 #endif
 #if defined(_GLFW_BUILD_DLL)
         " shared"
 #endif
         ;
-
-    return version;
 }
 

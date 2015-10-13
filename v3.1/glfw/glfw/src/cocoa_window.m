@@ -83,13 +83,16 @@ static void updateModeCursor(_GLFWwindow* window)
 //
 static GLboolean enterFullscreenMode(_GLFWwindow* window)
 {
+    GLFWvidmode mode;
     GLboolean status;
+    int xpos, ypos;
 
     status = _glfwSetVideoMode(window->monitor, &window->videoMode);
 
-    // NOTE: The window is resized despite mode setting failure to make
-    //       glfwSetWindowSize more robust
-    [window->ns.object setFrame:[window->monitor->ns.screen frame]
+    _glfwPlatformGetVideoMode(window->monitor, &mode);
+    _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
+
+    [window->ns.object setFrame:NSMakeRect(xpos, ypos, mode.width, mode.height)
                         display:YES];
 
     return status;
@@ -121,6 +124,34 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
     else
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
         return contentRect;
+}
+
+// Translates OS X key modifiers into GLFW ones
+//
+static int translateFlags(NSUInteger flags)
+{
+    int mods = 0;
+
+    if (flags & NSShiftKeyMask)
+        mods |= GLFW_MOD_SHIFT;
+    if (flags & NSControlKeyMask)
+        mods |= GLFW_MOD_CONTROL;
+    if (flags & NSAlternateKeyMask)
+        mods |= GLFW_MOD_ALT;
+    if (flags & NSCommandKeyMask)
+        mods |= GLFW_MOD_SUPER;
+
+    return mods;
+}
+
+// Translates a OS X keycode to a GLFW keycode
+//
+static int translateKey(unsigned int key)
+{
+    if (key >= sizeof(_glfw.ns.publicKeys) / sizeof(_glfw.ns.publicKeys[0]))
+        return GLFW_KEY_UNKNOWN;
+
+    return _glfw.ns.publicKeys[key];
 }
 
 
@@ -156,7 +187,9 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    if (_glfw.focusedWindow == window &&
+    [window->nsgl.context update];
+
+    if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         centerCursor(window);
@@ -167,12 +200,13 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
     _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
-    _glfwInputWindowDamage(window);
 }
 
 - (void)windowDidMove:(NSNotification *)notification
 {
-    if (_glfw.focusedWindow == window &&
+    [window->nsgl.context update];
+
+    if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         centerCursor(window);
@@ -185,20 +219,23 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 
 - (void)windowDidMiniaturize:(NSNotification *)notification
 {
+    if (window->monitor)
+        leaveFullscreenMode(window);
+
     _glfwInputWindowIconify(window, GL_TRUE);
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification
 {
+    if (window->monitor)
+        enterFullscreenMode(window);
+
     _glfwInputWindowIconify(window, GL_FALSE);
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-    if (window->monitor)
-        enterFullscreenMode(window);
-
-    if (_glfw.focusedWindow == window &&
+    if (_glfw.cursorWindow == window &&
         window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         centerCursor(window);
@@ -210,8 +247,8 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
 
 - (void)windowDidResignKey:(NSNotification *)notification
 {
-    if (window->monitor)
-        leaveFullscreenMode(window);
+    if (window->monitor && window->autoIconify)
+        _glfwPlatformIconifyWindow(window);
 
     _glfwInputWindowFocus(window, GL_FALSE);
 }
@@ -250,42 +287,22 @@ static NSRect convertRectToBacking(_GLFWwindow* window, NSRect contentRect)
     _glfwPlatformPostEmptyEvent();
 }
 
+- (void)applicationDidHide:(NSNotification *)notification
+{
+    int i;
+
+    for (i = 0;  i < _glfw.monitorCount;  i++)
+        _glfwRestoreVideoMode(_glfw.monitors[i]);
+}
+
 @end
-
-// Translates OS X key modifiers into GLFW ones
-//
-static int translateFlags(NSUInteger flags)
-{
-    int mods = 0;
-
-    if (flags & NSShiftKeyMask)
-        mods |= GLFW_MOD_SHIFT;
-    if (flags & NSControlKeyMask)
-        mods |= GLFW_MOD_CONTROL;
-    if (flags & NSAlternateKeyMask)
-        mods |= GLFW_MOD_ALT;
-    if (flags & NSCommandKeyMask)
-        mods |= GLFW_MOD_SUPER;
-
-    return mods;
-}
-
-// Translates a OS X keycode to a GLFW keycode
-//
-static int translateKey(unsigned int key)
-{
-    if (key >= sizeof(_glfw.ns.publicKeys) / sizeof(_glfw.ns.publicKeys[0]))
-        return GLFW_KEY_UNKNOWN;
-
-    return _glfw.ns.publicKeys[key];
-}
 
 
 //------------------------------------------------------------------------
 // Content view class for the GLFW window
 //------------------------------------------------------------------------
 
-@interface GLFWContentView : NSOpenGLView
+@interface GLFWContentView : NSView
 {
     _GLFWwindow* window;
     NSTrackingArea* trackingArea;
@@ -313,8 +330,7 @@ static int translateKey(unsigned int key)
 
 - (id)initWithGlfwWindow:(_GLFWwindow *)initWindow
 {
-    self = [super initWithFrame:NSMakeRect(0, 0, 1, 1)
-                    pixelFormat:nil];
+    self = [super init];
     if (self != nil)
     {
         window = initWindow;
@@ -453,6 +469,10 @@ static int translateKey(unsigned int key)
     const NSRect fbRect = convertRectToBacking(window, contentRect);
 
     _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
+}
+
+- (void)drawRect:(NSRect)rect
+{
     _glfwInputWindowDamage(window);
 }
 
@@ -719,6 +739,7 @@ static void createMenuBar(void)
     [[appMenu addItemWithTitle:@"Services"
                        action:NULL
                 keyEquivalent:@""] setSubmenu:servicesMenu];
+    [servicesMenu release];
     [appMenu addItem:[NSMenuItem separatorItem]];
     [appMenu addItemWithTitle:[NSString stringWithFormat:@"Hide %@", appName]
                        action:@selector(hide:)
@@ -737,6 +758,7 @@ static void createMenuBar(void)
 
     NSMenuItem* windowMenuItem =
         [bar addItemWithTitle:@"" action:NULL keyEquivalent:@""];
+    [bar release];
     NSMenu* windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
     [NSApp setWindowsMenu:windowMenu];
     [windowMenuItem setSubmenu:windowMenu];
@@ -838,7 +860,15 @@ static GLboolean createWindow(_GLFWwindow* window,
     NSRect contentRect;
 
     if (wndconfig->monitor)
-        contentRect = [wndconfig->monitor->ns.screen frame];
+    {
+        GLFWvidmode mode;
+        int xpos, ypos;
+
+        _glfwPlatformGetVideoMode(window->monitor, &mode);
+        _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
+
+        contentRect = NSMakeRect(xpos, ypos, mode.width, mode.height);
+    }
     else
         contentRect = NSMakeRect(0, 0, wndconfig->width, wndconfig->height);
 
@@ -865,7 +895,6 @@ static GLboolean createWindow(_GLFWwindow* window,
     if (wndconfig->monitor)
     {
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
-        [window->ns.object setHidesOnDeactivate:YES];
     }
     else
     {
@@ -875,9 +904,19 @@ static GLboolean createWindow(_GLFWwindow* window,
             [window->ns.object setLevel:NSFloatingWindowLevel];
     }
 
+    window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
+
+#if defined(_GLFW_USE_RETINA)
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+        [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+#endif /*_GLFW_USE_RETINA*/
+
     [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
+    [window->ns.object setContentView:window->ns.view];
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
@@ -906,22 +945,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (!_glfwCreateContext(window, ctxconfig, fbconfig))
         return GL_FALSE;
 
-    window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
-
-#if defined(_GLFW_USE_RETINA)
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
-        [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
-#endif /*_GLFW_USE_RETINA*/
-
-    [window->ns.object setContentView:window->ns.view];
-    // NOTE: If you set the pixel format before the context it creates another
-    //       context, only to have it destroyed by the next line
-    //       We cannot use the view to create the context because that interface
-    //       does not support context resource sharing
-    [window->ns.view setOpenGLContext:window->nsgl.context];
-    [window->ns.view setPixelFormat:window->nsgl.pixelFormat];
     [window->nsgl.context setView:window->ns.view];
 
     if (wndconfig->monitor)
@@ -1148,8 +1171,14 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     }
     else
     {
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+        const NSRect localRect = NSMakeRect(x, contentRect.size.height - y - 1, 0, 0);
+        const NSRect globalRect = [window->ns.object convertRectToScreen:localRect];
+        const NSPoint globalPoint = globalRect.origin;
+#else
         const NSPoint localPoint = NSMakePoint(x, contentRect.size.height - y - 1);
         const NSPoint globalPoint = [window->ns.object convertBaseToScreen:localPoint];
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
         CGWarpMouseCursorPosition(CGPointMake(globalPoint.x,
                                               transformY(globalPoint.y)));
@@ -1172,6 +1201,9 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 {
     NSImage* native;
     NSBitmapImageRep* rep;
+
+    if (!initializeAppKit())
+        return GL_FALSE;
 
     rep = [[NSBitmapImageRep alloc]
         initWithBitmapDataPlanes:NULL
@@ -1208,6 +1240,9 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
+    if (!initializeAppKit())
+        return GL_FALSE;
+
     cursor->ns.object = getStandardCursor(shape);
     if (!cursor->ns.object)
     {

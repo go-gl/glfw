@@ -25,8 +25,8 @@
 //
 //========================================================================
 
-#ifndef _x11_platform_h_
-#define _x11_platform_h_
+#ifndef _glfw3_x11_platform_h_
+#define _glfw3_x11_platform_h_
 
 #include <unistd.h>
 #include <signal.h>
@@ -57,6 +57,9 @@
 #endif
 
 #include "posix_tls.h"
+#include "posix_time.h"
+#include "linux_joystick.h"
+#include "xkb_unicode.h"
 
 #if defined(_GLFW_GLX)
  #define _GLFW_X11_CONTEXT_VISUAL window->glx.visual
@@ -69,10 +72,6 @@
 #else
  #error "No supported context creation API selected"
 #endif
-
-#include "posix_time.h"
-#include "linux_joystick.h"
-#include "xkb_unicode.h"
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
@@ -88,8 +87,6 @@ typedef struct _GLFWwindowX11
     Window          handle;
     XIC             ic;
 
-    GLboolean       overrideRedirect;
-
     // Cached position and size used to filter out duplicate events
     int             width, height;
     int             xpos, ypos;
@@ -98,6 +95,12 @@ typedef struct _GLFWwindowX11
     double          cursorPosX, cursorPosY;
     // The last position the cursor was warped to by GLFW
     int             warpPosX, warpPosY;
+
+    // The information from the last KeyPress event
+    struct {
+        unsigned int keycode;
+        Time         time;
+    } last;
 
 } _GLFWwindowX11;
 
@@ -116,8 +119,6 @@ typedef struct _GLFWlibraryX11
     XContext        context;
     // XIM input method
     XIM             im;
-    // True if window manager supports EWMH
-    GLboolean       hasEWMH;
     // Most recent error code received by X error handler
     int             errorCode;
     // Clipboard string (while the selection is owned)
@@ -170,8 +171,8 @@ typedef struct _GLFWlibraryX11
         GLboolean   available;
         int         eventBase;
         int         errorBase;
-        int         versionMajor;
-        int         versionMinor;
+        int         major;
+        int         minor;
         GLboolean   gammaBroken;
         GLboolean   monitorBroken;
     } randr;
@@ -182,8 +183,8 @@ typedef struct _GLFWlibraryX11
         int         majorOpcode;
         int         eventBase;
         int         errorBase;
-        int         versionMajor;
-        int         versionMinor;
+        int         major;
+        int         minor;
     } xkb;
 
     struct {
@@ -200,8 +201,8 @@ typedef struct _GLFWlibraryX11
 
     struct {
         GLboolean   available;
-        int         versionMajor;
-        int         versionMinor;
+        int         major;
+        int         minor;
     } xinerama;
 
 #if defined(_GLFW_HAS_XINPUT)
@@ -210,8 +211,8 @@ typedef struct _GLFWlibraryX11
         int         majorOpcode;
         int         eventBase;
         int         errorBase;
-        int         versionMajor;
-        int         versionMinor;
+        int         major;
+        int         minor;
     } xi;
 #endif /*_GLFW_HAS_XINPUT*/
 
@@ -264,4 +265,4 @@ void _glfwGrabXErrorHandler(void);
 void _glfwReleaseXErrorHandler(void);
 void _glfwInputXError(int error, const char* message);
 
-#endif // _x11_platform_h_
+#endif // _glfw3_x11_platform_h_

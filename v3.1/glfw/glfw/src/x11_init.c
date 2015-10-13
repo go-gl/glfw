@@ -38,7 +38,7 @@
 
 // Translate an X11 key code to a GLFW key code.
 //
-static int translateKey(int scancode)
+static int translateKeyCode(int scancode)
 {
     int keySym;
 
@@ -241,15 +241,14 @@ static void createKeyTables(void)
         // keyboard layout
 
         char name[XkbKeyNameLength + 1];
-        XkbDescPtr descr = XkbGetKeyboard(_glfw.x11.display,
-                                          XkbAllComponentsMask,
-                                          XkbUseCoreKbd);
+        XkbDescPtr desc = XkbGetMap(_glfw.x11.display, 0, XkbUseCoreKbd);
+        XkbGetNames(_glfw.x11.display, XkbKeyNamesMask, desc);
 
         // Find the X11 key code -> GLFW key code mapping
-        for (scancode = descr->min_key_code;  scancode <= descr->max_key_code;  scancode++)
+        for (scancode = desc->min_key_code;  scancode <= desc->max_key_code;  scancode++)
         {
-            memcpy(name, descr->names->keys[scancode].name, XkbKeyNameLength);
-            name[XkbKeyNameLength] = 0;
+            memcpy(name, desc->names->keys[scancode].name, XkbKeyNameLength);
+            name[XkbKeyNameLength] = '\0';
 
             // Map the key name to a GLFW key code. Note: We only map printable
             // keys here, and we use the US keyboard layout. The rest of the
@@ -309,7 +308,8 @@ static void createKeyTables(void)
                 _glfw.x11.publicKeys[scancode] = key;
         }
 
-        XkbFreeKeyboard(descr, 0, True);
+        XkbFreeNames(desc, XkbKeyNamesMask, True);
+        XkbFreeClientMap(desc, 0, True);
     }
 
     // Translate the un-translated key codes using traditional X11 KeySym
@@ -317,7 +317,7 @@ static void createKeyTables(void)
     for (scancode = 0;  scancode < 256;  scancode++)
     {
         if (_glfw.x11.publicKeys[scancode] < 0)
-            _glfw.x11.publicKeys[scancode] = translateKey(scancode);
+            _glfw.x11.publicKeys[scancode] = translateKeyCode(scancode);
     }
 }
 
@@ -459,8 +459,6 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_BYPASS_COMPOSITOR");
 
     XFree(supportedAtoms);
-
-    _glfw.x11.hasEWMH = GL_TRUE;
 }
 
 // Initialize X11 display and look for supported X11 extensions
@@ -498,8 +496,8 @@ static GLboolean initExtensions(void)
         XRRScreenResources* sr;
 
         if (!XRRQueryVersion(_glfw.x11.display,
-                             &_glfw.x11.randr.versionMajor,
-                             &_glfw.x11.randr.versionMinor))
+                             &_glfw.x11.randr.major,
+                             &_glfw.x11.randr.minor))
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "X11: Failed to query RandR version");
@@ -507,11 +505,8 @@ static GLboolean initExtensions(void)
         }
 
         // The GLFW RandR path requires at least version 1.3
-        if (_glfw.x11.randr.versionMajor == 1 &&
-            _glfw.x11.randr.versionMinor < 3)
-        {
+        if (_glfw.x11.randr.major == 1 && _glfw.x11.randr.minor < 3)
             _glfw.x11.randr.available = GL_FALSE;
-        }
 
         sr = XRRGetScreenResources(_glfw.x11.display, _glfw.x11.root);
 
@@ -530,8 +525,8 @@ static GLboolean initExtensions(void)
     }
 
     if (XineramaQueryExtension(_glfw.x11.display,
-                               &_glfw.x11.xinerama.versionMajor,
-                               &_glfw.x11.xinerama.versionMinor))
+                               &_glfw.x11.xinerama.major,
+                               &_glfw.x11.xinerama.minor))
     {
         if (XineramaIsActive(_glfw.x11.display))
             _glfw.x11.xinerama.available = GL_TRUE;
@@ -544,12 +539,12 @@ static GLboolean initExtensions(void)
                         &_glfw.x11.xi.eventBase,
                         &_glfw.x11.xi.errorBase))
     {
-        _glfw.x11.xi.versionMajor = 2;
-        _glfw.x11.xi.versionMinor = 0;
+        _glfw.x11.xi.major = 2;
+        _glfw.x11.xi.minor = 0;
 
         if (XIQueryVersion(_glfw.x11.display,
-                           &_glfw.x11.xi.versionMajor,
-                           &_glfw.x11.xi.versionMinor) != BadRequest)
+                           &_glfw.x11.xi.major,
+                           &_glfw.x11.xi.minor) != BadRequest)
         {
             _glfw.x11.xi.available = GL_TRUE;
         }
@@ -557,15 +552,15 @@ static GLboolean initExtensions(void)
 #endif /*_GLFW_HAS_XINPUT*/
 
     // Check if Xkb is supported on this display
-    _glfw.x11.xkb.versionMajor = 1;
-    _glfw.x11.xkb.versionMinor = 0;
+    _glfw.x11.xkb.major = 1;
+    _glfw.x11.xkb.minor = 0;
     _glfw.x11.xkb.available =
         XkbQueryExtension(_glfw.x11.display,
                           &_glfw.x11.xkb.majorOpcode,
                           &_glfw.x11.xkb.eventBase,
                           &_glfw.x11.xkb.errorBase,
-                          &_glfw.x11.xkb.versionMajor,
-                          &_glfw.x11.xkb.versionMinor);
+                          &_glfw.x11.xkb.major,
+                          &_glfw.x11.xkb.minor);
 
     if (_glfw.x11.xkb.available)
     {
@@ -714,17 +709,30 @@ Cursor _glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
 
 int _glfwPlatformInit(void)
 {
+#if !defined(X_HAVE_UTF8_STRING)
     // HACK: If the current locale is C, apply the environment's locale
-    //       This is done because the C locale breaks character input
+    //       This is done because the C locale breaks wide character input
     if (strcmp(setlocale(LC_CTYPE, NULL), "C") == 0)
         setlocale(LC_CTYPE, "");
+#endif
 
     XInitThreads();
 
     _glfw.x11.display = XOpenDisplay(NULL);
     if (!_glfw.x11.display)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to open X display");
+        const char* display = getenv("DISPLAY");
+        if (display)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to open display %s", display);
+        }
+        else
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: The DISPLAY environment variable is missing");
+        }
+
         return GL_FALSE;
     }
 
@@ -741,7 +749,7 @@ int _glfwPlatformInit(void)
     {
         XSetLocaleModifiers("");
 
-        _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, 0, 0);
+        _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, NULL, NULL);
         if (_glfw.x11.im)
         {
             if (!hasUsableInputMethodStyle())
@@ -780,43 +788,43 @@ void _glfwPlatformTerminate(void)
     }
 
     _glfwTerminateJoysticks();
-    _glfwTerminateContextAPI();
 
     if (_glfw.x11.display)
     {
         XCloseDisplay(_glfw.x11.display);
         _glfw.x11.display = NULL;
     }
+
+    // NOTE: This needs to be done after XCloseDisplay, as libGL registers
+    //       internal cleanup callbacks in libX11
+    _glfwTerminateContextAPI();
 }
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_NUMBER " X11"
+    return _GLFW_VERSION_NUMBER " X11"
 #if defined(_GLFW_GLX)
         " GLX"
 #elif defined(_GLFW_EGL)
         " EGL"
 #endif
-#if defined(_GLFW_HAS_GLXGETPROCADDRESS)
-        " glXGetProcAddress"
-#elif defined(_GLFW_HAS_GLXGETPROCADDRESSARB)
-        " glXGetProcAddressARB"
-#elif defined(_GLFW_HAS_GLXGETPROCADDRESSEXT)
-        " glXGetProcAddressEXT"
-#elif defined(_GLFW_DLOPEN_LIBGL)
-        " dlsym(libGL)"
-#endif
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
+#else
+        " gettimeofday"
 #endif
 #if defined(__linux__)
         " /dev/js"
+#endif
+#if defined(_GLFW_HAS_XINPUT)
+        " XI"
+#endif
+#if defined(_GLFW_HAS_XF86VM)
+        " Xf86vm"
 #endif
 #if defined(_GLFW_BUILD_DLL)
         " shared"
 #endif
         ;
-
-    return version;
 }
 

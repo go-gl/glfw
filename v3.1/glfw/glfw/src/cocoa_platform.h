@@ -24,9 +24,8 @@
 //
 //========================================================================
 
-#ifndef _cocoa_platform_h_
-#define _cocoa_platform_h_
-
+#ifndef _glfw3_cocoa_platform_h_
+#define _glfw3_cocoa_platform_h_
 
 #include <stdint.h>
 
@@ -38,14 +37,13 @@ typedef void* id;
 #endif
 
 #include "posix_tls.h"
+#include "iokit_joystick.h"
 
 #if defined(_GLFW_NSGL)
  #include "nsgl_context.h"
 #else
- #error "No supported context creation API selected"
+ #error "The Cocoa backend depends on NSGL platform support"
 #endif
-
-#include "iokit_joystick.h"
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
@@ -59,7 +57,7 @@ typedef void* id;
 typedef struct _GLFWwindowNS
 {
     id              object;
-    id	            delegate;
+    id              delegate;
     id              view;
     unsigned int    modifierFlags;
 
@@ -92,7 +90,7 @@ typedef struct _GLFWmonitorNS
 {
     CGDirectDisplayID   displayID;
     CGDisplayModeRef    previousMode;
-    id                  screen;
+    uint32_t            unitNumber;
 
 } _GLFWmonitorNS;
 
@@ -121,4 +119,4 @@ void _glfwInitTimer(void);
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
-#endif // _cocoa_platform_h_
+#endif // _glfw3_cocoa_platform_h_

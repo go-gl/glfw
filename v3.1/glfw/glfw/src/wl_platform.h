@@ -24,22 +24,22 @@
 //
 //========================================================================
 
-#ifndef _wayland_platform_h_
-#define _wayland_platform_h_
-
+#ifndef _glfw3_wayland_platform_h_
+#define _glfw3_wayland_platform_h_
 
 #include <wayland-client.h>
 #include <xkbcommon/xkbcommon.h>
+
+#include "posix_tls.h"
+#include "posix_time.h"
+#include "linux_joystick.h"
+#include "xkb_unicode.h"
 
 #if defined(_GLFW_EGL)
  #include "egl_context.h"
 #else
  #error "The Wayland backend depends on EGL platform support"
 #endif
-
-#include "posix_tls.h"
-#include "posix_time.h"
-#include "linux_joystick.h"
 
 #define _GLFW_EGL_NATIVE_WINDOW         window->wl.native
 #define _GLFW_EGL_NATIVE_DISPLAY        _glfw.wl.display
@@ -66,6 +66,7 @@ typedef struct _GLFWwindowWayland
     struct wl_shell_surface*    shell_surface;
     struct wl_callback*         callback;
     _GLFWcursor*                currentCursor;
+    double                      cursorPosX, cursorPosY;
 } _GLFWwindowWayland;
 
 
@@ -137,4 +138,4 @@ typedef struct _GLFWcursorWayland
 
 void _glfwAddOutput(uint32_t name, uint32_t version);
 
-#endif // _wayland_platform_h_
+#endif // _glfw3_wayland_platform_h_

@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW 3.1 Mir - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2014 Brandon Schaefer <brandon.schaefer@canonical.com>
+// Copyright (c) 2014-2015 Brandon Schaefer <brandon.schaefer@canonical.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -55,6 +55,9 @@ int _glfwPlatformInit(void)
     if (!_glfwInitContextAPI())
         return GL_FALSE;
 
+    // Need the default conf for when we set a NULL cursor
+    _glfw.mir.default_conf = mir_cursor_configuration_from_name(mir_arrow_cursor_name);
+
     _glfwInitTimer();
     _glfwInitJoysticks();
 
@@ -87,15 +90,18 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    const char* version = _GLFW_VERSION_NUMBER " Mir EGL"
+    return _GLFW_VERSION_NUMBER " Mir EGL"
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
+#else
+        " gettimeofday"
+#endif
+#if defined(__linux__)
+        " /dev/js"
 #endif
 #if defined(_GLFW_BUILD_DLL)
         " shared"
 #endif
         ;
-
-    return version;
 }
 
