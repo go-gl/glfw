@@ -31,12 +31,12 @@ package glfw
 // Linux Build Tags
 // ----------------
 // GLFW Options:
-#cgo linux,!wayland CFLAGS: -D_GLFW_X11 -D_GLFW_GLX -D_GLFW_HAS_GLXGETPROCADDRESSARB -D_GLFW_HAS_DLOPEN
-#cgo linux,wayland CFLAGS: -D_GLFW_WAYLAND -D_GLFW_EGL -D_GLFW_HAS_DLOPEN
+#cgo linux,!wayland CFLAGS: -D_GLFW_X11 -D_GLFW_GLX
+#cgo linux,wayland CFLAGS: -D_GLFW_WAYLAND -D_GLFW_EGL
 
 // Linker Options:
-#cgo linux,!wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama
-#cgo linux,wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama
+#cgo linux,!wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama -ldl
+#cgo linux,wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama -ldl
 
 
 // FreeBSD Build Tags
