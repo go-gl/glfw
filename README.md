@@ -1,4 +1,4 @@
-# GLFW 3.1 for Go [![GoDoc](https://godoc.org/github.com/go-gl/glfw/v3.1/glfw?status.svg)](https://godoc.org/github.com/go-gl/glfw/v3.1/glfw)
+# GLFW 3.1 for Go [![Build Status](https://travis-ci.org/go-gl/glfw.svg?branch=master)](https://travis-ci.org/go-gl/glfw) [![GoDoc](https://godoc.org/github.com/go-gl/glfw/v3.1/glfw?status.svg)](https://godoc.org/github.com/go-gl/glfw/v3.1/glfw)
 
 ## Installation
 
