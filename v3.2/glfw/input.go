@@ -332,7 +332,8 @@ func (w *Window) GetKey(key Key) Action {
 	return ret
 }
 
-// This function returns the localized name of the specified printable key.
+// GetKeyName returns the localized name of the specified printable key.
+//
 // If the key is glfw.KeyUnknown, the scancode is used, otherwise the scancode is ignored.
 func GetKeyName(key Key, scancode int) string {
 	ret := C.glfwGetKeyName(C.int(key), C.int(scancode))

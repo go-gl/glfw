@@ -360,6 +360,29 @@ func (w *Window) SetSize(width, height int) {
 	panicError()
 }
 
+// SetWindowSizeLimits sets the size limits of the client area of the specified window.
+// If the window is full screen or not resizable, this function does nothing.
+//
+// The size limits are applied immediately and may cause the window to be resized.
+func (w *Window) SetWindowSizeLimits(minw, minh, maxw, maxh int) {
+	C.glfwSetWindowSizeLimits(w.data, C.int(minw), C.int(minh), C.int(maxw), C.int(maxh))
+	panicError()
+}
+
+// SetWindoAspectRatio sets the required aspect ratio of the client area of the specified window.
+// If the window is full screen or not resizable, this function does nothing.
+//
+// The aspect ratio is specified as a numerator and a denominator and both values must be greater
+// than zero. For example, the common 16:9 aspect ratio is specified as 16 and 9, respectively.
+//
+// If the numerator and denominator is set to glfw.DontCare then the aspect ratio limit is disabled.
+//
+// The aspect ratio is applied immediately and may cause the window to be resized.
+func (w *Window) SetWindowAspectRatio(numer, denom int) {
+	C.glfwSetWindowAspectRatio(w.data, C.int(numer), C.int(denom))
+	panicError()
+}
+
 // GetFramebufferSize retrieves the size, in pixels, of the framebuffer of the
 // specified window.
 func (w *Window) GetFramebufferSize() (width, height int) {
