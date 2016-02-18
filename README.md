@@ -1,4 +1,4 @@
-# GLFW 3.1 for Go [![Build Status](https://travis-ci.org/go-gl/glfw.svg?branch=master)](https://travis-ci.org/go-gl/glfw) [![GoDoc](https://godoc.org/github.com/go-gl/glfw/v3.1/glfw?status.svg)](https://godoc.org/github.com/go-gl/glfw/v3.1/glfw)
+# GLFW 3.2 for Go [![Build Status](https://travis-ci.org/go-gl/glfw.svg?branch=master)](https://travis-ci.org/go-gl/glfw) [![GoDoc](https://godoc.org/github.com/go-gl/glfw/v3.2/glfw?status.svg)](https://godoc.org/github.com/go-gl/glfw/v3.2/glfw)
 
 ## Installation
 
@@ -9,7 +9,7 @@
 * Go 1.4+ is required on Windows (otherwise you must use MinGW v4.8.1 exactly, see [Go issue 8811](https://github.com/golang/go/issues/8811)).
 
 ```
-go get -u github.com/go-gl/glfw/v3.1/glfw
+go get -u github.com/go-gl/glfw/v3.2/glfw
 ```
 
 ## Usage
@@ -19,7 +19,7 @@ package main
 
 import (
 	"runtime"
-	"github.com/go-gl/glfw/v3.1/glfw"
+	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
 func init() {
@@ -52,8 +52,26 @@ func main() {
 
 ## Changelog
 
-* Easy `go get` installation. GLFW source code is now included in-repo and compiled in so you don't have to build GLFW on your own and distribute shared libraries. The revision of GLFW C library used is listed in [GLFW_C_REVISION.txt](https://github.com/go-gl/glfw/blob/master/v3.1/glfw/GLFW_C_REVISION.txt) file.
+* Easy `go get` installation. GLFW source code is now included in-repo and compiled in so you don't have to build GLFW on your own and distribute shared libraries. The revision of GLFW C library used is listed in [GLFW_C_REVISION.txt](https://github.com/go-gl/glfw/blob/master/v3.2/glfw/GLFW_C_REVISION.txt) file.
 * The error callback is now set internally. Functions return an error with corresponding code and description (do a type assertion to glfw3.Error for accessing the variables) if the error is recoverable. If not a panic will occur.
+
+### GLFW 3.2 Specfic Changes
+* Added function `Window.SetSizeLimits`.
+* Added function `Window.SetAspectRatio`.
+* Added function `Window.SetMonitor`.
+* Added function `Window.Maximize`.
+* Added function `Window.SetIcon`.
+* Added function `Window.Focus`.
+* Added function `GetKeyName`.
+* Added function `VulkanSupported`.
+* Added function `GetTimerValue`.
+* Added function `GetTimerFrequency`.
+* Added function `WaitEventsTimeout`.
+* Added function `SetJoystickCallback`.
+* Added window hint `Maximized`.
+* Added hint `NoAPI`.
+* Added hint `NativeContextAPI`.
+* Added hint `EGLContextAPI`.
 
 ### GLFW 3.1 Specfic Changes
 * Added type `Cursor`.

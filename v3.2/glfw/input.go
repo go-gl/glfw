@@ -1,6 +1,7 @@
 package glfw
 
 //#include "glfw/include/GLFW/glfw3.h"
+//void glfwSetJoystickCallbackCB();
 //void glfwSetKeyCallbackCB(GLFWwindow *window);
 //void glfwSetCharCallbackCB(GLFWwindow *window);
 //void glfwSetCharModsCallbackCB(GLFWwindow *window);
@@ -18,6 +19,8 @@ import (
 	"image/draw"
 	"unsafe"
 )
+
+var fJoystickHolder func(joy, event int)
 
 // Joystick corresponds to a joystick.
 type Joystick int
@@ -247,6 +250,11 @@ type Cursor struct {
 	data *C.GLFWcursor
 }
 
+//export goJoystickCB
+func goJoystickCB(joy, event C.int) {
+	fJoystickHolder(int(joy), int(event))
+}
+
 //export goMouseButtonCB
 func goMouseButtonCB(window unsafe.Pointer, button, action, mods C.int) {
 	w := windows.get((*C.GLFWwindow)(window))
@@ -330,6 +338,15 @@ func (w *Window) GetKey(key Key) Action {
 	ret := Action(C.glfwGetKey(w.data, C.int(key)))
 	panicError()
 	return ret
+}
+
+// GetKeyName returns the localized name of the specified printable key.
+//
+// If the key is glfw.KeyUnknown, the scancode is used, otherwise the scancode is ignored.
+func GetKeyName(key Key, scancode int) string {
+	ret := C.glfwGetKeyName(C.int(key), C.int(scancode))
+	panicError()
+	return C.GoString(ret)
 }
 
 // GetMouseButton returns the last state reported for the specified mouse button.
@@ -433,6 +450,23 @@ func (w *Window) SetCursor(c *Cursor) {
 		C.glfwSetCursor(w.data, c.data)
 	}
 	panicError()
+}
+
+type JoystickCallback func(joy, event int)
+
+// SetJoystickCallback sets the joystick configuration callback, or removes the
+// currently set callback. This is called when a joystick is connected to or
+// disconnected from the system.
+func SetJoystickCallback(cbfun JoystickCallback) (previous JoystickCallback) {
+	previous = fJoystickHolder
+	fJoystickHolder = cbfun
+	if cbfun == nil {
+		C.glfwSetJoystickCallback(nil)
+	} else {
+		C.glfwSetJoystickCallbackCB()
+	}
+	panicError()
+	return previous
 }
 
 type KeyCallback func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
