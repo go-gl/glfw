@@ -25,3 +25,17 @@ func SetTime(time float64) {
 	C.glfwSetTime(C.double(time))
 	panicError()
 }
+
+// GetTimerFrequency returns frequency of the timer, in Hz, or zero if an error occurred.
+func GetTimerFrequency() uint64 {
+	ret := uint64(C.glfwGetTimerFrequency())
+	panicError()
+	return ret
+}
+
+// GetTimerValue returns the current value of the raw timer, measured in 1 / frequency seconds.
+func GetTimerValue() uint64 {
+	ret := uint64(C.glfwGetTimerValue())
+	panicError()
+	return ret
+}

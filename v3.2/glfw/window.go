@@ -52,6 +52,7 @@ type Hint int
 const (
 	Focused     Hint = C.GLFW_FOCUSED      // Specifies whether the window will be given input focus when created. This hint is ignored for full screen and initially hidden windows.
 	Iconified   Hint = C.GLFW_ICONIFIED    // Specifies whether the window will be minimized.
+	Maximized   Hint = C.GLFW_MAXIMIZED    // Specifies whether the window is maximized.
 	Visible     Hint = C.GLFW_VISIBLE      // Specifies whether the window will be initially visible.
 	Resizable   Hint = C.GLFW_RESIZABLE    // Specifies whether the window will be resizable by the user.
 	Decorated   Hint = C.GLFW_DECORATED    // Specifies whether the window will have window decorations such as a border, a close widget, etc.
@@ -405,6 +406,19 @@ func (w *Window) GetFrameSize() (left, top, right, bottom int) {
 	return int(l), int(t), int(r), int(b)
 }
 
+// Focus brings the specified window to front and sets input focus.
+// The window should already be visible and not iconified.
+//
+// By default, both windowed and full screen mode windows are focused when initially created.
+// Set the glfw.Focused to disable this behavior.
+//
+// Do not use this function to steal focus from other applications unless you are certain that
+// is what the user wants. Focus stealing can be extremely disruptive.
+func (w *Window) Focus() error {
+	C.glfwFocusWindow(w.data)
+	return acceptError(APIUnavailable)
+}
+
 // Iconfiy iconifies/minimizes the window, if it was previously restored. If it
 // is a full screen window, the original monitor resolution is restored until the
 // window is restored. If the window is already iconified, this function does
@@ -413,6 +427,15 @@ func (w *Window) GetFrameSize() (left, top, right, bottom int) {
 // This function may only be called from the main thread.
 func (w *Window) Iconify() error {
 	C.glfwIconifyWindow(w.data)
+	return acceptError(APIUnavailable)
+}
+
+// Maximize maximizes the specified window if it was previously not maximized.
+// If the window is already maximized, this function does nothing.
+//
+// If the specified window is a full screen window, this function does nothing.
+func (w *Window) Maximize() error {
+	C.glfwMaximizeWindow(w.data)
 	return acceptError(APIUnavailable)
 }
 
@@ -663,6 +686,33 @@ func PollEvents() {
 // This function may only be called from the main thread.
 func WaitEvents() {
 	C.glfwWaitEvents()
+	panicError()
+}
+
+// WaitEventsTimeout puts the calling thread to sleep until at least one event is available in the
+// event queue, or until the specified timeout is reached. If one or more events are available,
+// it behaves exactly like PollEvents, i.e. the events in the queue are processed and the function
+// then returns immediately. Processing events will cause the window and input callbacks associated
+// with those events to be called.
+//
+// The timeout value must be a positive finite number.
+//
+// Since not all events are associated with callbacks, this function may return without a callback
+// having been called even if you are monitoring all callbacks.
+//
+// On some platforms, a window move, resize or menu operation will cause event processing to block.
+// This is due to how event processing is designed on those platforms. You can use the window
+// refresh callback to redraw the contents of your window when necessary during such operations.
+//
+// On some platforms, certain callbacks may be called outside of a call to one of the event
+// processing functions.
+//
+// If no windows exist, this function returns immediately. For synchronization of threads in
+// applications that do not create windows, use your threading library of choice.
+//
+// Event processing is not required for joystick input to work.
+func WaitEventsTimeout(timeout float64) {
+	C.glfwWaitEventsTimeout(C.double(timeout))
 	panicError()
 }
 
