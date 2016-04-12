@@ -60,6 +60,12 @@ func main() {
 * Added function `SetWindowSizeLimits`.
 * Added function `SetWindowAspectRatio`.
 * Added function `VulkanSupported`.
+* Added function `MaximizeWindow`.
+* Added function `FocusWindow`.
+* Added function `GetTimerValue`.
+* Added function `GetTimerFrequency`.
+* Added function `WaitEventsTimeout`.
+* Added window hint `Maximized`.
 
 ### GLFW 3.1 Specfic Changes
 * Added type `Cursor`.
