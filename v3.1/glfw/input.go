@@ -381,23 +381,29 @@ func (w *Window) SetCursorPos(xpos, ypos float64) {
 // Like all other coordinate systems in GLFW, the X-axis points to the right and the Y-axis points down.
 func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
 	var img_c C.GLFWimage
-	var pixPointer *uint8
+	var pixels []uint8
 	b := img.Bounds()
 
 	switch img := img.(type) {
 	case *image.RGBA:
-		pixPointer = &img.Pix[0]
+		pixels = img.Pix
 	default:
 		m := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
 		draw.Draw(m, m.Bounds(), img, b.Min, draw.Src)
-		pixPointer = &m.Pix[0]
+		pixels = m.Pix
 	}
+
+	pix, free := strs(string(pixels) + "\x00")
 
 	img_c.width = C.int(b.Dx())
 	img_c.height = C.int(b.Dy())
-	img_c.pixels = (*C.uchar)(pixPointer)
+	img_c.pixels = (*C.uchar)(*pix)
+
 	c := C.glfwCreateCursor(&img_c, C.int(xhot), C.int(yhot))
+
+	free()
 	panicError()
+
 	return &Cursor{c}
 }
 
