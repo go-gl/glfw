@@ -402,11 +402,11 @@ func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
 		pixels = m.Pix
 	}
 
-	pix, free := strs(string(pixels) + "\x00")
+	pix, free := bytes(pixels)
 
 	img_c.width = C.int(b.Dx())
 	img_c.height = C.int(b.Dy())
-	img_c.pixels = (*C.uchar)(*pix)
+	img_c.pixels = (*C.uchar)(pix)
 
 	c := C.glfwCreateCursor(&img_c, C.int(xhot), C.int(yhot))
 
