@@ -17,20 +17,21 @@ func glfwbool(b C.int) bool {
 }
 
 func bytes(origin []byte) (pointer *uint8, free func()) {
-	if len(origin) == 0 {
-		panic("Slice of bytes cannot be empty.")
+	n := len(origin)
+
+	if n == 0 {
+		return nil, func() {}
 	}
 
-	l := len(origin)
-	d := C.malloc(C.size_t(l))
+	data := C.malloc(C.size_t(n))
 
-	ds := *(*[]byte)(unsafe.Pointer(&reflect.SliceHeader{
-		Data: uintptr(d),
-		Len:  l,
-		Cap:  l,
+	dataSlice := *(*[]byte)(unsafe.Pointer(&reflect.SliceHeader{
+		Data: uintptr(data),
+		Len:  n,
+		Cap:  n,
 	}))
 
-	copy(ds[0:l], origin[:])
+	copy(dataSlice, origin)
 
-	return (*uint8)(unsafe.Pointer(&ds[0])), func() { C.free(d) }
+	return &dataSlice[0], func() { C.free(data) }
 }
