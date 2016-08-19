@@ -5,7 +5,8 @@ addons:
     - xorg-dev
 language: go
 go:
-  - 1.5.2
+  - 1.7
+  - 1.6.3
   - tip
 matrix:
   allow_failures:
