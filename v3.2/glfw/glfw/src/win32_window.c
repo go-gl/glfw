@@ -850,9 +850,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
 }
 
-// Creates the GLFW window and rendering context
+// Creates the GLFW window
 //
-static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
+static int createNativeWindow(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig)
 {
     int xpos, ypos, fullWidth, fullHeight;
     WCHAR* wideTitle;
@@ -928,21 +929,6 @@ static int createWindow(_GLFWwindow* window, const _GLFWwndconfig* wndconfig)
     return GLFW_TRUE;
 }
 
-// Destroys the GLFW window and rendering context
-//
-static void destroyWindow(_GLFWwindow* window)
-{
-    if (_glfw.win32.disabledCursorWindow == window)
-        _glfw.win32.disabledCursorWindow = NULL;
-
-    if (window->win32.handle)
-    {
-        RemovePropW(window->win32.handle, L"GLFW");
-        DestroyWindow(window->win32.handle);
-        window->win32.handle = NULL;
-    }
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -1001,60 +987,22 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    int status;
-
-    if (!createWindow(window, wndconfig))
+    if (!createNativeWindow(window, wndconfig))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)
     {
         if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
         {
+            if (!_glfwInitWGL())
+                return GLFW_FALSE;
             if (!_glfwCreateContextWGL(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
-
-            status = _glfwAnalyzeContextWGL(window, ctxconfig, fbconfig);
-
-            if (status == _GLFW_RECREATION_IMPOSSIBLE)
-                return GLFW_FALSE;
-
-            if (status == _GLFW_RECREATION_REQUIRED)
-            {
-                // Some window hints require us to re-create the context using WGL
-                // extensions retrieved through the current context, as we cannot
-                // check for WGL extensions or retrieve WGL entry points before we
-                // have a current context (actually until we have implicitly loaded
-                // the vendor ICD)
-
-                // Yes, this is strange, and yes, this is the proper way on WGL
-
-                // As Windows only allows you to set the pixel format once for
-                // a window, we need to destroy the current window and create a new
-                // one to be able to use the new pixel format
-
-                // Technically, it may be possible to keep the old window around if
-                // we're just creating an OpenGL 3.0+ context with the same pixel
-                // format, but it's not worth the added code complexity
-
-                // First we clear the current context (the one we just created)
-                // This is usually done by glfwDestroyWindow, but as we're not doing
-                // full GLFW window destruction, it's duplicated here
-                window->context.makeCurrent(NULL);
-
-                // Next destroy the Win32 window and WGL context (without resetting
-                // or destroying the GLFW window object)
-                window->context.destroy(window);
-                destroyWindow(window);
-
-                // ...and then create them again, this time with better APIs
-                if (!createWindow(window, wndconfig))
-                    return GLFW_FALSE;
-                if (!_glfwCreateContextWGL(window, ctxconfig, fbconfig))
-                    return GLFW_FALSE;
-            }
         }
         else
         {
+            if (!_glfwInitEGL())
+                return GLFW_FALSE;
             if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
@@ -1078,10 +1026,18 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (window->monitor)
         releaseMonitor(window);
 
-    if (window->context.client != GLFW_NO_API)
+    if (window->context.destroy)
         window->context.destroy(window);
 
-    destroyWindow(window);
+    if (_glfw.win32.disabledCursorWindow == window)
+        _glfw.win32.disabledCursorWindow = NULL;
+
+    if (window->win32.handle)
+    {
+        RemovePropW(window->win32.handle, L"GLFW");
+        DestroyWindow(window->win32.handle);
+        window->win32.handle = NULL;
+    }
 
     if (window->win32.bigIcon)
         DestroyIcon(window->win32.bigIcon);
@@ -1594,52 +1550,55 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 
 void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
 {
-    WCHAR* wideString;
-    HANDLE stringHandle;
-    size_t wideSize;
+    int characterCount;
+    HANDLE object;
+    WCHAR* buffer;
 
-    wideString = _glfwCreateWideStringFromUTF8Win32(string);
-    if (!wideString)
+    characterCount = MultiByteToWideChar(CP_UTF8, 0, string, -1, NULL, 0);
+    if (!characterCount)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to convert string to UTF-16");
+                        "Win32: Failed to convert clipboard string to UTF-16");
         return;
     }
 
-    wideSize = (wcslen(wideString) + 1) * sizeof(WCHAR);
-
-    stringHandle = GlobalAlloc(GMEM_MOVEABLE, wideSize);
-    if (!stringHandle)
+    object = GlobalAlloc(GMEM_MOVEABLE, characterCount * sizeof(WCHAR));
+    if (!object)
     {
-        free(wideString);
-
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Win32: Failed to allocate global handle for clipboard");
         return;
     }
 
-    memcpy(GlobalLock(stringHandle), wideString, wideSize);
-    GlobalUnlock(stringHandle);
+    buffer = GlobalLock(object);
+    if (!buffer)
+    {
+        GlobalFree(object);
+
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to lock global handle");
+        return;
+    }
+
+    MultiByteToWideChar(CP_UTF8, 0, string, -1, buffer, characterCount);
+    GlobalUnlock(object);
 
     if (!OpenClipboard(_glfw.win32.helperWindowHandle))
     {
-        GlobalFree(stringHandle);
-        free(wideString);
+        GlobalFree(object);
 
         _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to open clipboard");
         return;
     }
 
     EmptyClipboard();
-    SetClipboardData(CF_UNICODETEXT, stringHandle);
+    SetClipboardData(CF_UNICODETEXT, object);
     CloseClipboard();
-
-    free(wideString);
 }
 
 const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 {
-    HANDLE stringHandle;
+    HANDLE object;
+    WCHAR* buffer;
 
     if (!OpenClipboard(_glfw.win32.helperWindowHandle))
     {
@@ -1647,8 +1606,8 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         return NULL;
     }
 
-    stringHandle = GetClipboardData(CF_UNICODETEXT);
-    if (!stringHandle)
+    object = GetClipboardData(CF_UNICODETEXT);
+    if (!object)
     {
         CloseClipboard();
 
@@ -1657,11 +1616,20 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
         return NULL;
     }
 
+    buffer = GlobalLock(object);
+    if (!buffer)
+    {
+        CloseClipboard();
+
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to lock global handle");
+        return NULL;
+    }
+
     free(_glfw.win32.clipboardString);
     _glfw.win32.clipboardString =
-        _glfwCreateUTF8FromWideStringWin32(GlobalLock(stringHandle));
+        _glfwCreateUTF8FromWideStringWin32(buffer);
 
-    GlobalUnlock(stringHandle);
+    GlobalUnlock(object);
     CloseClipboard();
 
     if (!_glfw.win32.clipboardString)

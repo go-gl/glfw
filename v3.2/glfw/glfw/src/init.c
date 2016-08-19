@@ -65,9 +65,9 @@ static const char* getErrorString(int error)
         case GLFW_OUT_OF_MEMORY:
             return "Out of memory";
         case GLFW_API_UNAVAILABLE:
-            return "The requested client API is unavailable";
+            return "The requested API is unavailable";
         case GLFW_VERSION_UNAVAILABLE:
-            return "The requested client API version is unavailable";
+            return "The requested API version is unavailable";
         case GLFW_PLATFORM_ERROR:
             return "A platform-specific error occurred";
         case GLFW_FORMAT_UNAVAILABLE:
@@ -129,8 +129,6 @@ GLFWAPI int glfwInit(void)
         _glfwPlatformTerminate();
         return GLFW_FALSE;
     }
-
-    _glfwInitVulkan();
 
     _glfw.monitors = _glfwPlatformGetMonitors(&_glfw.monitorCount);
     _glfwInitialized = GLFW_TRUE;

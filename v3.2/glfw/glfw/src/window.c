@@ -151,7 +151,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
 
     if (ctxconfig.share)
     {
-        if (ctxconfig.share->context.client == GLFW_NO_API)
+        if (ctxconfig.client == GLFW_NO_API ||
+            ctxconfig.share->context.client == GLFW_NO_API)
         {
             _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
             return NULL;
@@ -627,6 +628,8 @@ GLFWAPI void glfwRestoreWindow(GLFWwindow* handle)
 GLFWAPI void glfwMaximizeWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
     _GLFW_REQUIRE_INIT();
     _glfwPlatformMaximizeWindow(window);
 }

@@ -176,7 +176,7 @@ static int compareJoystickObjects(const void* first, const void* second)
 //
 static GLFWbool supportsXInput(const GUID* guid)
 {
-    UINT i, count;
+    UINT i, count = 0;
     RAWINPUTDEVICELIST* ridl;
     GLFWbool result = GLFW_FALSE;
 
@@ -185,7 +185,7 @@ static GLFWbool supportsXInput(const GUID* guid)
 
     ridl = calloc(count, sizeof(RAWINPUTDEVICELIST));
 
-    if (GetRawInputDeviceList(ridl, &count, sizeof(RAWINPUTDEVICELIST)) == -1)
+    if (GetRawInputDeviceList(ridl, &count, sizeof(RAWINPUTDEVICELIST)) == (UINT) -1)
     {
         free(ridl);
         return GLFW_FALSE;
@@ -211,7 +211,7 @@ static GLFWbool supportsXInput(const GUID* guid)
             continue;
         }
 
-        if (MAKELONG(rdi.hid.dwVendorId, rdi.hid.dwProductId) != guid->Data1)
+        if (MAKELONG(rdi.hid.dwVendorId, rdi.hid.dwProductId) != (LONG) guid->Data1)
             continue;
 
         memset(name, 0, sizeof(name));

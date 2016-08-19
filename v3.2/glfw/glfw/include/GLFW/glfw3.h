@@ -115,11 +115,14 @@ extern "C" {
  #define GLFW_CALLBACK_DEFINED
 #endif /* CALLBACK */
 
-/* Most Windows GLU headers need wchar_t.
- * The OS X OpenGL header blocks the definition of ptrdiff_t by glext.h.
+/* Include because most Windows GLU headers need wchar_t and
+ * the OS X OpenGL header blocks the definition of ptrdiff_t by glext.h.
  * Include it unconditionally to avoid surprising side-effects.
  */
 #include <stddef.h>
+
+/* Include because it is needed by Vulkan and related functions.
+ */
 #include <stdint.h>
 
 /* Include the chosen client API headers.
@@ -1182,6 +1185,7 @@ typedef struct GLFWgammaramp
 /*! @brief Image data.
  *
  *  @sa @ref cursor_custom
+ *  @sa @ref window_icon
  *
  *  @since Added in version 2.1.
  *  @glfw3 Removed format and bytes-per-pixel members.
@@ -1738,6 +1742,10 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  mode is set for the specified monitor.  For more information about full
  *  screen windows, including the creation of so called _windowed full screen_
  *  or _borderless full screen_ windows, see @ref window_windowed_full_screen.
+ *
+ *  Once you have created the window, you can switch it between windowed and
+ *  full screen mode with @ref glfwSetWindowMonitor.  If the window has an
+ *  OpenGL or OpenGL ES context, it will be unaffected.
  *
  *  By default, newly created windows use the placement recommended by the
  *  window system.  To create the window at a specific position, make it
@@ -2390,8 +2398,8 @@ GLFWAPI void glfwFocusWindow(GLFWwindow* window);
  *  in full screen on.
  *
  *  @param[in] window The window to query.
- *  @return The monitor, or `NULL` if the window is in windowed mode or an error
- *  occurred.
+ *  @return The monitor, or `NULL` if the window is in windowed mode or an
+ *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
@@ -2846,7 +2854,7 @@ GLFWAPI void glfwWaitEventsTimeout(double timeout);
 /*! @brief Posts an empty event to the event queue.
  *
  *  This function posts an empty event from the current thread to the event
- *  queue, causing @ref glfwWaitEvents to return.
+ *  queue, causing @ref glfwWaitEvents or @ref glfwWaitEventsTimeout to return.
  *
  *  If no windows exist, this function returns immediately.  For synchronization
  *  of threads in applications that do not create windows, use your threading
@@ -2859,6 +2867,7 @@ GLFWAPI void glfwWaitEventsTimeout(double timeout);
  *
  *  @sa @ref events
  *  @sa glfwWaitEvents
+ *  @sa glfwWaitEventsTimeout
  *
  *  @since Added in version 3.1.
  *
@@ -3354,7 +3363,7 @@ GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
  *  callback.
  *  @return The previously set callback, or `NULL` if no callback was set or an
- *  error occurred.
+ *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
@@ -3533,8 +3542,10 @@ GLFWAPI int glfwJoystickPresent(int joy);
  *
  *  @param[in] joy The [joystick](@ref joysticks) to query.
  *  @param[out] count Where to store the number of axis values in the returned
- *  array.  This is set to zero if an error occurred.
- *  @return An array of axis values, or `NULL` if the joystick is not present.
+ *  array.  This is set to zero if the joystick is not present or an error
+ *  occurred.
+ *  @return An array of axis values, or `NULL` if the joystick is not present or
+ *  an [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
@@ -3565,8 +3576,10 @@ GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
  *
  *  @param[in] joy The [joystick](@ref joysticks) to query.
  *  @param[out] count Where to store the number of button states in the returned
- *  array.  This is set to zero if an error occurred.
- *  @return An array of button states, or `NULL` if the joystick is not present.
+ *  array.  This is set to zero if the joystick is not present or an error
+ *  occurred.
+ *  @return An array of button states, or `NULL` if the joystick is not present
+ *  or an [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
@@ -3599,7 +3612,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int joy, int* count);
  *
  *  @param[in] joy The [joystick](@ref joysticks) to query.
  *  @return The UTF-8 encoded name of the joystick, or `NULL` if the joystick
- *  is not present.
+ *  is not present or an [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.

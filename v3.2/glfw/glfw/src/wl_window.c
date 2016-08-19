@@ -393,6 +393,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (ctxconfig->client != GLFW_NO_API)
     {
+        if (!_glfwInitEGL())
+            return GLFW_FALSE;
         if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
             return GLFW_FALSE;
     }
@@ -435,7 +437,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         _glfwInputWindowFocus(window, GLFW_FALSE);
     }
 
-    if (window->context.client != GLFW_NO_API)
+    if (window->context.destroy)
         window->context.destroy(window);
 
     if (window->wl.native)
