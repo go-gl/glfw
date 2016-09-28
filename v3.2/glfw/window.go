@@ -159,6 +159,12 @@ type Window struct {
 	fDropHolder        func(w *Window, names []string)
 }
 
+// GLFWWindow returns a *C.GLFWwindow reference (i.e. the GLFW window itself). This can be used for
+// passing the GLFW window handle to external C libraries.
+func (w *Window) GLFWWindow() uintptr {
+	return uintptr(unsafe.Pointer(w.data))
+}
+
 //export goWindowPosCB
 func goWindowPosCB(window unsafe.Pointer, xpos, ypos C.int) {
 	w := windows.get((*C.GLFWwindow)(window))
