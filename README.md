@@ -5,6 +5,7 @@
 * GLFW C library source is included and built automatically as part of the Go package. But you need to make sure you have dependencies of GLFW:
 	* On OS X, you need Xcode or Command Line Tools for Xcode (`xcode-select --install`) for required headers and libraries.
 	* On Ubuntu/Debian-like Linux distributions, you need `libgl1-mesa-dev` and `xorg-dev` packages.
+	* On CentOS/Fedora-like Linux distributions, you need `libX11-devel libXcursor-devel libXrandr-devel libXinerama-devel mesa-libGL-devel libXi-devel` packages.
 	* See [here](http://www.glfw.org/docs/latest/compile.html#compile_deps) for full details.
 * Go 1.4+ is required on Windows (otherwise you must use MinGW v4.8.1 exactly, see [Go issue 8811](https://github.com/golang/go/issues/8811)).
 
