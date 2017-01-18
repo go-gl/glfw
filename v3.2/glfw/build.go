@@ -4,7 +4,7 @@ package glfw
 // Windows Build Tags
 // ----------------
 // GLFW Options:
-#cgo windows CFLAGS: -D_GLFW_WIN32
+#cgo windows CFLAGS: -D_GLFW_WIN32 -Iglfw/deps/mingw
 
 // Linker Options:
 #cgo windows LDFLAGS: -lopengl32 -lgdi32
