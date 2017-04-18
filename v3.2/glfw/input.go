@@ -425,7 +425,7 @@ func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
 }
 
 // Returns a cursor with a standard shape, that can be set for a window with SetCursor.
-func CreateStandardCursor(shape int) *Cursor {
+func CreateStandardCursor(shape StandardCursor) *Cursor {
 	c := C.glfwCreateStandardCursor(C.int(shape))
 	panicError()
 	return &Cursor{c}
