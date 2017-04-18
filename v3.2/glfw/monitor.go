@@ -12,6 +12,7 @@ import (
 	"unsafe"
 )
 
+// Monitor represents a monitor.
 type Monitor struct {
 	data *C.GLFWmonitor
 }

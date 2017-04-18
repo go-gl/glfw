@@ -60,7 +60,7 @@ func SwapInterval(interval int) {
 	panicError()
 }
 
-// ExtensionSupported returns whether the specified OpenGL or context creation
+// ExtensionSupported reports whether the specified OpenGL or context creation
 // API extension is supported by the current context. For example, on Windows
 // both the OpenGL and WGL extension strings are checked.
 //

@@ -25,7 +25,7 @@ var fJoystickHolder func(joy, event int)
 // Joystick corresponds to a joystick.
 type Joystick int
 
-// Joystick IDs
+// Joystick IDs.
 const (
 	Joystick1    Joystick = C.GLFW_JOYSTICK_1
 	Joystick2    Joystick = C.GLFW_JOYSTICK_2
@@ -180,7 +180,7 @@ const (
 // ModifierKey corresponds to a modifier key.
 type ModifierKey int
 
-// Modifier keys
+// Modifier keys.
 const (
 	ModShift   ModifierKey = C.GLFW_MOD_SHIFT
 	ModControl ModifierKey = C.GLFW_MOD_CONTROL
@@ -191,7 +191,7 @@ const (
 // MouseButton corresponds to a mouse button.
 type MouseButton int
 
-// Mouse buttons
+// Mouse buttons.
 const (
 	MouseButton1      MouseButton = C.GLFW_MOUSE_BUTTON_1
 	MouseButton2      MouseButton = C.GLFW_MOUSE_BUTTON_2
@@ -223,6 +223,7 @@ const (
 // Action corresponds to a key or button action.
 type Action int
 
+// Action types.
 const (
 	Release Action = C.GLFW_RELEASE // The key or button was released.
 	Press   Action = C.GLFW_PRESS   // The key or button was pressed.
@@ -232,20 +233,21 @@ const (
 // InputMode corresponds to an input mode.
 type InputMode int
 
-// Input modes
+// Input modes.
 const (
 	CursorMode             InputMode = C.GLFW_CURSOR               // See Cursor mode values
 	StickyKeysMode         InputMode = C.GLFW_STICKY_KEYS          // Value can be either 1 or 0
 	StickyMouseButtonsMode InputMode = C.GLFW_STICKY_MOUSE_BUTTONS // Value can be either 1 or 0
 )
 
-// Cursor mode values
+// Cursor mode values.
 const (
 	CursorNormal   int = C.GLFW_CURSOR_NORMAL
 	CursorHidden   int = C.GLFW_CURSOR_HIDDEN
 	CursorDisabled int = C.GLFW_CURSOR_DISABLED
 )
 
+// Cursor represents a cursor.
 type Cursor struct {
 	data *C.GLFWcursor
 }
@@ -317,7 +319,7 @@ func (w *Window) GetInputMode(mode InputMode) int {
 	return ret
 }
 
-// Sets an input option for the window.
+// SetInputMode sets an input option for the window.
 func (w *Window) SetInputMode(mode InputMode, value int) {
 	C.glfwSetInputMode(w.data, C.int(mode), C.int(value))
 	panicError()
@@ -386,7 +388,7 @@ func (w *Window) SetCursorPos(xpos, ypos float64) {
 	panicError()
 }
 
-// Creates a new custom cursor image that can be set for a window with SetCursor.
+// CreateCursor creates a new custom cursor image that can be set for a window with SetCursor.
 // The cursor can be destroyed with Destroy. Any remaining cursors are destroyed by Terminate.
 //
 // The pixels are 32-bit little-endian RGBA, i.e. eight bits per channel. They are arranged
@@ -397,7 +399,7 @@ func (w *Window) SetCursorPos(xpos, ypos float64) {
 // The cursor hotspot is specified in pixels, relative to the upper-left corner of the cursor image.
 // Like all other coordinate systems in GLFW, the X-axis points to the right and the Y-axis points down.
 func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
-	var img_c C.GLFWimage
+	var imgC C.GLFWimage
 	var pixels []uint8
 	b := img.Bounds()
 
@@ -412,11 +414,11 @@ func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
 
 	pix, free := bytes(pixels)
 
-	img_c.width = C.int(b.Dx())
-	img_c.height = C.int(b.Dy())
-	img_c.pixels = (*C.uchar)(pix)
+	imgC.width = C.int(b.Dx())
+	imgC.height = C.int(b.Dy())
+	imgC.pixels = (*C.uchar)(pix)
 
-	c := C.glfwCreateCursor(&img_c, C.int(xhot), C.int(yhot))
+	c := C.glfwCreateCursor(&imgC, C.int(xhot), C.int(yhot))
 
 	free()
 	panicError()
@@ -424,21 +426,22 @@ func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
 	return &Cursor{c}
 }
 
-// Returns a cursor with a standard shape, that can be set for a window with SetCursor.
+// CreateStandardCursor returns a cursor with a standard shape,
+// that can be set for a window with SetCursor.
 func CreateStandardCursor(shape StandardCursor) *Cursor {
 	c := C.glfwCreateStandardCursor(C.int(shape))
 	panicError()
 	return &Cursor{c}
 }
 
-// This function destroys a cursor previously created with CreateCursor.
+// Destroy destroys a cursor previously created with CreateCursor.
 // Any remaining cursors will be destroyed by Terminate.
 func (c *Cursor) Destroy() {
 	C.glfwDestroyCursor(c.data)
 	panicError()
 }
 
-// This function sets the cursor image to be used when the cursor is over the client area
+// SetCursor sets the cursor image to be used when the cursor is over the client area
 // of the specified window. The set cursor will only be visible when the cursor mode of the
 // window is CursorNormal.
 //
@@ -452,6 +455,7 @@ func (w *Window) SetCursor(c *Cursor) {
 	panicError()
 }
 
+// JoystickCallback is the joystick configuration callback.
 type JoystickCallback func(joy, event int)
 
 // SetJoystickCallback sets the joystick configuration callback, or removes the
@@ -469,6 +473,7 @@ func SetJoystickCallback(cbfun JoystickCallback) (previous JoystickCallback) {
 	return previous
 }
 
+// KeyCallback is the key callback.
 type KeyCallback func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
 
 // SetKeyCallback sets the key callback which is called when a key is pressed,
@@ -495,6 +500,7 @@ func (w *Window) SetKeyCallback(cbfun KeyCallback) (previous KeyCallback) {
 	return previous
 }
 
+// CharCallback is the character callback.
 type CharCallback func(w *Window, char rune)
 
 // SetCharCallback sets the character callback which is called when a
@@ -523,6 +529,7 @@ func (w *Window) SetCharCallback(cbfun CharCallback) (previous CharCallback) {
 	return previous
 }
 
+// CharModsCallback is the character with modifiers callback.
 type CharModsCallback func(w *Window, char rune, mods ModifierKey)
 
 // SetCharModsCallback sets the character with modifiers callback which is called when a
@@ -547,6 +554,7 @@ func (w *Window) SetCharModsCallback(cbfun CharModsCallback) (previous CharModsC
 	return previous
 }
 
+// MouseButtonCallback is the mouse button callback.
 type MouseButtonCallback func(w *Window, button MouseButton, action Action, mod ModifierKey)
 
 // SetMouseButtonCallback sets the mouse button callback which is called when a
@@ -569,6 +577,7 @@ func (w *Window) SetMouseButtonCallback(cbfun MouseButtonCallback) (previous Mou
 	return previous
 }
 
+// CursorPosCallback the cursor position callback.
 type CursorPosCallback func(w *Window, xpos float64, ypos float64)
 
 // SetCursorPosCallback sets the cursor position callback which is called
@@ -586,6 +595,7 @@ func (w *Window) SetCursorPosCallback(cbfun CursorPosCallback) (previous CursorP
 	return previous
 }
 
+// CursorEnterCallback is the cursor boundary crossing callback.
 type CursorEnterCallback func(w *Window, entered bool)
 
 // SetCursorEnterCallback the cursor boundary crossing callback which is called
@@ -602,6 +612,7 @@ func (w *Window) SetCursorEnterCallback(cbfun CursorEnterCallback) (previous Cur
 	return previous
 }
 
+// ScrollCallback is the scroll callback.
 type ScrollCallback func(w *Window, xoff float64, yoff float64)
 
 // SetScrollCallback sets the scroll callback which is called when a scrolling
@@ -618,6 +629,7 @@ func (w *Window) SetScrollCallback(cbfun ScrollCallback) (previous ScrollCallbac
 	return previous
 }
 
+// DropCallback is the drop callback.
 type DropCallback func(w *Window, names []string)
 
 // SetDropCallback sets the drop callback which is called when an object
@@ -634,7 +646,7 @@ func (w *Window) SetDropCallback(cbfun DropCallback) (previous DropCallback) {
 	return previous
 }
 
-// GetJoystickPresent returns whether the specified joystick is present.
+// JoystickPresent reports whether the specified joystick is present.
 func JoystickPresent(joy Joystick) bool {
 	ret := glfwbool(C.glfwJoystickPresent(C.int(joy)))
 	panicError()

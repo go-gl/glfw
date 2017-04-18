@@ -3,7 +3,7 @@ package glfw
 //#include "glfw/include/GLFW/glfw3.h"
 import "C"
 
-// VulkanSupported returns whether the Vulkan loader has been found. This check is performed by Init.
+// VulkanSupported reports whether the Vulkan loader has been found. This check is performed by Init.
 //
 // The availability of a Vulkan loader does not by itself guarantee that window surface creation or
 // even device creation is possible. Call GetRequiredInstanceExtensions to check whether the

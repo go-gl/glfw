@@ -3,6 +3,7 @@ package glfw
 //#include "glfw/include/GLFW/glfw3.h"
 import "C"
 
+// Version constants.
 const (
 	VersionMajor    = C.GLFW_VERSION_MAJOR    // This is incremented when the API is changed in non-compatible ways.
 	VersionMinor    = C.GLFW_VERSION_MINOR    // This is incremented when features are added to the API but it remains backward-compatible.
