@@ -357,7 +357,11 @@ func (w *Window) SetIcon(images []image.Image) {
 		cimages[i].pixels = (*C.uchar)(pix)
 	}
 
-	C.glfwSetWindowIcon(w.data, C.int(count), &cimages[0])
+	var p *C.GLFWimage
+	if count > 0 {
+		p = &cimages[0]
+	}
+	C.glfwSetWindowIcon(w.data, C.int(count), p)
 
 	for _, v := range freePixels {
 		v()
