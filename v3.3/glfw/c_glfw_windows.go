@@ -9,5 +9,6 @@ package glfw
 #include "glfw/src/win32_window.c"
 #include "glfw/src/wgl_context.c"
 #include "glfw/src/egl_context.c"
+#include "glfw/src/osmesa_context.c"
 */
 import "C"

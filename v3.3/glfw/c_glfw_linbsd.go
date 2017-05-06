@@ -24,5 +24,6 @@ package glfw
 #include "glfw/src/posix_tls.c"
 #include "glfw/src/xkb_unicode.c"
 #include "glfw/src/egl_context.c"
+#include "glfw/src/osmesa_context.c"
 */
 import "C"
