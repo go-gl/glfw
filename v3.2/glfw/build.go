@@ -1,5 +1,11 @@
 package glfw
 
+// Generating wayland protocols files
+//go:generate wayland-scanner code relative-pointer-unstable-v1.xml glfw/src/wayland-relative-pointer-unstable-v1-client-protocol.c
+//go:generate wayland-scanner client-header relative-pointer-unstable-v1.xml glfw/src/wayland-relative-pointer-unstable-v1-client-protocol.h
+//go:generate wayland-scanner code pointer-constraints-unstable-v1.xml glfw/src/wayland-pointer-constraints-unstable-v1-client-protocol.c
+//go:generate wayland-scanner client-header pointer-constraints-unstable-v1.xml glfw/src/wayland-pointer-constraints-unstable-v1-client-protocol.h
+
 /*
 // Windows Build Tags
 // ----------------
@@ -23,11 +29,11 @@ package glfw
 // ----------------
 // GLFW Options:
 #cgo linux,!wayland CFLAGS: -D_GLFW_X11
-#cgo linux,wayland CFLAGS: -D_GLFW_WAYLAND
+#cgo linux,wayland CFLAGS: -D_GLFW_WAYLAND -D_GNU_SOURCE
 
 // Linker Options:
 #cgo linux,!wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama -ldl -lrt
-#cgo linux,wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama -ldl -lrt
+#cgo linux,wayland LDFLAGS: -lGL -lwayland-client -lwayland-cursor -lwayland-egl -lxkbcommon -lm -ldl -lrt
 
 
 // FreeBSD Build Tags
@@ -38,6 +44,6 @@ package glfw
 
 // Linker Options:
 #cgo freebsd,!wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama
-#cgo freebsd,wayland LDFLAGS: -lGL -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama
+#cgo freebsd,wayland LDFLAGS: -lGL -lwayland-client -lwayland-cursor -lwayland-egl -lxkbcommon -lm
 */
 import "C"

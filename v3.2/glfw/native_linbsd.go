@@ -1,4 +1,4 @@
-// +build linux freebsd
+// +build linux,!wayland freebsd,!wayland
 
 package glfw
 
