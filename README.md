@@ -94,7 +94,7 @@ func main() {
 * Added hint value `DontCare`.
 
 ### API changes
-* `Window.Iconfiy` Returns an error.
+* `Window.Iconify` Returns an error.
 * `Window.Restore` Returns an error.
 * `Init` Returns an error instead of `bool`.
 * `GetJoystickAxes` No longer returns an error.
