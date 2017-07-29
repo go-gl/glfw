@@ -72,6 +72,7 @@ const (
 	OpenGLForwardCompatible Hint = C.GLFW_OPENGL_FORWARD_COMPAT    // Specifies whether the OpenGL context should be forward-compatible. Hard constraint.
 	OpenGLDebugContext      Hint = C.GLFW_OPENGL_DEBUG_CONTEXT     // Specifies whether to create a debug OpenGL context, which may have additional error and performance issue reporting functionality. If OpenGL ES is requested, this hint is ignored.
 	OpenGLProfile           Hint = C.GLFW_OPENGL_PROFILE           // Specifies which OpenGL profile to create the context for. Hard constraint.
+	ContextCreationAPI      Hint = C.GLFW_CONTEXT_CREATION_API     // Specifies which context creation API to use to create the context.
 )
 
 // Framebuffer related hints.
