@@ -803,7 +803,7 @@ func WaitEvents() {
 // processing functions.
 //
 // If no windows exist, this function returns immediately. For synchronization of threads in
-// applications that do not create windows, use your threading library of choice.
+// applications that do not create windows, use native Go primitives.
 //
 // Event processing is not required for joystick input to work.
 func WaitEventsTimeout(timeout float64) {
@@ -814,9 +814,8 @@ func WaitEventsTimeout(timeout float64) {
 // PostEmptyEvent posts an empty event from the current thread to the main
 // thread event queue, causing WaitEvents to return.
 //
-// If no windows exist, this function returns immediately.  For
-// synchronization of threads in applications that do not create windows, use
-// your threading library of choice.
+// If no windows exist, this function returns immediately. For synchronization of threads in
+// applications that do not create windows, use native Go primitives.
 //
 // This function may be called from secondary threads.
 func PostEmptyEvent() {
