@@ -391,10 +391,11 @@ func (w *Window) SetCursorPos(xpos, ypos float64) {
 // CreateCursor creates a new custom cursor image that can be set for a window with SetCursor.
 // The cursor can be destroyed with Destroy. Any remaining cursors are destroyed by Terminate.
 //
-// The pixels are 32-bit little-endian RGBA, i.e. eight bits per channel. They are arranged
-// canonically as packed sequential rows, starting from the top-left corner.
-//
-// All non-RGBA images will be converted to RGBA.
+// The image is ideally provided in the form of *image.NRGBA.
+// The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
+// bits per channel with the red channel first. They are arranged canonically
+// as packed sequential rows, starting from the top-left corner. If the image
+// type is not *image.NRGBA, it will be converted to it.
 //
 // The cursor hotspot is specified in pixels, relative to the upper-left corner of the cursor image.
 // Like all other coordinate systems in GLFW, the X-axis points to the right and the Y-axis points down.
@@ -404,10 +405,10 @@ func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
 	b := img.Bounds()
 
 	switch img := img.(type) {
-	case *image.RGBA:
+	case *image.NRGBA:
 		pixels = img.Pix
 	default:
-		m := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
+		m := image.NewNRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
 		draw.Draw(m, m.Bounds(), img, b.Min, draw.Src)
 		pixels = m.Pix
 	}

@@ -330,6 +330,12 @@ func (w *Window) SetTitle(title string) {
 // those of or closest to the sizes desired by the system are selected. If no images are
 // specified, the window reverts to its default icon.
 //
+// The image is ideally provided in the form of *image.NRGBA.
+// The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
+// bits per channel with the red channel first. They are arranged canonically
+// as packed sequential rows, starting from the top-left corner. If the image
+// type is not *image.NRGBA, it will be converted to it.
+//
 // The desired image sizes varies depending on platform and system settings. The selected
 // images will be rescaled as needed. Good sizes include 16x16, 32x32 and 48x48.
 func (w *Window) SetIcon(images []image.Image) {
@@ -342,10 +348,10 @@ func (w *Window) SetIcon(images []image.Image) {
 		b := img.Bounds()
 
 		switch img := img.(type) {
-		case *image.RGBA:
+		case *image.NRGBA:
 			pixels = img.Pix
 		default:
-			m := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
+			m := image.NewNRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
 			draw.Draw(m, m.Bounds(), img, b.Min, draw.Src)
 			pixels = m.Pix
 		}
