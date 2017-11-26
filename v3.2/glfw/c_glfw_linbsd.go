@@ -12,6 +12,8 @@ package glfw
 	#include "glfw/src/wl_init.c"
 	#include "glfw/src/wl_monitor.c"
 	#include "glfw/src/wl_window.c"
+	#include "glfw/src/wayland-pointer-constraints-unstable-v1-client-protocol.c"
+	#include "glfw/src/wayland-relative-pointer-unstable-v1-client-protocol.c"
 #endif
 #ifdef _GLFW_X11
 	#include "glfw/src/x11_init.c"
