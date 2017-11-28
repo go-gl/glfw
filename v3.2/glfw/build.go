@@ -1,11 +1,5 @@
 package glfw
 
-// Generating wayland protocols files
-//go:generate wayland-scanner code relative-pointer-unstable-v1.xml glfw/src/wayland-relative-pointer-unstable-v1-client-protocol.c
-//go:generate wayland-scanner client-header relative-pointer-unstable-v1.xml glfw/src/wayland-relative-pointer-unstable-v1-client-protocol.h
-//go:generate wayland-scanner code pointer-constraints-unstable-v1.xml glfw/src/wayland-pointer-constraints-unstable-v1-client-protocol.c
-//go:generate wayland-scanner client-header pointer-constraints-unstable-v1.xml glfw/src/wayland-pointer-constraints-unstable-v1-client-protocol.h
-
 /*
 // Windows Build Tags
 // ----------------
