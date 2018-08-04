@@ -72,3 +72,16 @@ func GetVersion() (major, minor, revision int) {
 func GetVersionString() string {
 	return C.GoString(C.glfwGetVersionString())
 }
+
+// InitHint function sets hints for the next initialization of GLFW.
+//
+// The values you set hints to are never reset by GLFW, but they only take
+// effect during initialization. Once GLFW has been initialized, any values you
+// set will be ignored until the library is terminated and initialized again.
+//
+// Some hints are platform specific. These may be set on any platform but they
+// will only affect their specific platform. Other platforms will ignore them.
+// Setting these hints requires no platform specific headers or functions.
+func InitHint(hint Hint, value int) {
+	C.glfwInitHint(C.int(hint), C.int(value))
+}

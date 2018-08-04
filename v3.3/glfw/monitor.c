@@ -1,19 +1,15 @@
 #include "_cgo_export.h"
 
+void glfwSetMonitorCallbackCB() {
+	glfwSetMonitorCallback((GLFWmonitorfun) goMonitorCB);
+}
+
 GLFWmonitor *GetMonitorAtIndex(GLFWmonitor **monitors, int index) {
 	return monitors[index];
 }
 
 GLFWvidmode GetVidmodeAtIndex(GLFWvidmode *vidmodes, int index) {
 	return vidmodes[index];
-}
-
-void glfwMonitorCB(GLFWmonitor* monitor, int event) {
-	goMonitorCB(monitor, event);
-}
-
-void glfwSetMonitorCallbackCB() {
-	glfwSetMonitorCallback(glfwMonitorCB);
 }
 
 unsigned int GetGammaAtIndex(unsigned short *color, int i) {

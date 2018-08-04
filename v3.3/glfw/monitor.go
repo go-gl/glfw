@@ -200,3 +200,14 @@ func (m *Monitor) SetGammaRamp(ramp *GammaRamp) {
 
 	C.glfwSetGammaRamp(m.data, &rampC)
 }
+
+// GetContentScale function retrieves the content scale for the specified monitor.
+// The content scale is the ratio between the current DPI and the platform's
+// default DPI. If you scale all pixel dimensions by this scale then your content
+// should appear at an appropriate size. This is especially important for text
+// and any UI elements.
+func (m *Monitor) GetContentScale() (float32, float32) {
+	var x, y C.float
+	C.glfwGetMonitorContentScale(m.data, &x, &y)
+	return float32(x), float32(y)
+}

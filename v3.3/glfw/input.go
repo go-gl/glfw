@@ -247,6 +247,33 @@ const (
 	CursorDisabled int = C.GLFW_CURSOR_DISABLED
 )
 
+// JoystickCallback is the joystick configuration callback.
+type JoystickCallback func(joy, event int)
+
+// KeyCallback is the key callback.
+type KeyCallback func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
+
+// CharCallback is the character callback.
+type CharCallback func(w *Window, char rune)
+
+// CharModsCallback is the character with modifiers callback.
+type CharModsCallback func(w *Window, char rune, mods ModifierKey)
+
+// MouseButtonCallback is the mouse button callback.
+type MouseButtonCallback func(w *Window, button MouseButton, action Action, mod ModifierKey)
+
+// CursorPosCallback the cursor position callback.
+type CursorPosCallback func(w *Window, xpos float64, ypos float64)
+
+// CursorEnterCallback is the cursor boundary crossing callback.
+type CursorEnterCallback func(w *Window, entered bool)
+
+// ScrollCallback is the scroll callback.
+type ScrollCallback func(w *Window, xoff float64, yoff float64)
+
+// DropCallback is the drop callback.
+type DropCallback func(w *Window, names []string)
+
 // Cursor represents a cursor.
 type Cursor struct {
 	data *C.GLFWcursor
@@ -272,8 +299,7 @@ func goCursorPosCB(window unsafe.Pointer, xpos, ypos C.double) {
 //export goCursorEnterCB
 func goCursorEnterCB(window unsafe.Pointer, entered C.int) {
 	w := windows.get((*C.GLFWwindow)(window))
-	hasEntered := glfwbool(entered)
-	w.fCursorEnterHolder(w, hasEntered)
+	w.fCursorEnterHolder(w, glfwbool(entered))
 }
 
 //export goScrollCB
@@ -320,6 +346,15 @@ func (w *Window) GetInputMode(mode InputMode) int {
 // SetInputMode sets an input option for the window.
 func (w *Window) SetInputMode(mode InputMode, value int) {
 	C.glfwSetInputMode(w.data, C.int(mode), C.int(value))
+}
+
+// GetKeyScancode function returns the platform-specific scancode of the
+// specified key.
+//
+// If the key is KeyUnknown or does not exist on the keyboard this method will
+// return -1.
+func GetKeyScancode(key Key) int {
+	return int(C.glfwGetKeyScancode(C.int(key)))
 }
 
 // GetKey returns the last reported state of a keyboard key. The returned state
@@ -442,14 +477,11 @@ func (w *Window) SetCursor(c *Cursor) {
 	}
 }
 
-// JoystickCallback is the joystick configuration callback.
-type JoystickCallback func(joy, event int)
-
 // SetJoystickCallback sets the joystick configuration callback, or removes the
 // currently set callback. This is called when a joystick is connected to or
 // disconnected from the system.
-func SetJoystickCallback(cbfun JoystickCallback) (previous JoystickCallback) {
-	previous = fJoystickHolder
+func SetJoystickCallback(cbfun JoystickCallback) JoystickCallback {
+	previous := fJoystickHolder
 	fJoystickHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetJoystickCallback(nil)
@@ -458,9 +490,6 @@ func SetJoystickCallback(cbfun JoystickCallback) (previous JoystickCallback) {
 	}
 	return previous
 }
-
-// KeyCallback is the key callback.
-type KeyCallback func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
 
 // SetKeyCallback sets the key callback which is called when a key is pressed,
 // repeated or released.
@@ -474,8 +503,8 @@ type KeyCallback func(w *Window, key Key, scancode int, action Action, mods Modi
 // fact that the synthetic ones are generated after the window has lost focus,
 // i.e. Focused will be false and the focus callback will have already been
 // called.
-func (w *Window) SetKeyCallback(cbfun KeyCallback) (previous KeyCallback) {
-	previous = w.fKeyHolder
+func (w *Window) SetKeyCallback(cbfun KeyCallback) KeyCallback {
+	previous := w.fKeyHolder
 	w.fKeyHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetKeyCallback(w.data, nil)
@@ -484,9 +513,6 @@ func (w *Window) SetKeyCallback(cbfun KeyCallback) (previous KeyCallback) {
 	}
 	return previous
 }
-
-// CharCallback is the character callback.
-type CharCallback func(w *Window, char rune)
 
 // SetCharCallback sets the character callback which is called when a
 // Unicode character is input.
@@ -502,8 +528,8 @@ type CharCallback func(w *Window, char rune)
 // not be called if modifier keys are held down that would prevent normal text
 // input on that platform, for example a Super (Command) key on OS X or Alt key
 // on Windows. There is a character with modifiers callback that receives these events.
-func (w *Window) SetCharCallback(cbfun CharCallback) (previous CharCallback) {
-	previous = w.fCharHolder
+func (w *Window) SetCharCallback(cbfun CharCallback) CharCallback {
+	previous := w.fCharHolder
 	w.fCharHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetCharCallback(w.data, nil)
@@ -512,9 +538,6 @@ func (w *Window) SetCharCallback(cbfun CharCallback) (previous CharCallback) {
 	}
 	return previous
 }
-
-// CharModsCallback is the character with modifiers callback.
-type CharModsCallback func(w *Window, char rune, mods ModifierKey)
 
 // SetCharModsCallback sets the character with modifiers callback which is called when a
 // Unicode character is input regardless of what modifier keys are used.
@@ -526,8 +549,8 @@ type CharModsCallback func(w *Window, char rune, mods ModifierKey)
 // map 1:1 to physical keys, as a key may produce zero, one or more characters.
 // If you want to know whether a specific physical key was pressed or released,
 // see the key callback instead.
-func (w *Window) SetCharModsCallback(cbfun CharModsCallback) (previous CharModsCallback) {
-	previous = w.fCharModsHolder
+func (w *Window) SetCharModsCallback(cbfun CharModsCallback) CharModsCallback {
+	previous := w.fCharModsHolder
 	w.fCharModsHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetCharModsCallback(w.data, nil)
@@ -537,9 +560,6 @@ func (w *Window) SetCharModsCallback(cbfun CharModsCallback) (previous CharModsC
 	return previous
 }
 
-// MouseButtonCallback is the mouse button callback.
-type MouseButtonCallback func(w *Window, button MouseButton, action Action, mod ModifierKey)
-
 // SetMouseButtonCallback sets the mouse button callback which is called when a
 // mouse button is pressed or released.
 //
@@ -548,8 +568,8 @@ type MouseButtonCallback func(w *Window, button MouseButton, action Action, mod 
 // user-generated events by the fact that the synthetic ones are generated after
 // the window has lost focus, i.e. Focused will be false and the focus
 // callback will have already been called.
-func (w *Window) SetMouseButtonCallback(cbfun MouseButtonCallback) (previous MouseButtonCallback) {
-	previous = w.fMouseButtonHolder
+func (w *Window) SetMouseButtonCallback(cbfun MouseButtonCallback) MouseButtonCallback {
+	previous := w.fMouseButtonHolder
 	w.fMouseButtonHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetMouseButtonCallback(w.data, nil)
@@ -559,14 +579,11 @@ func (w *Window) SetMouseButtonCallback(cbfun MouseButtonCallback) (previous Mou
 	return previous
 }
 
-// CursorPosCallback the cursor position callback.
-type CursorPosCallback func(w *Window, xpos float64, ypos float64)
-
 // SetCursorPosCallback sets the cursor position callback which is called
 // when the cursor is moved. The callback is provided with the position relative
 // to the upper-left corner of the client area of the window.
-func (w *Window) SetCursorPosCallback(cbfun CursorPosCallback) (previous CursorPosCallback) {
-	previous = w.fCursorPosHolder
+func (w *Window) SetCursorPosCallback(cbfun CursorPosCallback) CursorPosCallback {
+	previous := w.fCursorPosHolder
 	w.fCursorPosHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetCursorPosCallback(w.data, nil)
@@ -576,13 +593,10 @@ func (w *Window) SetCursorPosCallback(cbfun CursorPosCallback) (previous CursorP
 	return previous
 }
 
-// CursorEnterCallback is the cursor boundary crossing callback.
-type CursorEnterCallback func(w *Window, entered bool)
-
 // SetCursorEnterCallback the cursor boundary crossing callback which is called
 // when the cursor enters or leaves the client area of the window.
-func (w *Window) SetCursorEnterCallback(cbfun CursorEnterCallback) (previous CursorEnterCallback) {
-	previous = w.fCursorEnterHolder
+func (w *Window) SetCursorEnterCallback(cbfun CursorEnterCallback) CursorEnterCallback {
+	previous := w.fCursorEnterHolder
 	w.fCursorEnterHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetCursorEnterCallback(w.data, nil)
@@ -592,13 +606,10 @@ func (w *Window) SetCursorEnterCallback(cbfun CursorEnterCallback) (previous Cur
 	return previous
 }
 
-// ScrollCallback is the scroll callback.
-type ScrollCallback func(w *Window, xoff float64, yoff float64)
-
 // SetScrollCallback sets the scroll callback which is called when a scrolling
 // device is used, such as a mouse wheel or scrolling area of a touchpad.
-func (w *Window) SetScrollCallback(cbfun ScrollCallback) (previous ScrollCallback) {
-	previous = w.fScrollHolder
+func (w *Window) SetScrollCallback(cbfun ScrollCallback) ScrollCallback {
+	previous := w.fScrollHolder
 	w.fScrollHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetScrollCallback(w.data, nil)
@@ -608,13 +619,10 @@ func (w *Window) SetScrollCallback(cbfun ScrollCallback) (previous ScrollCallbac
 	return previous
 }
 
-// DropCallback is the drop callback.
-type DropCallback func(w *Window, names []string)
-
 // SetDropCallback sets the drop callback which is called when an object
 // is dropped over the window.
-func (w *Window) SetDropCallback(cbfun DropCallback) (previous DropCallback) {
-	previous = w.fDropHolder
+func (w *Window) SetDropCallback(cbfun DropCallback) DropCallback {
+	previous := w.fDropHolder
 	w.fDropHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetDropCallback(w.data, nil)
