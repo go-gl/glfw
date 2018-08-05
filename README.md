@@ -56,11 +56,11 @@ func main() {
 * Vulkan methods are intentionally not implemented. `Window.Handle` can be used to create a Vulkan surface via the [this](https://github.com/vulkan-go/vulkan) package.
 
 ### GLFW 3.3 Specific Changes
+* Renamed `Window.GLFWWindow` to `Window.Handle`
 * Added function `SetErrorCallback`.
 * Added function `GetError`.
 * Added function `Window.RequestAttention`.
 * Added function `Window.SetAttrib`.
-* Added function `Window.Handle`.
 * Added function `Window.GetContentScale`.
 * Added function `Window.GetOpacity`.
 * Added function `Window.SetOpacity`.
