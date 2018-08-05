@@ -698,13 +698,13 @@ func (w *Window) SetCursor(c *Cursor) {
 	}
 }
 
-// JoystickPresent reports whether the specified joystick is present.
-func JoystickPresent(joy Joystick) bool {
+// Present reports whether the joystick is present.
+func (joy Joystick) Present() bool {
 	return glfwbool(C.glfwJoystickPresent(C.int(joy)))
 }
 
-// GetJoystickAxes returns a slice of axis values.
-func GetJoystickAxes(joy Joystick) []float32 {
+// GetAxes returns a slice of axis values.
+func (joy Joystick) GetAxes() []float32 {
 	var length int
 
 	axis := C.glfwGetJoystickAxes(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
@@ -719,8 +719,8 @@ func GetJoystickAxes(joy Joystick) []float32 {
 	return a
 }
 
-// GetJoystickHats returns the state of all hats of the specified joystick.
-func GetJoystickHats(joy Joystick) []JoystickHatState {
+// GetHats returns the state of all hats of the specified joystick.
+func (joy Joystick) GetHats() []JoystickHatState {
 	var length int
 
 	hats := C.glfwGetJoystickHats(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
@@ -735,8 +735,8 @@ func GetJoystickHats(joy Joystick) []JoystickHatState {
 	return b
 }
 
-// GetJoystickButtons returns a slice of button values.
-func GetJoystickButtons(joy Joystick) []Action {
+// GetButtons returns a slice of button values.
+func (joy Joystick) GetButtons() []Action {
 	var length int
 
 	buttons := C.glfwGetJoystickButtons(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
@@ -751,25 +751,14 @@ func GetJoystickButtons(joy Joystick) []Action {
 	return b
 }
 
-// GetJoystickName returns the name, encoded as UTF-8, of the specified
+// GetName returns the name, encoded as UTF-8, of the specified
 // joystick.
-func GetJoystickName(joy Joystick) string {
+func (joy Joystick) GetName() string {
 	jn := C.glfwGetJoystickName(C.int(joy))
 	return C.GoString(jn)
 }
 
-// JoystickIsGamepad returns whether the specified joystick is both present and
-// has a gamepad mapping.
-//
-// If the specified joystick is present but does not have a gamepad mapping this
-// function will return false but will not generate an error. Call
-// JoystickPresent to check if a joystick is present regardless of whether it
-// has a mapping.
-func JoystickIsGamepad(joy Joystick) bool {
-	return glfwbool(C.glfwJoystickIsGamepad(C.int(joy)))
-}
-
-// GetJoystickGUID returns the SDL compatible GUID, as a UTF-8 encoded
+// GetGUID returns the SDL compatible GUID, as a UTF-8 encoded
 // hexadecimal string, of the specified joystick.
 //
 // The GUID is what connects a joystick to a gamepad mapping. A connected
@@ -785,9 +774,20 @@ func JoystickIsGamepad(joy Joystick) bool {
 // unit, e.g. all wired Xbox 360 controllers will have the same GUID on that
 // platform. The GUID for a unit may vary between platforms depending on what
 // hardware information the platform specific APIs provide.
-func GetJoystickGUID(joy Joystick) string {
+func (joy Joystick) GetGUID() string {
 	guid := C.glfwGetJoystickGUID(C.int(joy))
 	return C.GoString(guid)
+}
+
+// IsGamepad returns whether the specified joystick is both present and
+// has a gamepad mapping.
+//
+// If the specified joystick is present but does not have a gamepad mapping this
+// function will return false but will not generate an error. Call
+// JoystickPresent to check if a joystick is present regardless of whether it
+// has a mapping.
+func (joy Joystick) IsGamepad() bool {
+	return glfwbool(C.glfwJoystickIsGamepad(C.int(joy)))
 }
 
 // GetGamepadName returns the human-readable name of the gamepad from the
@@ -797,27 +797,9 @@ func GetJoystickGUID(joy Joystick) string {
 // this function will return empty string but will not generate an error. Call
 // JoystickPresent to check whether it is present regardless of whether it has
 // a mapping.
-func GetGamepadName(joy Joystick) string {
+func (joy Joystick) GetGamepadName() string {
 	gn := C.glfwGetGamepadName(C.int(joy))
 	return C.GoString(gn)
-}
-
-// UpdateGamepadMappings parses the specified ASCII encoded string and updates
-// the internal list with any gamepad mappings it finds. This string may contain
-// either a single gamepad mapping or many mappings separated by newlines. The
-// parser supports the full format of the gamecontrollerdb.txt source file
-// including empty lines and comments.
-//
-// See Gamepad mappings for a description of the format.
-//
-// If there is already a gamepad mapping for a given GUID in the internal list,
-// it will be replaced by the one passed to this function. If the library is
-// terminated and re-initialized the internal list will revert to the built-in
-// default.
-func UpdateGamepadMappings(mapping string) bool {
-	m := C.CString(mapping)
-	defer C.free(unsafe.Pointer(m))
-	return glfwbool(C.glfwUpdateGamepadMappings(m))
 }
 
 // GetGamepadState retrives the state of the specified joystick remapped to an
@@ -833,7 +815,7 @@ func UpdateGamepadMappings(mapping string) bool {
 //
 // Not all devices have all the buttons or axes provided by GamepadState.
 // Unavailable buttons and axes will always report Release and 0.0 respectively.
-func GetGamepadState(joy Joystick) *GamepadState {
+func (joy Joystick) GetGamepadState() *GamepadState {
 	var (
 		gs  GamepadState
 		cgs C.GLFWgamepadstate
@@ -853,4 +835,22 @@ func GetGamepadState(joy Joystick) *GamepadState {
 	}
 
 	return &gs
+}
+
+// UpdateGamepadMappings parses the specified ASCII encoded string and updates
+// the internal list with any gamepad mappings it finds. This string may contain
+// either a single gamepad mapping or many mappings separated by newlines. The
+// parser supports the full format of the gamecontrollerdb.txt source file
+// including empty lines and comments.
+//
+// See Gamepad mappings for a description of the format.
+//
+// If there is already a gamepad mapping for a given GUID in the internal list,
+// it will be replaced by the one passed to this function. If the library is
+// terminated and re-initialized the internal list will revert to the built-in
+// default.
+func UpdateGamepadMappings(mapping string) bool {
+	m := C.CString(mapping)
+	defer C.free(unsafe.Pointer(m))
+	return glfwbool(C.glfwUpdateGamepadMappings(m))
 }
