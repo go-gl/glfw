@@ -1,5 +1,6 @@
 package glfw
 
+//#include <stdlib.h>
 //#include "glfw/include/GLFW/glfw3.h"
 //void glfwSetJoystickCallbackCB();
 //void glfwSetKeyCallbackCB(GLFWwindow *window);
@@ -12,6 +13,8 @@ package glfw
 //void glfwSetDropCallbackCB(GLFWwindow *window);
 //float GetAxisAtIndex(float *axis, int i);
 //unsigned char GetButtonsAtIndex(unsigned char *buttons, int i);
+//float GetGamepadAxisAtIndex(GLFWgamepadstate *gp, int i);
+//unsigned char GetGamepadButtonAtIndex(GLFWgamepadstate *gp, int i);
 import "C"
 
 import (
@@ -44,6 +47,63 @@ const (
 	Joystick15   Joystick = C.GLFW_JOYSTICK_15
 	Joystick16   Joystick = C.GLFW_JOYSTICK_16
 	JoystickLast Joystick = C.GLFW_JOYSTICK_LAST
+)
+
+// JoystickHatState corresponds to joystick hat states.
+type JoystickHatState int
+
+// Joystick Hat State IDs.
+const (
+	HatCentered  JoystickHatState = C.GLFW_HAT_CENTERED
+	HatUp        JoystickHatState = C.GLFW_HAT_UP
+	HatRight     JoystickHatState = C.GLFW_HAT_RIGHT
+	HatDown      JoystickHatState = C.GLFW_HAT_DOWN
+	HatLeft      JoystickHatState = C.GLFW_HAT_LEFT
+	HatRightUp   JoystickHatState = C.GLFW_HAT_RIGHT_UP
+	HatRightDown JoystickHatState = C.GLFW_HAT_RIGHT_DOWN
+	HatLeftUp    JoystickHatState = C.GLFW_HAT_LEFT_UP
+	HatLeftDown  JoystickHatState = C.GLFW_HAT_LEFT_DOWN
+)
+
+// GamepadAxis corresponds to a gamepad axis.
+type GamepadAxis int
+
+// Gamepad axis IDs.
+const (
+	AxisLeftX        GamepadAxis = C.GLFW_GAMEPAD_AXIS_LEFT_X
+	AxisLeftY        GamepadAxis = C.GLFW_GAMEPAD_AXIS_LEFT_Y
+	AxisRightX       GamepadAxis = C.GLFW_GAMEPAD_AXIS_RIGHT_X
+	AxisRightY       GamepadAxis = C.GLFW_GAMEPAD_AXIS_RIGHT_Y
+	AxisLeftTrigger  GamepadAxis = C.GLFW_GAMEPAD_AXIS_LEFT_TRIGGER
+	AxisRightTrigger GamepadAxis = C.GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER
+	AxisLast         GamepadAxis = C.GLFW_GAMEPAD_AXIS_LAST
+)
+
+// GamepadButton corresponds to a gamepad button.
+type GamepadButton int
+
+// Gamepad button IDs.
+const (
+	ButtonA           GamepadButton = C.GLFW_GAMEPAD_BUTTON_A
+	ButtonB           GamepadButton = C.GLFW_GAMEPAD_BUTTON_B
+	ButtonX           GamepadButton = C.GLFW_GAMEPAD_BUTTON_X
+	ButtonY           GamepadButton = C.GLFW_GAMEPAD_BUTTON_Y
+	ButtonLeftBumper  GamepadButton = C.GLFW_GAMEPAD_BUTTON_LEFT_BUMPER
+	ButtonRightBumper GamepadButton = C.GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER
+	ButtonBack        GamepadButton = C.GLFW_GAMEPAD_BUTTON_BACK
+	ButtonStart       GamepadButton = C.GLFW_GAMEPAD_BUTTON_START
+	ButtonGuide       GamepadButton = C.GLFW_GAMEPAD_BUTTON_GUIDE
+	ButtonLeftThumb   GamepadButton = C.GLFW_GAMEPAD_BUTTON_LEFT_THUMB
+	ButtonRightThumb  GamepadButton = C.GLFW_GAMEPAD_BUTTON_RIGHT_THUMB
+	ButtonDpadUp      GamepadButton = C.GLFW_GAMEPAD_BUTTON_DPAD_UP
+	ButtonDpadRight   GamepadButton = C.GLFW_GAMEPAD_BUTTON_DPAD_RIGHT
+	ButtonDpadDown    GamepadButton = C.GLFW_GAMEPAD_BUTTON_DPAD_DOWN
+	ButtonDpadLeft    GamepadButton = C.GLFW_GAMEPAD_BUTTON_DPAD_LEFT
+	ButtonLast        GamepadButton = C.GLFW_GAMEPAD_BUTTON_LAST
+	ButtonCross       GamepadButton = C.GLFW_GAMEPAD_BUTTON_CROSS
+	ButtonCircle      GamepadButton = C.GLFW_GAMEPAD_BUTTON_CIRCLE
+	ButtonSquare      GamepadButton = C.GLFW_GAMEPAD_BUTTON_SQUARE
+	ButtonTriangle    GamepadButton = C.GLFW_GAMEPAD_BUTTON_TRIANGLE
 )
 
 // Key corresponds to a keyboard key.
@@ -279,6 +339,12 @@ type Cursor struct {
 	data *C.GLFWcursor
 }
 
+// GamepadState describes the input state of a gamepad.
+type GamepadState struct {
+	Buttons [15]Action
+	Axes    [6]float32
+}
+
 //export goJoystickCB
 func goJoystickCB(joy, event C.int) {
 	fJoystickHolder(int(joy), int(event))
@@ -336,145 +402,6 @@ func goDropCB(window unsafe.Pointer, count C.int, names **C.char) { // TODO: The
 		namesSlice[i] = C.GoString(*p)                                                                // TODO: Make this better.
 	}
 	w.fDropHolder(w, namesSlice)
-}
-
-// GetInputMode returns the value of an input option of the window.
-func (w *Window) GetInputMode(mode InputMode) int {
-	return int(C.glfwGetInputMode(w.data, C.int(mode)))
-}
-
-// SetInputMode sets an input option for the window.
-func (w *Window) SetInputMode(mode InputMode, value int) {
-	C.glfwSetInputMode(w.data, C.int(mode), C.int(value))
-}
-
-// GetKeyScancode function returns the platform-specific scancode of the
-// specified key.
-//
-// If the key is KeyUnknown or does not exist on the keyboard this method will
-// return -1.
-func GetKeyScancode(key Key) int {
-	return int(C.glfwGetKeyScancode(C.int(key)))
-}
-
-// GetKey returns the last reported state of a keyboard key. The returned state
-// is one of Press or Release. The higher-level state Repeat is only reported to
-// the key callback.
-//
-// If the StickyKeys input mode is enabled, this function returns Press the first
-// time you call this function after a key has been pressed, even if the key has
-// already been released.
-//
-// The key functions deal with physical keys, with key tokens named after their
-// use on the standard US keyboard layout. If you want to input text, use the
-// Unicode character callback instead.
-func (w *Window) GetKey(key Key) Action {
-	return Action(C.glfwGetKey(w.data, C.int(key)))
-}
-
-// GetKeyName returns the localized name of the specified printable key.
-//
-// If the key is glfw.KeyUnknown, the scancode is used, otherwise the scancode is ignored.
-func GetKeyName(key Key, scancode int) string {
-	ret := C.glfwGetKeyName(C.int(key), C.int(scancode))
-	return C.GoString(ret)
-}
-
-// GetMouseButton returns the last state reported for the specified mouse button.
-//
-// If the StickyMouseButtons input mode is enabled, this function returns Press
-// the first time you call this function after a mouse button has been pressed,
-// even if the mouse button has already been released.
-func (w *Window) GetMouseButton(button MouseButton) Action {
-	return Action(C.glfwGetMouseButton(w.data, C.int(button)))
-}
-
-// GetCursorPos returns the last reported position of the cursor.
-//
-// If the cursor is disabled (with CursorDisabled) then the cursor position is
-// unbounded and limited only by the minimum and maximum values of a double.
-//
-// The coordinate can be converted to their integer equivalents with the floor
-// function. Casting directly to an integer type works for positive coordinates,
-// but fails for negative ones.
-func (w *Window) GetCursorPos() (x, y float64) {
-	var xpos, ypos C.double
-	C.glfwGetCursorPos(w.data, &xpos, &ypos)
-	return float64(xpos), float64(ypos)
-}
-
-// SetCursorPos sets the position of the cursor. The specified window must
-// be focused. If the window does not have focus when this function is called,
-// it fails silently.
-//
-// If the cursor is disabled (with CursorDisabled) then the cursor position is
-// unbounded and limited only by the minimum and maximum values of a double.
-func (w *Window) SetCursorPos(xpos, ypos float64) {
-	C.glfwSetCursorPos(w.data, C.double(xpos), C.double(ypos))
-}
-
-// CreateCursor creates a new custom cursor image that can be set for a window with SetCursor.
-// The cursor can be destroyed with Destroy. Any remaining cursors are destroyed by Terminate.
-//
-// The image is ideally provided in the form of *image.NRGBA.
-// The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
-// bits per channel with the red channel first. They are arranged canonically
-// as packed sequential rows, starting from the top-left corner. If the image
-// type is not *image.NRGBA, it will be converted to it.
-//
-// The cursor hotspot is specified in pixels, relative to the upper-left corner of the cursor image.
-// Like all other coordinate systems in GLFW, the X-axis points to the right and the Y-axis points down.
-func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
-	var imgC C.GLFWimage
-	var pixels []uint8
-	b := img.Bounds()
-
-	switch img := img.(type) {
-	case *image.NRGBA:
-		pixels = img.Pix
-	default:
-		m := image.NewNRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
-		draw.Draw(m, m.Bounds(), img, b.Min, draw.Src)
-		pixels = m.Pix
-	}
-
-	pix, free := bytes(pixels)
-
-	imgC.width = C.int(b.Dx())
-	imgC.height = C.int(b.Dy())
-	imgC.pixels = (*C.uchar)(pix)
-
-	c := C.glfwCreateCursor(&imgC, C.int(xhot), C.int(yhot))
-
-	free()
-
-	return &Cursor{c}
-}
-
-// CreateStandardCursor returns a cursor with a standard shape,
-// that can be set for a window with SetCursor.
-func CreateStandardCursor(shape StandardCursor) *Cursor {
-	c := C.glfwCreateStandardCursor(C.int(shape))
-	return &Cursor{c}
-}
-
-// Destroy destroys a cursor previously created with CreateCursor.
-// Any remaining cursors will be destroyed by Terminate.
-func (c *Cursor) Destroy() {
-	C.glfwDestroyCursor(c.data)
-}
-
-// SetCursor sets the cursor image to be used when the cursor is over the client area
-// of the specified window. The set cursor will only be visible when the cursor mode of the
-// window is CursorNormal.
-//
-// On some platforms, the set cursor may not be visible unless the window also has input focus.
-func (w *Window) SetCursor(c *Cursor) {
-	if c == nil {
-		C.glfwSetCursor(w.data, nil)
-	} else {
-		C.glfwSetCursor(w.data, c.data)
-	}
 }
 
 // SetJoystickCallback sets the joystick configuration callback, or removes the
@@ -632,6 +559,145 @@ func (w *Window) SetDropCallback(cbfun DropCallback) DropCallback {
 	return previous
 }
 
+// GetInputMode returns the value of an input option of the window.
+func (w *Window) GetInputMode(mode InputMode) int {
+	return int(C.glfwGetInputMode(w.data, C.int(mode)))
+}
+
+// SetInputMode sets an input option for the window.
+func (w *Window) SetInputMode(mode InputMode, value int) {
+	C.glfwSetInputMode(w.data, C.int(mode), C.int(value))
+}
+
+// GetKeyScancode function returns the platform-specific scancode of the
+// specified key.
+//
+// If the key is KeyUnknown or does not exist on the keyboard this method will
+// return -1.
+func GetKeyScancode(key Key) int {
+	return int(C.glfwGetKeyScancode(C.int(key)))
+}
+
+// GetKey returns the last reported state of a keyboard key. The returned state
+// is one of Press or Release. The higher-level state Repeat is only reported to
+// the key callback.
+//
+// If the StickyKeys input mode is enabled, this function returns Press the first
+// time you call this function after a key has been pressed, even if the key has
+// already been released.
+//
+// The key functions deal with physical keys, with key tokens named after their
+// use on the standard US keyboard layout. If you want to input text, use the
+// Unicode character callback instead.
+func (w *Window) GetKey(key Key) Action {
+	return Action(C.glfwGetKey(w.data, C.int(key)))
+}
+
+// GetKeyName returns the localized name of the specified printable key.
+//
+// If the key is glfw.KeyUnknown, the scancode is used, otherwise the scancode is ignored.
+func GetKeyName(key Key, scancode int) string {
+	ret := C.glfwGetKeyName(C.int(key), C.int(scancode))
+	return C.GoString(ret)
+}
+
+// GetMouseButton returns the last state reported for the specified mouse button.
+//
+// If the StickyMouseButtons input mode is enabled, this function returns Press
+// the first time you call this function after a mouse button has been pressed,
+// even if the mouse button has already been released.
+func (w *Window) GetMouseButton(button MouseButton) Action {
+	return Action(C.glfwGetMouseButton(w.data, C.int(button)))
+}
+
+// GetCursorPos returns the last reported position of the cursor.
+//
+// If the cursor is disabled (with CursorDisabled) then the cursor position is
+// unbounded and limited only by the minimum and maximum values of a double.
+//
+// The coordinate can be converted to their integer equivalents with the floor
+// function. Casting directly to an integer type works for positive coordinates,
+// but fails for negative ones.
+func (w *Window) GetCursorPos() (x, y float64) {
+	var xpos, ypos C.double
+	C.glfwGetCursorPos(w.data, &xpos, &ypos)
+	return float64(xpos), float64(ypos)
+}
+
+// SetCursorPos sets the position of the cursor. The specified window must
+// be focused. If the window does not have focus when this function is called,
+// it fails silently.
+//
+// If the cursor is disabled (with CursorDisabled) then the cursor position is
+// unbounded and limited only by the minimum and maximum values of a double.
+func (w *Window) SetCursorPos(xpos, ypos float64) {
+	C.glfwSetCursorPos(w.data, C.double(xpos), C.double(ypos))
+}
+
+// CreateCursor creates a new custom cursor image that can be set for a window with SetCursor.
+// The cursor can be destroyed with Destroy. Any remaining cursors are destroyed by Terminate.
+//
+// The image is ideally provided in the form of *image.NRGBA.
+// The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
+// bits per channel with the red channel first. They are arranged canonically
+// as packed sequential rows, starting from the top-left corner. If the image
+// type is not *image.NRGBA, it will be converted to it.
+//
+// The cursor hotspot is specified in pixels, relative to the upper-left corner of the cursor image.
+// Like all other coordinate systems in GLFW, the X-axis points to the right and the Y-axis points down.
+func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
+	var imgC C.GLFWimage
+	var pixels []uint8
+	b := img.Bounds()
+
+	switch img := img.(type) {
+	case *image.NRGBA:
+		pixels = img.Pix
+	default:
+		m := image.NewNRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
+		draw.Draw(m, m.Bounds(), img, b.Min, draw.Src)
+		pixels = m.Pix
+	}
+
+	pix, free := bytes(pixels)
+
+	imgC.width = C.int(b.Dx())
+	imgC.height = C.int(b.Dy())
+	imgC.pixels = (*C.uchar)(pix)
+
+	c := C.glfwCreateCursor(&imgC, C.int(xhot), C.int(yhot))
+
+	free()
+
+	return &Cursor{c}
+}
+
+// CreateStandardCursor returns a cursor with a standard shape,
+// that can be set for a window with SetCursor.
+func CreateStandardCursor(shape StandardCursor) *Cursor {
+	c := C.glfwCreateStandardCursor(C.int(shape))
+	return &Cursor{c}
+}
+
+// Destroy destroys a cursor previously created with CreateCursor.
+// Any remaining cursors will be destroyed by Terminate.
+func (c *Cursor) Destroy() {
+	C.glfwDestroyCursor(c.data)
+}
+
+// SetCursor sets the cursor image to be used when the cursor is over the client area
+// of the specified window. The set cursor will only be visible when the cursor mode of the
+// window is CursorNormal.
+//
+// On some platforms, the set cursor may not be visible unless the window also has input focus.
+func (w *Window) SetCursor(c *Cursor) {
+	if c == nil {
+		C.glfwSetCursor(w.data, nil)
+	} else {
+		C.glfwSetCursor(w.data, c.data)
+	}
+}
+
 // JoystickPresent reports whether the specified joystick is present.
 func JoystickPresent(joy Joystick) bool {
 	return glfwbool(C.glfwJoystickPresent(C.int(joy)))
@@ -653,8 +719,24 @@ func GetJoystickAxes(joy Joystick) []float32 {
 	return a
 }
 
+// GetJoystickHats returns the state of all hats of the specified joystick.
+func GetJoystickHats(joy Joystick) []JoystickHatState {
+	var length int
+
+	hats := C.glfwGetJoystickHats(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
+	if hats == nil {
+		return nil
+	}
+
+	b := make([]JoystickHatState, length)
+	for i := 0; i < length; i++ {
+		b[i] = JoystickHatState(C.GetButtonsAtIndex(hats, C.int(i)))
+	}
+	return b
+}
+
 // GetJoystickButtons returns a slice of button values.
-func GetJoystickButtons(joy Joystick) []byte {
+func GetJoystickButtons(joy Joystick) []Action {
 	var length int
 
 	buttons := C.glfwGetJoystickButtons(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
@@ -662,15 +744,113 @@ func GetJoystickButtons(joy Joystick) []byte {
 		return nil
 	}
 
-	b := make([]byte, length)
+	b := make([]Action, length)
 	for i := 0; i < length; i++ {
-		b[i] = byte(C.GetButtonsAtIndex(buttons, C.int(i)))
+		b[i] = Action(C.GetButtonsAtIndex(buttons, C.int(i)))
 	}
 	return b
 }
 
-// GetJoystickName returns the name, encoded as UTF-8, of the specified joystick.
+// GetJoystickName returns the name, encoded as UTF-8, of the specified
+// joystick.
 func GetJoystickName(joy Joystick) string {
 	jn := C.glfwGetJoystickName(C.int(joy))
 	return C.GoString(jn)
+}
+
+// JoystickIsGamepad returns whether the specified joystick is both present and
+// has a gamepad mapping.
+//
+// If the specified joystick is present but does not have a gamepad mapping this
+// function will return false but will not generate an error. Call
+// JoystickPresent to check if a joystick is present regardless of whether it
+// has a mapping.
+func JoystickIsGamepad(joy Joystick) bool {
+	return glfwbool(C.glfwJoystickIsGamepad(C.int(joy)))
+}
+
+// GetJoystickGUID returns the SDL compatible GUID, as a UTF-8 encoded
+// hexadecimal string, of the specified joystick.
+//
+// The GUID is what connects a joystick to a gamepad mapping. A connected
+// joystick will always have a GUID even if there is no gamepad mapping
+// assigned to it.
+//
+// If the specified joystick is not present this function will return empty
+// string but will not generate an error. This can be used instead of first
+// calling JoystickPresent.
+//
+// The GUID uses the format introduced in SDL 2.0.5. This GUID tries to uniquely
+// identify the make and model of a joystick but does not identify a specific
+// unit, e.g. all wired Xbox 360 controllers will have the same GUID on that
+// platform. The GUID for a unit may vary between platforms depending on what
+// hardware information the platform specific APIs provide.
+func GetJoystickGUID(joy Joystick) string {
+	guid := C.glfwGetJoystickGUID(C.int(joy))
+	return C.GoString(guid)
+}
+
+// GetGamepadName returns the human-readable name of the gamepad from the
+// gamepad mapping assigned to the specified joystick.
+//
+// If the specified joystick is not present or does not have a gamepad mapping
+// this function will return empty string but will not generate an error. Call
+// JoystickPresent to check whether it is present regardless of whether it has
+// a mapping.
+func GetGamepadName(joy Joystick) string {
+	gn := C.glfwGetGamepadName(C.int(joy))
+	return C.GoString(gn)
+}
+
+// UpdateGamepadMappings parses the specified ASCII encoded string and updates
+// the internal list with any gamepad mappings it finds. This string may contain
+// either a single gamepad mapping or many mappings separated by newlines. The
+// parser supports the full format of the gamecontrollerdb.txt source file
+// including empty lines and comments.
+//
+// See Gamepad mappings for a description of the format.
+//
+// If there is already a gamepad mapping for a given GUID in the internal list,
+// it will be replaced by the one passed to this function. If the library is
+// terminated and re-initialized the internal list will revert to the built-in
+// default.
+func UpdateGamepadMappings(mapping string) bool {
+	m := C.CString(mapping)
+	defer C.free(unsafe.Pointer(m))
+	return glfwbool(C.glfwUpdateGamepadMappings(m))
+}
+
+// GetGamepadState retrives the state of the specified joystick remapped to an
+// Xbox-like gamepad.
+//
+// If the specified joystick is not present or does not have a gamepad mapping
+// this function will return nil but will not generate an error. Call
+// JoystickPresent to check whether it is present regardless of whether it has
+// a mapping.
+//
+// The Guide button may not be available for input as it is often hooked by the
+// system or the Steam client.
+//
+// Not all devices have all the buttons or axes provided by GamepadState.
+// Unavailable buttons and axes will always report Release and 0.0 respectively.
+func GetGamepadState(joy Joystick) *GamepadState {
+	var (
+		gs  GamepadState
+		cgs C.GLFWgamepadstate
+	)
+
+	ret := C.glfwGetGamepadState(C.int(joy), &cgs)
+	if ret == C.GLFW_FALSE {
+		return nil
+	}
+
+	for i := 0; i < 15; i++ {
+		gs.Buttons[i] = Action(C.GetGamepadButtonAtIndex(&cgs, C.int(i)))
+	}
+
+	for i := 0; i < 6; i++ {
+		gs.Axes[i] = float32(C.GetGamepadAxisAtIndex(&cgs, C.int(i)))
+	}
+
+	return &gs
 }

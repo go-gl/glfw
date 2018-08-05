@@ -69,6 +69,15 @@ func main() {
 * Added function `Monitor.GetContentScale`.
 * Added function `GetKeyScancode`.
 * Added function `InitHint`.
+* Added function `GetJoystickHats`.
+* Added function `JoystickIsGamepad`.
+* Added function `GetJoystickGUID`.
+* Added function `GetGamepadName`.
+* Added function `UpdateGamepadMappings`.
+* Added function `GetGamepadState`.
+* Added gamepad button IDs.
+* Added gamepad axis IDs.
+* Added joystick hat state IDs.
 * Added hint `Hovered`.
 * Added hint `CenterCursor`.
 * Added hint `JoystickHatButtons`.
@@ -77,6 +86,7 @@ func main() {
 * Added hint `TransparentFramebuffer`.
 * Added hint value `OSMesaContextAPI`.
 * `Init` Returns `bool` instead of error.
+* `GetJoystickButtons` Returns `[]Action` instead of `[]byte`.
 * `SetMonitorCallback` Returns `MonitorCallback`.
 * `Focus` No longer returns an error.
 * `Iconify` No longer returns an error.
