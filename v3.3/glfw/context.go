@@ -8,20 +8,38 @@ import (
 	"unsafe"
 )
 
-// MakeContextCurrent makes the context of the window current.
-// Originally GLFW 3 passes a null pointer to detach the context.
-// But since we're using receievers, DetachCurrentContext should
-// be used instead.
+// MakeContextCurrent makes the OpenGL or OpenGL ES context of the specified
+// window current on the calling thread. A context must only be made current on
+// a single thread at a time and each thread can have only a single current
+// context at a time.
+//
+// When moving a context between threads, you must make it non-current on the
+// old thread before making it current on the new one.
+//
+// By default, making a context non-current implicitly forces a pipeline flush.
+// On machines that support GL_KHR_context_flush_control, you can control
+// whether a context performs this flush by setting the ContextReleaseBehavior
+// hint.
+//
+// The specified window must have an OpenGL or OpenGL ES context. Specifying a
+// window without a context will generate a NoWindowContext error.
+//
+// This function may be called from any thread.
 func (w *Window) MakeContextCurrent() {
 	C.glfwMakeContextCurrent(w.data)
 }
 
 // DetachCurrentContext detaches the current context.
+//
+// This function may be called from any thread.
 func DetachCurrentContext() {
 	C.glfwMakeContextCurrent(nil)
 }
 
-// GetCurrentContext returns the window whose context is current.
+// GetCurrentContext returns the window whose OpenGL or OpenGL ES context is
+// current on the calling thread.
+//
+// This function may be called from any thread.
 func GetCurrentContext() *Window {
 	w := C.glfwGetCurrentContext()
 	if w == nil {
@@ -30,39 +48,43 @@ func GetCurrentContext() *Window {
 	return windows.get(w)
 }
 
-// SwapBuffers swaps the front and back buffers of the window. If the
-// swap interval is greater than zero, the GPU driver waits the specified number
-// of screen updates before swapping the buffers.
-func (w *Window) SwapBuffers() {
-	C.glfwSwapBuffers(w.data)
-}
-
-// SwapInterval sets the swap interval for the current context, i.e. the number
-// of screen updates to wait before swapping the buffers of a window and
-// returning from SwapBuffers. This is sometimes called
-// 'vertical synchronization', 'vertical retrace synchronization' or 'vsync'.
+// SwapInterval sets the swap interval for the current OpenGL or OpenGL ES
+// context, i.e. the number of screen updates to wait from the time SwapBuffers
+// was called before swapping the buffers and returning. This is sometimes
+// called vertical synchronization, vertical retrace synchronization or just
+// vsync.
 //
-// Contexts that support either of the WGL_EXT_swap_control_tear and
-// GLX_EXT_swap_control_tear extensions also accept negative swap intervals,
-// which allow the driver to swap even if a frame arrives a little bit late.
-// You can check for the presence of these extensions using
-// ExtensionSupported. For more information about swap tearing,
-// see the extension specifications.
+// A context that supports either of the WGL_EXT_swap_control_tear and
+// GLX_EXT_swap_control_tear extensions also accepts negative swap intervals,
+// which allows the driver to swap immediately even if a frame arrives a little
+// bit late. You can check for these extensions with ExtensionSupported.
 //
-// Some GPU drivers do not honor the requested swap interval, either because of
-// user settings that override the request or due to bugs in the driver.
+// A context must be current on the calling thread. Calling this function
+// without a current context will cause a NoCurrentContext error.
+//
+// This function does not apply to Vulkan. If you are rendering with Vulkan,
+// see the present mode of your swapchain instead.
+//
+// This function may be called from any thread.
 func SwapInterval(interval int) {
 	C.glfwSwapInterval(C.int(interval))
 }
 
-// ExtensionSupported reports whether the specified OpenGL or context creation
-// API extension is supported by the current context. For example, on Windows
-// both the OpenGL and WGL extension strings are checked.
+// ExtensionSupported returns whether the specified API extension is supported
+// by the current OpenGL or OpenGL ES context. It searches both for client API
+// extension and context creation API extensions.
 //
-// As this functions searches one or more extension strings on each call, it is
-// recommended that you cache its results if it's going to be used frequently.
-// The extension strings will not change during the lifetime of a context, so
-// there is no danger in doing this.
+// A context must be current on the calling thread. Calling this function
+// without a current context will cause a NoCurrentContext error.
+//
+// As this functions retrieves and searches one or more extension strings each
+// call, it is recommended that you cache its results if it is going to be used
+// frequently. The extension strings will not change during the lifetime of a
+// context, so there is no danger in doing this.
+//
+// This function does not apply to Vulkan.
+//
+// This function may be called from any thread.
 func ExtensionSupported(extension string) bool {
 	e := C.CString(extension)
 	defer C.free(unsafe.Pointer(e))

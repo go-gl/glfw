@@ -13,7 +13,8 @@ void glfwSetWindowCloseCallbackCB(GLFWwindow* window) {
 }
 
 void glfwSetWindowRefreshCallbackCB(GLFWwindow* window) {
-	glfwSetWindowRefreshCallback(window, (GLFWwindowrefreshfun) goWindowRefreshCB);
+	glfwSetWindowRefreshCallback(window, (GLFWwindowrefreshfun)
+		goWindowRefreshCB);
 }
 
 void glfwSetWindowFocusCallbackCB(GLFWwindow* window) {
@@ -21,17 +22,21 @@ void glfwSetWindowFocusCallbackCB(GLFWwindow* window) {
 }
 
 void glfwSetWindowIconifyCallbackCB(GLFWwindow* window) {
-	glfwSetWindowIconifyCallback(window, (GLFWwindowiconifyfun) goWindowIconifyCB);
+	glfwSetWindowIconifyCallback(window, (GLFWwindowiconifyfun)
+		goWindowIconifyCB);
 }
 
 void glfwSetWindowMaximizeCallbackCB(GLFWwindow* window) {
-	glfwSetWindowMaximizeCallback(window, (GLFWwindowmaximizefun) goWindowMaximizeCB);
+	glfwSetWindowMaximizeCallback(window, (GLFWwindowmaximizefun)
+		goWindowMaximizeCB);
 }
 
 void glfwSetFramebufferSizeCallbackCB(GLFWwindow* window) {
-	glfwSetFramebufferSizeCallback(window, (GLFWframebuffersizefun) goFramebufferSizeCB);
+	glfwSetFramebufferSizeCallback(window, (GLFWframebuffersizefun)
+		goFramebufferSizeCB);
 }
 
 void glfwSetWindowContentScaleCallbackCB(GLFWwindow* window) {
-	glfwSetWindowContentScaleCallback(window, (GLFWwindowcontentscalefun) goWindowContentScaleCB);
+	glfwSetWindowContentScaleCallback(window, (GLFWwindowcontentscalefun)
+		goWindowContentScaleCB);
 }

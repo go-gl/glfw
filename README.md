@@ -82,6 +82,7 @@ func main() {
 * Added function `UpdateGamepadMappings`.
 * Added function `SetX11SelectionString`.
 * Added function `GetX11SelectionString`.
+* Added function `WindowHintString`.
 * Added gamepad button IDs.
 * Added gamepad axis IDs.
 * Added joystick hat state IDs.

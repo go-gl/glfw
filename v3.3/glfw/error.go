@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-// ErrorCallback is the signature of the error callback function.
+// ErrorCallback is the function signature for error callback functions.
 type ErrorCallback func(code ErrorCode, desc string)
 
 var fErrorHolder ErrorCallback
@@ -163,6 +163,8 @@ func (e *Error) Error() string {
 // the calling thread, and optionally a UTF-8 encoded human-readable description
 // of it. If no error has occurred since the last call, it returns NoError and
 // the description is set to empty string.
+//
+// This function may be called from any thread.
 func GetError() error {
 	var (
 		desc *C.char
@@ -193,6 +195,8 @@ func GetError() error {
 //
 // Once set, the error callback remains set even after the library has been
 // terminated.
+//
+// This function must only be called from the main thread.
 func SetErrorCallback(cbfun ErrorCallback) ErrorCallback {
 	previous := fErrorHolder
 	fErrorHolder = cbfun

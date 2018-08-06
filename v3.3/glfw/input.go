@@ -293,9 +293,9 @@ type InputMode int
 
 // Input modes.
 const (
-	CursorMode             InputMode = C.GLFW_CURSOR               // See Cursor mode values
-	StickyKeysMode         InputMode = C.GLFW_STICKY_KEYS          // Value can be either 1 or 0
-	StickyMouseButtonsMode InputMode = C.GLFW_STICKY_MOUSE_BUTTONS // Value can be either 1 or 0
+	CursorMode             InputMode = C.GLFW_CURSOR
+	StickyKeysMode         InputMode = C.GLFW_STICKY_KEYS
+	StickyMouseButtonsMode InputMode = C.GLFW_STICKY_MOUSE_BUTTONS
 )
 
 // Cursor mode values.
@@ -304,33 +304,6 @@ const (
 	CursorHidden   int = C.GLFW_CURSOR_HIDDEN
 	CursorDisabled int = C.GLFW_CURSOR_DISABLED
 )
-
-// JoystickCallback is the joystick configuration callback.
-type JoystickCallback func(joy Joystick, event PeripheralEvent)
-
-// KeyCallback is the key callback.
-type KeyCallback func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
-
-// CharCallback is the character callback.
-type CharCallback func(w *Window, char rune)
-
-// CharModsCallback is the character with modifiers callback.
-type CharModsCallback func(w *Window, char rune, mods ModifierKey)
-
-// MouseButtonCallback is the mouse button callback.
-type MouseButtonCallback func(w *Window, button MouseButton, action Action, mod ModifierKey)
-
-// CursorPosCallback the cursor position callback.
-type CursorPosCallback func(w *Window, xpos float64, ypos float64)
-
-// CursorEnterCallback is the cursor boundary crossing callback.
-type CursorEnterCallback func(w *Window, entered bool)
-
-// ScrollCallback is the scroll callback.
-type ScrollCallback func(w *Window, xoff float64, yoff float64)
-
-// DropCallback is the drop callback.
-type DropCallback func(w *Window, names []string)
 
 // Cursor represents a cursor.
 type Cursor struct {
@@ -343,6 +316,51 @@ type GamepadState struct {
 	Axes    [6]float32
 }
 
+// MouseButtonCallback is the function signature for mouse button callback
+// functions.
+type MouseButtonCallback func(
+	w *Window,
+	button MouseButton,
+	action Action,
+	mod ModifierKey,
+)
+
+// CursorPosCallback is the function signature for cursor position callback
+// functions.
+type CursorPosCallback func(w *Window, xpos float64, ypos float64)
+
+// CursorEnterCallback is the function signature for cursor enter/leave callback
+// functions.
+type CursorEnterCallback func(w *Window, entered bool)
+
+// ScrollCallback is the function signature for scroll callback functions.
+type ScrollCallback func(w *Window, xoff float64, yoff float64)
+
+// KeyCallback is the function signature for keyboard key callback functions.
+type KeyCallback func(
+	w *Window,
+	key Key,
+	scancode int,
+	action Action,
+	mods ModifierKey,
+)
+
+// CharCallback is the function signature for Unicode character callback
+// functions.
+type CharCallback func(w *Window, char rune)
+
+// CharModsCallback is the function signature for Unicode character with
+// modifiers callback functions. It is called for each input character,
+// regardless of what modifier keys are held down.
+type CharModsCallback func(w *Window, char rune, mods ModifierKey)
+
+// DropCallback is the function signature for file drop callbacks.
+type DropCallback func(w *Window, names []string)
+
+// JoystickCallback is the function signature for joystick configuration
+// callback functions.
+type JoystickCallback func(joy Joystick, event PeripheralEvent)
+
 var fJoystickHolder JoystickCallback
 
 //export goJoystickCB
@@ -353,7 +371,11 @@ func goJoystickCB(joy, event C.int) {
 //export goMouseButtonCB
 func goMouseButtonCB(window unsafe.Pointer, button, action, mods C.int) {
 	w := windows.get((*C.GLFWwindow)(window))
-	w.fMouseButtonHolder(w, MouseButton(button), Action(action), ModifierKey(mods))
+	w.fMouseButtonHolder(
+		w, MouseButton(button),
+		Action(action),
+		ModifierKey(mods),
+	)
 }
 
 //export goCursorPosCB
@@ -393,43 +415,43 @@ func goCharModsCB(window unsafe.Pointer, character C.uint, mods C.int) {
 }
 
 //export goDropCB
-func goDropCB(window unsafe.Pointer, count C.int, names **C.char) { // TODO: The types of name can be `**C.char` or `unsafe.Pointer`, use whichever is better.
+func goDropCB(window unsafe.Pointer, count C.int, names **C.char) {
+	// TODO: Make this better. This part is unfinished, hacky, probably not
+	// correct, and not idiomatic.
 	w := windows.get((*C.GLFWwindow)(window))
-	namesSlice := make([]string, int(count)) // TODO: Make this better. This part is unfinished, hacky, probably not correct, and not idiomatic.
-	for i := 0; i < int(count); i++ {        // TODO: Make this better. It should be cleaned up and vetted.
-		var x *C.char                                                                                 // TODO: Make this better.
-		p := (**C.char)(unsafe.Pointer(uintptr(unsafe.Pointer(names)) + uintptr(i)*unsafe.Sizeof(x))) // TODO: Make this better.
-		namesSlice[i] = C.GoString(*p)                                                                // TODO: Make this better.
+	namesSlice := make([]string, int(count))
+	for i := 0; i < int(count); i++ {
+		var x *C.char
+		p := (**C.char)(unsafe.Pointer(
+			uintptr(unsafe.Pointer(names)) + uintptr(i)*unsafe.Sizeof(x)),
+		)
+		namesSlice[i] = C.GoString(*p)
 	}
 	w.fDropHolder(w, namesSlice)
 }
 
-// SetJoystickCallback sets the joystick configuration callback, or removes the
-// currently set callback. This is called when a joystick is connected to or
-// disconnected from the system.
-func SetJoystickCallback(cbfun JoystickCallback) JoystickCallback {
-	previous := fJoystickHolder
-	fJoystickHolder = cbfun
-	if cbfun == nil {
-		C.glfwSetJoystickCallback(nil)
-	} else {
-		C.glfwSetJoystickCallbackCB()
-	}
-	return previous
-}
-
-// SetKeyCallback sets the key callback which is called when a key is pressed,
-// repeated or released.
+// SetKeyCallback sets the key callback of the specified window, which is called
+// when a key is pressed, repeated or released.
 //
 // The key functions deal with physical keys, with layout independent key tokens
 // named after their values in the standard US keyboard layout. If you want to
-// input text, use the SetCharCallback instead.
+// input text, use the character callback instead.
 //
-// When a window loses focus, it will generate synthetic key release events for
-// all pressed keys. You can tell these events from user-generated events by the
-// fact that the synthetic ones are generated after the window has lost focus,
-// i.e. Focused will be false and the focus callback will have already been
+// When a window loses input focus, it will generate synthetic key release
+// events for all pressed keys. You can tell these events from user-generated
+// events by the fact that the synthetic ones are generated after the focus loss
+// event has been processed, i.e. after the window focus callback has been
 // called.
+//
+// The scancode of a key is specific to that platform or sometimes even to that
+// machine. Scancodes are intended to allow users to bind keys that don't have a
+// GLFW key token. Such keys have key set to KeyUnknown, their state is not
+// saved and so it cannot be queried with GetKey.
+//
+// Sometimes GLFW needs to generate synthetic key events, in which case the
+// scancode may be zero.
+//
+// This function must only be called from the main thread.
 func (w *Window) SetKeyCallback(cbfun KeyCallback) KeyCallback {
 	previous := w.fKeyHolder
 	w.fKeyHolder = cbfun
@@ -441,20 +463,22 @@ func (w *Window) SetKeyCallback(cbfun KeyCallback) KeyCallback {
 	return previous
 }
 
-// SetCharCallback sets the character callback which is called when a
-// Unicode character is input.
+// SetCharCallback sets the character callback of the specified window, which is
+// called when a Unicode character is input.
 //
 // The character callback is intended for Unicode text input. As it deals with
-// characters, it is keyboard layout dependent, whereas the
-// key callback is not. Characters do not map 1:1
-// to physical keys, as a key may produce zero, one or more characters. If you
-// want to know whether a specific physical key was pressed or released, see
-// the key callback instead.
+// characters, it is keyboard layout dependent, whereas the key callback is not.
+// Characters do not map 1:1 to physical keys, as a key may produce zero, one or
+// more characters. If you want to know whether a specific physical key was
+// pressed or released, see the key callback instead.
 //
 // The character callback behaves as system text input normally does and will
 // not be called if modifier keys are held down that would prevent normal text
-// input on that platform, for example a Super (Command) key on OS X or Alt key
-// on Windows. There is a character with modifiers callback that receives these events.
+// input on that platform, for example a Super (Command) key on macOS or Alt key
+// on Windows. There is a character with modifiers callback that receives
+// these events.
+//
+// This function must only be called from the main thread.
 func (w *Window) SetCharCallback(cbfun CharCallback) CharCallback {
 	previous := w.fCharHolder
 	w.fCharHolder = cbfun
@@ -466,16 +490,19 @@ func (w *Window) SetCharCallback(cbfun CharCallback) CharCallback {
 	return previous
 }
 
-// SetCharModsCallback sets the character with modifiers callback which is called when a
-// Unicode character is input regardless of what modifier keys are used.
+// SetCharModsCallback sets the character with modifiers callback of the
+// specified window, which is called when a Unicode character is input
+// regardless of what modifier keys are used.
 //
 // The character with modifiers callback is intended for implementing custom
-// Unicode character input. For regular Unicode text input, see the
-// character callback. Like the character callback, the character with modifiers callback
-// deals with characters and is keyboard layout dependent. Characters do not
-// map 1:1 to physical keys, as a key may produce zero, one or more characters.
+// Unicode character input. For regular Unicode text input, see the character
+// callback. Like the character callback, the character with modifiers callback
+// deals with characters and is keyboard layout dependent. Characters do not map
+// 1:1 to physical keys, as a key may produce zero, one or more characters.
 // If you want to know whether a specific physical key was pressed or released,
 // see the key callback instead.
+//
+// This function must only be called from the main thread.
 func (w *Window) SetCharModsCallback(cbfun CharModsCallback) CharModsCallback {
 	previous := w.fCharModsHolder
 	w.fCharModsHolder = cbfun
@@ -487,15 +514,19 @@ func (w *Window) SetCharModsCallback(cbfun CharModsCallback) CharModsCallback {
 	return previous
 }
 
-// SetMouseButtonCallback sets the mouse button callback which is called when a
-// mouse button is pressed or released.
+// SetMouseButtonCallback sets the mouse button callback of the specified
+// window, which is called when a mouse button is pressed or released.
 //
-// When a window loses focus, it will generate synthetic mouse button release
-// events for all pressed mouse buttons. You can tell these events from
+// When a window loses input focus, it will generate synthetic mouse button
+// release events for all pressed mouse buttons. You can tell these events from
 // user-generated events by the fact that the synthetic ones are generated after
-// the window has lost focus, i.e. Focused will be false and the focus
-// callback will have already been called.
-func (w *Window) SetMouseButtonCallback(cbfun MouseButtonCallback) MouseButtonCallback {
+// the focus loss event has been processed, i.e. after the window focus callback
+// has been called.
+//
+// This function must only be called from the main thread.
+func (w *Window) SetMouseButtonCallback(
+	cbfun MouseButtonCallback,
+) MouseButtonCallback {
 	previous := w.fMouseButtonHolder
 	w.fMouseButtonHolder = cbfun
 	if cbfun == nil {
@@ -509,7 +540,11 @@ func (w *Window) SetMouseButtonCallback(cbfun MouseButtonCallback) MouseButtonCa
 // SetCursorPosCallback sets the cursor position callback which is called
 // when the cursor is moved. The callback is provided with the position relative
 // to the upper-left corner of the client area of the window.
-func (w *Window) SetCursorPosCallback(cbfun CursorPosCallback) CursorPosCallback {
+//
+// This function must only be called from the main thread.
+func (w *Window) SetCursorPosCallback(
+	cbfun CursorPosCallback,
+) CursorPosCallback {
 	previous := w.fCursorPosHolder
 	w.fCursorPosHolder = cbfun
 	if cbfun == nil {
@@ -520,9 +555,14 @@ func (w *Window) SetCursorPosCallback(cbfun CursorPosCallback) CursorPosCallback
 	return previous
 }
 
-// SetCursorEnterCallback the cursor boundary crossing callback which is called
-// when the cursor enters or leaves the client area of the window.
-func (w *Window) SetCursorEnterCallback(cbfun CursorEnterCallback) CursorEnterCallback {
+// SetCursorEnterCallback the cursor boundary crossing callback of the specified
+// window, which is called when the cursor enters or leaves the client area of
+// the window.
+//
+// This function must only be called from the main thread.
+func (w *Window) SetCursorEnterCallback(
+	cbfun CursorEnterCallback,
+) CursorEnterCallback {
 	previous := w.fCursorEnterHolder
 	w.fCursorEnterHolder = cbfun
 	if cbfun == nil {
@@ -533,8 +573,14 @@ func (w *Window) SetCursorEnterCallback(cbfun CursorEnterCallback) CursorEnterCa
 	return previous
 }
 
-// SetScrollCallback sets the scroll callback which is called when a scrolling
-// device is used, such as a mouse wheel or scrolling area of a touchpad.
+// SetScrollCallback sets the scroll callback of the specified window, which is
+// called when a scrolling device is used, such as a mouse wheel or scrolling
+// area of a touchpad.
+//
+// The scroll callback receives all scrolling input, like that from a mouse
+// wheel or a touchpad scrolling area.
+//
+// This function must only be called from the main thread.
 func (w *Window) SetScrollCallback(cbfun ScrollCallback) ScrollCallback {
 	previous := w.fScrollHolder
 	w.fScrollHolder = cbfun
@@ -546,8 +592,15 @@ func (w *Window) SetScrollCallback(cbfun ScrollCallback) ScrollCallback {
 	return previous
 }
 
-// SetDropCallback sets the drop callback which is called when an object
-// is dropped over the window.
+// SetDropCallback sets the file drop callback of the specified window, which is
+// called when one or more dragged files are dropped on the window.
+//
+// Because the path array and its strings may have been generated specifically
+// for that event, they are not guaranteed to be valid after the callback has
+// returned. If you wish to use them after the callback returns, you need to
+// make a deep copy.
+//
+// This function must only be called from the main thread.
 func (w *Window) SetDropCallback(cbfun DropCallback) DropCallback {
 	previous := w.fDropHolder
 	w.fDropHolder = cbfun
@@ -559,14 +612,62 @@ func (w *Window) SetDropCallback(cbfun DropCallback) DropCallback {
 	return previous
 }
 
-// GetInputMode returns the value of an input option of the window.
+// SetJoystickCallback sets the joystick configuration callback, or removes the
+// currently set callback. This is called when a joystick is connected to or
+// disconnected from the system.
+//
+// For joystick connection and disconnection events to be delivered on all
+// platforms, you need to call one of the event processing functions. Joystick
+// disconnection may also be detected and the callback called by joystick
+// functions. The function will then return whatever it returns if the joystick
+// is not present.
+//
+// This function must only be called from the main thread.
+func SetJoystickCallback(cbfun JoystickCallback) JoystickCallback {
+	previous := fJoystickHolder
+	fJoystickHolder = cbfun
+	if cbfun == nil {
+		C.glfwSetJoystickCallback(nil)
+	} else {
+		C.glfwSetJoystickCallbackCB()
+	}
+	return previous
+}
+
+// GetInputMode returns the value of an input option for the specified window.
+//
+// This function must only be called from the main thread.
 func (w *Window) GetInputMode(mode InputMode) int {
 	return int(C.glfwGetInputMode(w.data, C.int(mode)))
 }
 
-// SetInputMode sets an input option for the window.
+// SetInputMode sets an input mode option for the specified window.
+//
+// This function must only be called from the main thread.
 func (w *Window) SetInputMode(mode InputMode, value int) {
 	C.glfwSetInputMode(w.data, C.int(mode), C.int(value))
+}
+
+// GetKeyName returns the name of the specified printable key, encoded as UTF-8.
+// This is typically the character that key would produce without any modifier
+// keys, intended for displaying key bindings to the user. For dead keys, it is
+// typically the diacritic it would add to a character.
+//
+// Do not use this function for text input. You will break text input for many
+// languages even if it happens to work for yours.
+//
+// If the key is KeyUnknown, the scancode is used to identify the key, otherwise
+// the scancode is ignored. If you specify a non-printable key, or KeyUnknown
+// and a scancode that maps to a non-printable key, this function returns
+// empty string but does not emit an error.
+//
+// This behavior allows you to always pass in the arguments in the key callback
+// without modification.
+//
+// This function must only be called from the main thread.
+func GetKeyName(key Key, scancode int) string {
+	ret := C.glfwGetKeyName(C.int(key), C.int(scancode))
+	return C.GoString(ret)
 }
 
 // GetKeyScancode function returns the platform-specific scancode of the
@@ -574,43 +675,48 @@ func (w *Window) SetInputMode(mode InputMode, value int) {
 //
 // If the key is KeyUnknown or does not exist on the keyboard this method will
 // return -1.
+//
+// This function may be called from any thread.
 func GetKeyScancode(key Key) int {
 	return int(C.glfwGetKeyScancode(C.int(key)))
 }
 
-// GetKey returns the last reported state of a keyboard key. The returned state
-// is one of Press or Release. The higher-level state Repeat is only reported to
-// the key callback.
+// GetKey returns the last state reported for the specified key to the specified
+// window. The returned state is one of Press or Release. The higher-level
+// action Repeat is only reported to the key callback.
 //
-// If the StickyKeys input mode is enabled, this function returns Press the first
-// time you call this function after a key has been pressed, even if the key has
+// If the StickyKeys input mode is enabled, this function returns Press the
+// first time you call it for a key that was pressed, even if that key has
 // already been released.
 //
 // The key functions deal with physical keys, with key tokens named after their
 // use on the standard US keyboard layout. If you want to input text, use the
 // Unicode character callback instead.
+//
+// The modifier key bit masks are not key tokens and cannot be used with this
+// function.
+//
+// Do not use this function to implement text input.
+//
+// This function must only be called from the main thread.
 func (w *Window) GetKey(key Key) Action {
 	return Action(C.glfwGetKey(w.data, C.int(key)))
 }
 
-// GetKeyName returns the localized name of the specified printable key.
-//
-// If the key is glfw.KeyUnknown, the scancode is used, otherwise the scancode is ignored.
-func GetKeyName(key Key, scancode int) string {
-	ret := C.glfwGetKeyName(C.int(key), C.int(scancode))
-	return C.GoString(ret)
-}
-
-// GetMouseButton returns the last state reported for the specified mouse button.
+// GetMouseButton returns the last state reported for the specified mouse button
+// to the specified window. The returned state is one of Press or Release.
 //
 // If the StickyMouseButtons input mode is enabled, this function returns Press
-// the first time you call this function after a mouse button has been pressed,
-// even if the mouse button has already been released.
+// the first time you call it for a mouse button that was pressed, even if that
+// mouse button has already been released.
+//
+// This function must only be called from the main thread.
 func (w *Window) GetMouseButton(button MouseButton) Action {
 	return Action(C.glfwGetMouseButton(w.data, C.int(button)))
 }
 
-// GetCursorPos returns the last reported position of the cursor.
+// GetCursorPos returns the position of the cursor, in screen coordinates,
+// relative to the upper-left corner of the client area of the specified window.
 //
 // If the cursor is disabled (with CursorDisabled) then the cursor position is
 // unbounded and limited only by the minimum and maximum values of a double.
@@ -618,33 +724,45 @@ func (w *Window) GetMouseButton(button MouseButton) Action {
 // The coordinate can be converted to their integer equivalents with the floor
 // function. Casting directly to an integer type works for positive coordinates,
 // but fails for negative ones.
+//
+// This function must only be called from the main thread.
 func (w *Window) GetCursorPos() (x, y float64) {
 	var xpos, ypos C.double
 	C.glfwGetCursorPos(w.data, &xpos, &ypos)
 	return float64(xpos), float64(ypos)
 }
 
-// SetCursorPos sets the position of the cursor. The specified window must
-// be focused. If the window does not have focus when this function is called,
-// it fails silently.
+// SetCursorPos sets the position, in screen coordinates, of the cursor relative
+// to the upper-left corner of the client area of the specified window.
+// The window must have input focus. If the window does not have input focus
+// when this function is called, it fails silently.
 //
-// If the cursor is disabled (with CursorDisabled) then the cursor position is
-// unbounded and limited only by the minimum and maximum values of a double.
+// Do not use this function to implement things like camera controls. GLFW
+// already provides the CursorDisabled cursor mode that hides the cursor,
+// transparently re-centers it and provides unconstrained cursor motion. See
+// SetInputMode for more information.
+//
+// If the cursor mode is CursorDisabled then the cursor position is
+// unconstrained and limited only by the minimum and maximum values of a double.
+//
+// This function must only be called from the main thread.
 func (w *Window) SetCursorPos(xpos, ypos float64) {
 	C.glfwSetCursorPos(w.data, C.double(xpos), C.double(ypos))
 }
 
-// CreateCursor creates a new custom cursor image that can be set for a window with SetCursor.
-// The cursor can be destroyed with Destroy. Any remaining cursors are destroyed by Terminate.
+// CreateCursor creates a new custom cursor image that can be set for a window
+// with SetCursor. The cursor can be destroyed with DestroyCursor. Any remaining
+// cursors are destroyed by Terminate.
 //
-// The image is ideally provided in the form of *image.NRGBA.
-// The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
-// bits per channel with the red channel first. They are arranged canonically
-// as packed sequential rows, starting from the top-left corner. If the image
-// type is not *image.NRGBA, it will be converted to it.
+// The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight bits
+// per channel with the red channel first. They are arranged canonically as
+// packed sequential rows, starting from the top-left corner.
 //
-// The cursor hotspot is specified in pixels, relative to the upper-left corner of the cursor image.
-// Like all other coordinate systems in GLFW, the X-axis points to the right and the Y-axis points down.
+// The cursor hotspot is specified in pixels, relative to the upper-left corner
+// of the cursor image. Like all other coordinate systems in GLFW, the X-axis
+// points to the right and the Y-axis points down.
+//
+// This function must only be called from the main thread.
 func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
 	var imgC C.GLFWimage
 	var pixels []uint8
@@ -672,24 +790,34 @@ func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
 	return &Cursor{c}
 }
 
-// CreateStandardCursor returns a cursor with a standard shape,
-// that can be set for a window with SetCursor.
+// CreateStandardCursor returns a cursor with a standard shape, that can be set
+// for a window with SetCursor.
+//
+// This function must only be called from the main thread.
 func CreateStandardCursor(shape StandardCursor) *Cursor {
 	c := C.glfwCreateStandardCursor(C.int(shape))
 	return &Cursor{c}
 }
 
-// Destroy destroys a cursor previously created with CreateCursor.
-// Any remaining cursors will be destroyed by Terminate.
+// Destroy destroys a cursor previously created with CreateCursor. Any remaining
+// cursors will be destroyed by Terminate.
+//
+// If the specified cursor is current for any window, that window will be
+// reverted to the default cursor. This does not affect the cursor mode.
+//
+// This function must only be called from the main thread.
 func (c *Cursor) Destroy() {
 	C.glfwDestroyCursor(c.data)
 }
 
-// SetCursor sets the cursor image to be used when the cursor is over the client area
-// of the specified window. The set cursor will only be visible when the cursor mode of the
-// window is CursorNormal.
+// SetCursor sets the cursor image to be used when the cursor is over the client
+// area of the specified window. The set cursor will only be visible when the
+// cursor mode of the window is CursorNormal.
 //
-// On some platforms, the set cursor may not be visible unless the window also has input focus.
+// On some platforms, the set cursor may not be visible unless the window also
+// has input focus.
+//
+// This function must only be called from the main thread.
 func (w *Window) SetCursor(c *Cursor) {
 	if c == nil {
 		C.glfwSetCursor(w.data, nil)
@@ -698,12 +826,24 @@ func (w *Window) SetCursor(c *Cursor) {
 	}
 }
 
-// Present reports whether the joystick is present.
+// Present returns whether the specified joystick is present.
+//
+// There is no need to call this function before other methods of Joystick type
+// as they all check for presence before performing any other work.
+//
+// This function must only be called from the main thread.
 func (joy Joystick) Present() bool {
 	return glfwbool(C.glfwJoystickPresent(C.int(joy)))
 }
 
-// GetAxes returns a slice of axis values.
+// GetAxes returns the values of all axes of the specified joystick. Each
+// element in the array is a value between -1.0 and 1.0.
+//
+// If the specified joystick is not present this function will return nil but
+// will not generate an error. This can be used instead of first calling
+// Present.
+//
+// This function must only be called from the main thread.
 func (joy Joystick) GetAxes() []float32 {
 	var length int
 
@@ -719,7 +859,45 @@ func (joy Joystick) GetAxes() []float32 {
 	return a
 }
 
+// GetButtons returns the state of all buttons of the specified joystick. Each
+// element in the array is either Press or Release.
+//
+// For backward compatibility with earlier versions that did not have GetHats,
+// the button array also includes all hats, each represented as four buttons.
+// The hats are in the same order as returned by GetHats and are in the order
+// up, right, down and left. To disable these extra buttons, set the
+// JoystickHatButtons init hint before initialization.
+//
+// If the specified joystick is not present this function will return nil but
+// will not generate an error. This can be used instead of first calling
+// Present.
+//
+// This function must only be called from the main thread.
+func (joy Joystick) GetButtons() []Action {
+	var length int
+
+	buttons := C.glfwGetJoystickButtons(
+		C.int(joy),
+		(*C.int)(unsafe.Pointer(&length)),
+	)
+	if buttons == nil {
+		return nil
+	}
+
+	b := make([]Action, length)
+	for i := 0; i < length; i++ {
+		b[i] = Action(C.GetButtonsAtIndex(buttons, C.int(i)))
+	}
+	return b
+}
+
 // GetHats returns the state of all hats of the specified joystick.
+//
+// If the specified joystick is not present this function will return nil but
+// will not generate an error. This can be used instead of first calling
+// Present.
+//
+// This function must only be called from the main thread.
 func (joy Joystick) GetHats() []JoystickHatState {
 	var length int
 
@@ -735,24 +913,13 @@ func (joy Joystick) GetHats() []JoystickHatState {
 	return b
 }
 
-// GetButtons returns a slice of button values.
-func (joy Joystick) GetButtons() []Action {
-	var length int
-
-	buttons := C.glfwGetJoystickButtons(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
-	if buttons == nil {
-		return nil
-	}
-
-	b := make([]Action, length)
-	for i := 0; i < length; i++ {
-		b[i] = Action(C.GetButtonsAtIndex(buttons, C.int(i)))
-	}
-	return b
-}
-
-// GetName returns the name, encoded as UTF-8, of the specified
-// joystick.
+// GetName returns the name, encoded as UTF-8, of the specified joystick.
+//
+// If the specified joystick is not present this function will return nil but
+// will not generate an error. This can be used instead of first calling
+// Present.
+//
+// This function must only be called from the main thread.
 func (joy Joystick) GetName() string {
 	jn := C.glfwGetJoystickName(C.int(joy))
 	return C.GoString(jn)
@@ -774,20 +941,65 @@ func (joy Joystick) GetName() string {
 // unit, e.g. all wired Xbox 360 controllers will have the same GUID on that
 // platform. The GUID for a unit may vary between platforms depending on what
 // hardware information the platform specific APIs provide.
+//
+// This function must only be called from the main thread.
 func (joy Joystick) GetGUID() string {
 	guid := C.glfwGetJoystickGUID(C.int(joy))
 	return C.GoString(guid)
+}
+
+// SetUserPointer sets the user-defined pointer of the joystick. The current value
+// is retained until the joystick is disconnected. The initial value is nil.
+//
+// This function may be called from the joystick callback, even for a joystick
+// that is being disconnected.
+//
+// This function may be called from any thread. Access is not synchronized.
+func (joy Joystick) SetUserPointer(pointer unsafe.Pointer) {
+	C.glfwSetJoystickUserPointer(C.int(joy), pointer)
+}
+
+// GetUserPointer returns the current value of the user-defined pointer of the
+// joystick. The initial value is nil.
+//
+// This function may be called from the joystick callback, even for a joystick
+// that is being disconnected.
+//
+// This function may be called from any thread. Access is not synchronized.
+func (joy Joystick) GetUserPointer() unsafe.Pointer {
+	return C.glfwGetJoystickUserPointer(C.int(joy))
 }
 
 // IsGamepad returns whether the specified joystick is both present and
 // has a gamepad mapping.
 //
 // If the specified joystick is present but does not have a gamepad mapping this
-// function will return false but will not generate an error. Call
-// JoystickPresent to check if a joystick is present regardless of whether it
-// has a mapping.
+// function will return false but will not generate an error. Call Present to
+// check if a joystick is present regardless of whether it has a mapping.
+//
+// This function must only be called from the main thread.
 func (joy Joystick) IsGamepad() bool {
 	return glfwbool(C.glfwJoystickIsGamepad(C.int(joy)))
+}
+
+// UpdateGamepadMappings parses the specified ASCII encoded string and updates
+// the internal list with any gamepad mappings it finds. This string may contain
+// either a single gamepad mapping or many mappings separated by newlines. The
+// parser supports the full format of the gamecontrollerdb.txt source file
+// including empty lines and comments.
+//
+// See Gamepad mappings for a description of the format.
+//
+// If there is already a gamepad mapping for a given GUID in the internal list,
+// it will be replaced by the one passed to this function. If the library is
+// terminated and re-initialized the internal list will revert to the built-in
+// default.
+//
+// This function must only be called from the main thread.
+func UpdateGamepadMappings(mapping string) bool {
+	m := C.CString(mapping)
+	defer C.free(unsafe.Pointer(m))
+	return glfwbool(C.glfwUpdateGamepadMappings(m))
 }
 
 // GetGamepadName returns the human-readable name of the gamepad from the
@@ -795,8 +1007,10 @@ func (joy Joystick) IsGamepad() bool {
 //
 // If the specified joystick is not present or does not have a gamepad mapping
 // this function will return empty string but will not generate an error. Call
-// JoystickPresent to check whether it is present regardless of whether it has
-// a mapping.
+// Present to check whether it is present regardless of whether it has a
+// mapping.
+//
+// This function must only be called from the main thread.
 func (joy Joystick) GetGamepadName() string {
 	gn := C.glfwGetGamepadName(C.int(joy))
 	return C.GoString(gn)
@@ -807,8 +1021,8 @@ func (joy Joystick) GetGamepadName() string {
 //
 // If the specified joystick is not present or does not have a gamepad mapping
 // this function will return nil but will not generate an error. Call
-// JoystickPresent to check whether it is present regardless of whether it has
-// a mapping.
+// Present to check whether it is present regardless of whether it has a
+// mapping.
 //
 // The Guide button may not be available for input as it is often hooked by the
 // system or the Steam client.
@@ -835,34 +1049,4 @@ func (joy Joystick) GetGamepadState() *GamepadState {
 	}
 
 	return &gs
-}
-
-// UpdateGamepadMappings parses the specified ASCII encoded string and updates
-// the internal list with any gamepad mappings it finds. This string may contain
-// either a single gamepad mapping or many mappings separated by newlines. The
-// parser supports the full format of the gamecontrollerdb.txt source file
-// including empty lines and comments.
-//
-// See Gamepad mappings for a description of the format.
-//
-// If there is already a gamepad mapping for a given GUID in the internal list,
-// it will be replaced by the one passed to this function. If the library is
-// terminated and re-initialized the internal list will revert to the built-in
-// default.
-func UpdateGamepadMappings(mapping string) bool {
-	m := C.CString(mapping)
-	defer C.free(unsafe.Pointer(m))
-	return glfwbool(C.glfwUpdateGamepadMappings(m))
-}
-
-// SetUserPointer sets the user-defined pointer of the joystick. The current value
-// is retained until the joystick is disconnected. The initial value is nil.
-func (joy Joystick) SetUserPointer(pointer unsafe.Pointer) {
-	C.glfwSetJoystickUserPointer(C.int(joy), pointer)
-}
-
-// GetUserPointer returns the current value of the user-defined pointer of the
-// joystick. The initial value is nil.
-func (joy Joystick) GetUserPointer() unsafe.Pointer {
-	return C.glfwGetJoystickUserPointer(C.int(joy))
 }
