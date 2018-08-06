@@ -211,3 +211,15 @@ func (m *Monitor) GetContentScale() (float32, float32) {
 	C.glfwGetMonitorContentScale(m.data, &x, &y)
 	return float32(x), float32(y)
 }
+
+// SetUserPointer sets the user-defined pointer of the monitor. The current value
+// is retained until the monitor is disconnected. The initial value is nil.
+func (m *Monitor) SetUserPointer(pointer unsafe.Pointer) {
+	C.glfwSetMonitorUserPointer(m.data, pointer)
+}
+
+// GetUserPointer returns the current value of the user-defined pointer of the
+// monitor. The initial value is nil.
+func (m *Monitor) GetUserPointer() unsafe.Pointer {
+	return C.glfwGetMonitorUserPointer(m.data)
+}

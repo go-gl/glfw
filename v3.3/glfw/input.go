@@ -854,3 +854,15 @@ func UpdateGamepadMappings(mapping string) bool {
 	defer C.free(unsafe.Pointer(m))
 	return glfwbool(C.glfwUpdateGamepadMappings(m))
 }
+
+// SetUserPointer sets the user-defined pointer of the joystick. The current value
+// is retained until the joystick is disconnected. The initial value is nil.
+func (joy Joystick) SetUserPointer(pointer unsafe.Pointer) {
+	C.glfwSetJoystickUserPointer(C.int(joy), pointer)
+}
+
+// GetUserPointer returns the current value of the user-defined pointer of the
+// joystick. The initial value is nil.
+func (joy Joystick) GetUserPointer() unsafe.Pointer {
+	return C.glfwGetJoystickUserPointer(C.int(joy))
+}
