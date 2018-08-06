@@ -53,6 +53,7 @@ func main() {
 ## Changelog
 
 * Internal error callback is now removed since GLFW now has a method called `GetError`. You can either set a custom error callback via `SetErrorCallback` or you can check for the last error via `GetError`. Due to this, some backward incompatible API changes needed to be made. See below for details.
+* Joystick functions now uses receivers instead of passing the joystick ID as argument.
 * Vulkan methods are intentionally not implemented. `Window.Handle` can be used to create a Vulkan surface via the [this](https://github.com/vulkan-go/vulkan) package.
 
 ### GLFW 3.3 Specific Changes
@@ -75,6 +76,8 @@ func main() {
 * Added function `Joystick.GetGamepadName`.
 * Added function `Joystick.GetGamepadState`.
 * Added function `UpdateGamepadMappings`.
+* Added function `SetX11SelectionString`.
+* Added function `GetX11SelectionString`.
 * Added gamepad button IDs.
 * Added gamepad axis IDs.
 * Added joystick hat state IDs.
@@ -85,7 +88,6 @@ func main() {
 * Added hint `CocoaMenubar`.
 * Added hint `TransparentFramebuffer`.
 * Added hint value `OSMesaContextAPI`.
-* Joystick functions now uses receivers instead of passing the joystick ID as argument.
 * `Init` Returns `bool` instead of error.
 * `Joystick.GetButtons` Returns `[]Action` instead of `[]byte`.
 * `SetMonitorCallback` Returns `MonitorCallback`.

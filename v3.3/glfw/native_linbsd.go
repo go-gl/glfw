@@ -4,9 +4,11 @@ package glfw
 
 //#define GLFW_EXPOSE_NATIVE_X11
 //#define GLFW_EXPOSE_NATIVE_GLX
+//#include <stdlib.h>
 //#include "glfw/include/GLFW/glfw3.h"
 //#include "glfw/include/GLFW/glfw3native.h"
 import "C"
+import "unsafe"
 
 // GetX11Display returns X11 display handle
 func GetX11Display() *C.Display {
@@ -36,4 +38,17 @@ func (w *Window) GetGLXContext() C.GLXContext {
 // GetGLXWindow returns the GLXWindow of the window.
 func (w *Window) GetGLXWindow() C.GLXWindow {
 	return C.glfwGetGLXWindow(w.data)
+}
+
+// SetX11SelectionString sets the X11 selection string.
+func SetX11SelectionString(str string) {
+	s := C.CString(str)
+	defer C.free(unsafe.Pointer(s))
+	C.glfwSetX11SelectionString(s)
+}
+
+// GetX11SelectionString gets the X11 selection string.
+func GetX11SelectionString() string {
+	s := C.glfwGetX11SelectionString()
+	return C.GoString(s)
 }
