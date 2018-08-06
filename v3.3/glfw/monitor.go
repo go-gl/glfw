@@ -17,8 +17,8 @@ type Monitor struct {
 	data *C.GLFWmonitor
 }
 
-// MonitorEvent corresponds to a monitor configuration event.
-type MonitorEvent int
+// PeripheralEvent corresponds to a monitor configuration event.
+type PeripheralEvent int
 
 // GammaRamp describes the gamma ramp for a monitor.
 type GammaRamp struct {
@@ -27,10 +27,10 @@ type GammaRamp struct {
 	Blue  []uint16 // A slice of value describing the response of the blue channel.
 }
 
-// Monitor events.
+// Peripheral events.
 const (
-	Connected    MonitorEvent = C.GLFW_CONNECTED
-	Disconnected MonitorEvent = C.GLFW_DISCONNECTED
+	Connected    PeripheralEvent = C.GLFW_CONNECTED
+	Disconnected PeripheralEvent = C.GLFW_DISCONNECTED
 )
 
 // VidMode describes a single video mode.
@@ -44,13 +44,13 @@ type VidMode struct {
 }
 
 // MonitorCallback is the signature of a monitor callback function
-type MonitorCallback func(monitor *Monitor, event MonitorEvent)
+type MonitorCallback func(monitor *Monitor, event PeripheralEvent)
 
 var fMonitorHolder MonitorCallback
 
 //export goMonitorCB
 func goMonitorCB(monitor unsafe.Pointer, event C.int) {
-	fMonitorHolder(&Monitor{(*C.GLFWmonitor)(monitor)}, MonitorEvent(event))
+	fMonitorHolder(&Monitor{(*C.GLFWmonitor)(monitor)}, PeripheralEvent(event))
 }
 
 // GetMonitors returns a slice of handles for all currently connected monitors.

@@ -23,8 +23,6 @@ import (
 	"unsafe"
 )
 
-var fJoystickHolder func(joy, event int)
-
 // Joystick corresponds to a joystick.
 type Joystick int
 
@@ -308,7 +306,7 @@ const (
 )
 
 // JoystickCallback is the joystick configuration callback.
-type JoystickCallback func(joy, event int)
+type JoystickCallback func(joy Joystick, event PeripheralEvent)
 
 // KeyCallback is the key callback.
 type KeyCallback func(w *Window, key Key, scancode int, action Action, mods ModifierKey)
@@ -345,9 +343,11 @@ type GamepadState struct {
 	Axes    [6]float32
 }
 
+var fJoystickHolder JoystickCallback
+
 //export goJoystickCB
 func goJoystickCB(joy, event C.int) {
-	fJoystickHolder(int(joy), int(event))
+	fJoystickHolder(Joystick(joy), PeripheralEvent(event))
 }
 
 //export goMouseButtonCB

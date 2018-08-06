@@ -92,6 +92,7 @@ func main() {
 * Added hint `CocoaMenubar`.
 * Added hint `TransparentFramebuffer`.
 * Added hint value `OSMesaContextAPI`.
+* `MonitorEvent` renamed to `PeripheralEvent` for reuse with joystick events.
 * `Init` Returns `bool` instead of error.
 * `Joystick.GetButtons` Returns `[]Action` instead of `[]byte`.
 * `SetMonitorCallback` Returns `MonitorCallback`.
