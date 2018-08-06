@@ -68,6 +68,8 @@ func main() {
 * Added function `Window.SetMaximizeCallback`.
 * Added function `Window.SetContentScaleCallback`.
 * Added function `Monitor.GetContentScale`.
+* Added function `Monitor.SetUserPointer`.
+* Added function `Monitor.GetUserPointer`.
 * Added function `GetKeyScancode`.
 * Added function `InitHint`.
 * Added function `Joystick.GetHats`.
@@ -75,6 +77,8 @@ func main() {
 * Added function `Joystick.GetGUID`.
 * Added function `Joystick.GetGamepadName`.
 * Added function `Joystick.GetGamepadState`.
+* Added function `Joystick.SetUserPointer`.
+* Added function `Joystick.GetUserPointer`.
 * Added function `UpdateGamepadMappings`.
 * Added function `SetX11SelectionString`.
 * Added function `GetX11SelectionString`.
