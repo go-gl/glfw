@@ -1029,6 +1029,8 @@ func (joy Joystick) GetGamepadName() string {
 //
 // Not all devices have all the buttons or axes provided by GamepadState.
 // Unavailable buttons and axes will always report Release and 0.0 respectively.
+//
+// This function must only be called from the main thread.
 func (joy Joystick) GetGamepadState() *GamepadState {
 	var (
 		gs  GamepadState
