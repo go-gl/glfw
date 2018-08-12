@@ -169,8 +169,9 @@ func (w *Window) GLFWWindow() uintptr {
 
 // GoWindow creates a Window from a *C.GLFWwindow reference.
 // Used when an external C library is calling your Go handlers.
-func GoWindow(w unsafe.Pointer) *Window {
-	return &Window{data: (*_Ctype_struct_GLFWwindow)(w)}
+func GoWindow(window uintptr) *Window {
+	w := (*C.GLFWwindow)(unsafe.Pointer(window))
+	return &Window{data: w}
 }
 
 //export goWindowPosCB
