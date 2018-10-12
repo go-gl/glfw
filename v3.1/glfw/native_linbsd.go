@@ -25,3 +25,5 @@ func GetX11Display() *C.Display {
 	panicError()
 	return ret
 }
+
+func (w *Window) updateNSGLContext() {}

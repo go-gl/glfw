@@ -48,3 +48,5 @@ func (w *Window) GetGLXWindow() C.GLXWindow {
 	panicError()
 	return ret
 }
+
+func (w *Window) updateNSGLContext() {}
