@@ -37,6 +37,7 @@ func GetCurrentContext() *Window {
 // swap interval is greater than zero, the GPU driver waits the specified number
 // of screen updates before swapping the buffers.
 func (w *Window) SwapBuffers() {
+	w.updateNSGLContext()
 	C.glfwSwapBuffers(w.data)
 	panicError()
 }

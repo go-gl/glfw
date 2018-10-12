@@ -17,3 +17,5 @@ func (w *Window) GetWGLContext() C.HGLRC {
 	panicError()
 	return ret
 }
+
+func (w *Window) updateNSGLContext() {}
