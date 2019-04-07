@@ -13,6 +13,18 @@
 go get -u github.com/go-gl/glfw/v3.2/glfw
 ```
 
+### OpenGL ES
+
+If your target system only provides an OpenGL ES implementation (true for some ARM boards), you need to link against that implementation.
+You do this by defining the appropriate build tags, e.g.
+
+```
+go get -u -tags=gles2 github.com/go-gl/glfw/v3.2/glfw
+```
+
+Supported tags are `gles1`, `gles2`, `gles3` and `vulkan`.
+Note that required packages might differ from those listed above; consult your hardware's documentation.
+
 ## Usage
 
 ```Go
