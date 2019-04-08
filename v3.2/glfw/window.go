@@ -316,7 +316,7 @@ func (w *Window) ShouldClose() bool {
 // should be closed.
 func (w *Window) SetShouldClose(value bool) {
 	if !value {
-		C.glfwSetWindowShouldClose(w.data, C.int(False)) 
+		C.glfwSetWindowShouldClose(w.data, C.int(False))
 	} else {
 		C.glfwSetWindowShouldClose(w.data, C.int(True))
 	}
