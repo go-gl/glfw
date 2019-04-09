@@ -1,15 +1,24 @@
 package glfw
 
-//#include <stdlib.h>
-//#define GLFW_INCLUDE_NONE
-//#include "glfw/include/GLFW/glfw3.h"
-//void glfwSetWindowPosCallbackCB(GLFWwindow *window);
-//void glfwSetWindowSizeCallbackCB(GLFWwindow *window);
-//void glfwSetFramebufferSizeCallbackCB(GLFWwindow *window);
-//void glfwSetWindowCloseCallbackCB(GLFWwindow *window);
-//void glfwSetWindowRefreshCallbackCB(GLFWwindow *window);
-//void glfwSetWindowFocusCallbackCB(GLFWwindow *window);
-//void glfwSetWindowIconifyCallbackCB(GLFWwindow *window);
+/*
+#include <stdlib.h>
+
+#define GLFW_INCLUDE_NONE
+
+#ifndef GO_GLFW_EXTERNAL
+  #include "glfw/include/GLFW/glfw3.h"
+#else
+  #include <GLFW/glfw3.h>
+#endif
+
+void glfwSetWindowPosCallbackCB(GLFWwindow *window);
+void glfwSetWindowSizeCallbackCB(GLFWwindow *window);
+void glfwSetFramebufferSizeCallbackCB(GLFWwindow *window);
+void glfwSetWindowCloseCallbackCB(GLFWwindow *window);
+void glfwSetWindowRefreshCallbackCB(GLFWwindow *window);
+void glfwSetWindowFocusCallbackCB(GLFWwindow *window);
+void glfwSetWindowIconifyCallbackCB(GLFWwindow *window);
+*/
 import "C"
 
 import (

@@ -1,3 +1,5 @@
+// +build !glfw_external
+
 package glfw
 
 /*

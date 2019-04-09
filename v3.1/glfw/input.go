@@ -1,17 +1,25 @@
 package glfw
 
-//#define GLFW_INCLUDE_NONE
-//#include "glfw/include/GLFW/glfw3.h"
-//void glfwSetKeyCallbackCB(GLFWwindow *window);
-//void glfwSetCharCallbackCB(GLFWwindow *window);
-//void glfwSetCharModsCallbackCB(GLFWwindow *window);
-//void glfwSetMouseButtonCallbackCB(GLFWwindow *window);
-//void glfwSetCursorPosCallbackCB(GLFWwindow *window);
-//void glfwSetCursorEnterCallbackCB(GLFWwindow *window);
-//void glfwSetScrollCallbackCB(GLFWwindow *window);
-//void glfwSetDropCallbackCB(GLFWwindow *window);
-//float GetAxisAtIndex(float *axis, int i);
-//unsigned char GetButtonsAtIndex(unsigned char *buttons, int i);
+/*
+#define GLFW_INCLUDE_NONE
+
+#ifndef GO_GLFW_EXTERNAL
+	#include "glfw/include/GLFW/glfw3.h"
+#else
+	#include <GLFW/glfw3.h>
+#endif
+
+void glfwSetKeyCallbackCB(GLFWwindow *window);
+void glfwSetCharCallbackCB(GLFWwindow *window);
+void glfwSetCharModsCallbackCB(GLFWwindow *window);
+void glfwSetMouseButtonCallbackCB(GLFWwindow *window);
+void glfwSetCursorPosCallbackCB(GLFWwindow *window);
+void glfwSetCursorEnterCallbackCB(GLFWwindow *window);
+void glfwSetScrollCallbackCB(GLFWwindow *window);
+void glfwSetDropCallbackCB(GLFWwindow *window);
+float GetAxisAtIndex(float *axis, int i);
+unsigned char GetButtonsAtIndex(unsigned char *buttons, int i);
+*/
 import "C"
 
 import (

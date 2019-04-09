@@ -1,12 +1,20 @@
 package glfw
 
-//#define GLFW_INCLUDE_NONE
-//#include "glfw/include/GLFW/glfw3.h"
-//GLFWmonitor* GetMonitorAtIndex(GLFWmonitor **monitors, int index);
-//GLFWvidmode GetVidmodeAtIndex(GLFWvidmode *vidmodes, int index);
-//void glfwSetMonitorCallbackCB();
-//unsigned int GetGammaAtIndex(unsigned short *color, int i);
-//void SetGammaAtIndex(unsigned short *color, int i, unsigned short value);
+/*
+#define GLFW_INCLUDE_NONE
+
+#ifndef GO_GLFW_EXTERNAL
+	#include "glfw/include/GLFW/glfw3.h"
+#else
+	#include <GLFW/glfw3.h>
+#endif
+
+GLFWmonitor* GetMonitorAtIndex(GLFWmonitor **monitors, int index);
+GLFWvidmode GetVidmodeAtIndex(GLFWvidmode *vidmodes, int index);
+void glfwSetMonitorCallbackCB();
+unsigned int GetGammaAtIndex(unsigned short *color, int i);
+void SetGammaAtIndex(unsigned short *color, int i, unsigned short value);
+*/
 import "C"
 
 import (

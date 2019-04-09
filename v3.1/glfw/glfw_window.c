@@ -1,1 +1,3 @@
-#include "glfw/src/window.c"
+#ifndef GO_GLFW_EXTERNAL
+    #include "glfw/src/window.c"
+#endif

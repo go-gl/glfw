@@ -12,7 +12,7 @@
 		return new;
 	}
 	#endif
-	
+
 	// _get_output_format is described at MSDN:
 	// http://msdn.microsoft.com/en-us/library/571yb472.aspx
 	//
@@ -24,6 +24,8 @@
 	};
 	#endif
 
-	#include "glfw/src/win32_init.c"
+	#ifndef GO_GLFW_EXTERNAL
+		#include "glfw/src/win32_init.c"
+	#endif
 #endif
 

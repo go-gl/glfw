@@ -1,3 +1,4 @@
+// +build !glfw_external
 // +build linux freebsd
 
 package glfw

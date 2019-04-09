@@ -1,7 +1,14 @@
 package glfw
 
-//#define GLFW_INCLUDE_NONE
-//#include "glfw/include/GLFW/glfw3.h"
+/*
+#define GLFW_INCLUDE_NONE
+
+#ifndef GO_GLFW_EXTERNAL
+	#include "glfw/include/GLFW/glfw3.h"
+#else
+	#include <GLFW/glfw3.h>
+#endif
+*/
 import "C"
 
 // GetTime returns the value of the GLFW timer. Unless the timer has been set

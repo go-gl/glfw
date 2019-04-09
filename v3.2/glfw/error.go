@@ -1,8 +1,16 @@
 package glfw
 
-//#define GLFW_INCLUDE_NONE
-//#include "glfw/include/GLFW/glfw3.h"
-//void glfwSetErrorCallbackCB();
+/*
+#define GLFW_INCLUDE_NONE
+
+#ifndef GO_GLFW_EXTERNAL
+  #include "glfw/include/GLFW/glfw3.h"
+#else
+  #include <GLFW/glfw3.h>
+#endif
+
+void glfwSetErrorCallbackCB();
+*/
 import "C"
 
 import (
