@@ -29,7 +29,7 @@ Note that required packages might differ from those listed above; consult your h
 
 If your host system has GLFW library already compiled and installed,
 you can link against it, instead of compiling and statically linking the embedded one.
-You do this by passing `-tags=glfw_external` flag to `go build/install`,
+You do this by passing `-tags=glfw_external` flag to `go build` or `go install`,
 when building your application.
 
 Supported for `v3.1` and later.
