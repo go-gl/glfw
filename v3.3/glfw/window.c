@@ -1,57 +1,30 @@
 #include "_cgo_export.h"
 
-void glfwWindowPosCB(GLFWwindow* window, int xpos, int ypos) {
-	goWindowPosCB(window, xpos, ypos);
+void glfwSetWindowPosCallbackCB(GLFWwindow *window) {
+  glfwSetWindowPosCallback(window, (GLFWwindowposfun)goWindowPosCB);
 }
 
-void glfwWindowSizeCB(GLFWwindow* window, int width, int height) {
-	goWindowSizeCB(window, width, height);
+void glfwSetWindowSizeCallbackCB(GLFWwindow *window) {
+  glfwSetWindowSizeCallback(window, (GLFWwindowsizefun)goWindowSizeCB);
 }
 
-void glfwFramebufferSizeCB(GLFWwindow* window, int width, int height) {
-	goFramebufferSizeCB(window, width, height);
+void glfwSetWindowCloseCallbackCB(GLFWwindow *window) {
+  glfwSetWindowCloseCallback(window, (GLFWwindowclosefun)goWindowCloseCB);
 }
 
-void glfwWindowCloseCB(GLFWwindow* window) {
-	goWindowCloseCB(window);
+void glfwSetWindowRefreshCallbackCB(GLFWwindow *window) {
+  glfwSetWindowRefreshCallback(window, (GLFWwindowrefreshfun)goWindowRefreshCB);
 }
 
-void glfwWindowRefreshCB(GLFWwindow* window) {
-	goWindowRefreshCB(window);
+void glfwSetWindowFocusCallbackCB(GLFWwindow *window) {
+  glfwSetWindowFocusCallback(window, (GLFWwindowfocusfun)goWindowFocusCB);
 }
 
-void glfwWindowFocusCB(GLFWwindow* window, int focused) {
-	goWindowFocusCB(window, focused);
+void glfwSetWindowIconifyCallbackCB(GLFWwindow *window) {
+  glfwSetWindowIconifyCallback(window, (GLFWwindowiconifyfun)goWindowIconifyCB);
 }
 
-void glfwWindowIconifyCB(GLFWwindow* window, int iconified) {
-	goWindowIconifyCB(window, iconified);
-}
-
-void glfwSetWindowPosCallbackCB(GLFWwindow* window) {
-	glfwSetWindowPosCallback(window, glfwWindowPosCB);
-}
-
-void glfwSetWindowSizeCallbackCB(GLFWwindow* window) {
-	glfwSetWindowSizeCallback(window, glfwWindowSizeCB);
-}
-
-void glfwSetFramebufferSizeCallbackCB(GLFWwindow* window) {
-	glfwSetFramebufferSizeCallback(window, glfwFramebufferSizeCB);
-}
-
-void glfwSetWindowCloseCallbackCB(GLFWwindow* window) {
-	glfwSetWindowCloseCallback(window, glfwWindowCloseCB);
-}
-
-void glfwSetWindowRefreshCallbackCB(GLFWwindow* window) {
-	glfwSetWindowRefreshCallback(window, glfwWindowRefreshCB);
-}
-
-void glfwSetWindowFocusCallbackCB(GLFWwindow* window) {
-	glfwSetWindowFocusCallback(window, glfwWindowFocusCB);
-}
-
-void glfwSetWindowIconifyCallbackCB(GLFWwindow* window) {
-	glfwSetWindowIconifyCallback(window, glfwWindowIconifyCB);
+void glfwSetFramebufferSizeCallbackCB(GLFWwindow *window) {
+  glfwSetFramebufferSizeCallback(window,
+                                 (GLFWframebuffersizefun)goFramebufferSizeCB);
 }

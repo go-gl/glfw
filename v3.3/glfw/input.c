@@ -1,81 +1,43 @@
 #include "_cgo_export.h"
 
-void glfwJoystickCB(int joy, int event) {
-	goJoystickCB(joy, event);
-}
-
-void glfwMouseButtonCB(GLFWwindow* window, int button, int action, int mods) {
-	goMouseButtonCB(window, button, action, mods);
-}
-
-void glfwCursorPosCB(GLFWwindow* window, double xpos, double ypos) {
-	goCursorPosCB(window, xpos, ypos);
-}
-
-void glfwCursorEnterCB(GLFWwindow* window, int entered) {
-	goCursorEnterCB(window, entered);
-}
-
-void glfwScrollCB(GLFWwindow* window, double xoff, double yoff) {
-	goScrollCB(window, xoff, yoff);
-}
-
-void glfwKeyCB(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	goKeyCB(window, key, scancode, action, mods);
-}
-
-void glfwCharCB(GLFWwindow* window, unsigned int character) {
-	goCharCB(window, character);
-}
-
-void glfwCharModsCB(GLFWwindow* window, unsigned int character, int mods) {
-	goCharModsCB(window, character, mods);
-}
-
-void glfwDropCB(GLFWwindow* window, int count, const char **names) {
-	goDropCB(window, count, (char**)names);
-}
-
 void glfwSetJoystickCallbackCB() {
-	glfwSetJoystickCallback(glfwJoystickCB);
+  glfwSetJoystickCallback((GLFWjoystickfun)goJoystickCB);
 }
 
 void glfwSetKeyCallbackCB(GLFWwindow *window) {
-	glfwSetKeyCallback(window, glfwKeyCB);
+  glfwSetKeyCallback(window, (GLFWkeyfun)goKeyCB);
 }
 
 void glfwSetCharCallbackCB(GLFWwindow *window) {
-	glfwSetCharCallback(window, glfwCharCB);
+  glfwSetCharCallback(window, (GLFWcharfun)goCharCB);
 }
 
 void glfwSetCharModsCallbackCB(GLFWwindow *window) {
-	glfwSetCharModsCallback(window, glfwCharModsCB);
+  glfwSetCharModsCallback(window, (GLFWcharmodsfun)goCharModsCB);
 }
 
 void glfwSetMouseButtonCallbackCB(GLFWwindow *window) {
-	glfwSetMouseButtonCallback(window, glfwMouseButtonCB);
+  glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)goMouseButtonCB);
 }
 
 void glfwSetCursorPosCallbackCB(GLFWwindow *window) {
-	glfwSetCursorPosCallback(window, glfwCursorPosCB);
+  glfwSetCursorPosCallback(window, (GLFWcursorposfun)goCursorPosCB);
 }
 
 void glfwSetCursorEnterCallbackCB(GLFWwindow *window) {
-	glfwSetCursorEnterCallback(window, glfwCursorEnterCB);
+  glfwSetCursorEnterCallback(window, (GLFWcursorenterfun)goCursorEnterCB);
 }
 
 void glfwSetScrollCallbackCB(GLFWwindow *window) {
-	glfwSetScrollCallback(window, glfwScrollCB);
+  glfwSetScrollCallback(window, (GLFWscrollfun)goScrollCB);
 }
 
 void glfwSetDropCallbackCB(GLFWwindow *window) {
-	glfwSetDropCallback(window, glfwDropCB);
+  glfwSetDropCallback(window, (GLFWdropfun)goDropCB);
 }
 
-float GetAxisAtIndex(float *axis, int i) {
-	return axis[i];
-}
+float GetAxisAtIndex(float *axis, int i) { return axis[i]; }
 
 unsigned char GetButtonsAtIndex(unsigned char *buttons, int i) {
-	return buttons[i];
+  return buttons[i];
 }
