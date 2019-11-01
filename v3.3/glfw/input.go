@@ -537,6 +537,8 @@ type CharModsCallback func(w *Window, char rune, mods ModifierKey)
 // SetCharModsCallback sets the character with modifiers callback which is called when a
 // Unicode character is input regardless of what modifier keys are used.
 //
+// Deprecated: Scheduled for removal in version 4.0.
+//
 // The character with modifiers callback is intended for implementing custom
 // Unicode character input. For regular Unicode text input, see the
 // character callback. Like the character callback, the character with modifiers callback

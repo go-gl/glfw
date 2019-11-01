@@ -745,6 +745,9 @@ func (w *Window) SetIconifyCallback(cbfun IconifyCallback) (previous IconifyCall
 // SetClipboardString sets the system clipboard to the specified UTF-8 encoded
 // string.
 //
+// Ownership to the Window is no longer necessary, see
+// glfw.SetClipboardString(string)
+//
 // This function may only be called from the main thread.
 func (w *Window) SetClipboardString(str string) {
 	cp := C.CString(str)
@@ -755,6 +758,9 @@ func (w *Window) SetClipboardString(str string) {
 
 // GetClipboardString returns the contents of the system clipboard, if it
 // contains or is convertible to a UTF-8 encoded string.
+//
+// Ownership to the Window is no longer necessary, see
+// glfw.GetClipboardString()
 //
 // This function may only be called from the main thread.
 func (w *Window) GetClipboardString() (string, error) {

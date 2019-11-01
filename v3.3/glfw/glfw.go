@@ -1,8 +1,10 @@
 package glfw
 
+//#include <stdlib.h>
 //#define GLFW_INCLUDE_NONE
 //#include "glfw/include/GLFW/glfw3.h"
 import "C"
+import "unsafe"
 
 // Version constants.
 const (
@@ -74,4 +76,27 @@ func GetVersion() (major, minor, revision int) {
 // This function may be called before Init.
 func GetVersionString() string {
 	return C.GoString(C.glfwGetVersionString())
+}
+
+// GetClipboardString returns the contents of the system clipboard, if it
+// contains or is convertible to a UTF-8 encoded string.
+//
+// This function may only be called from the main thread.
+func GetClipboardString() (string, error) {
+	cs := C.glfwGetClipboardString(nil)
+	if cs == nil {
+		return "", acceptError(FormatUnavailable)
+	}
+	return C.GoString(cs), nil
+}
+
+// SetClipboardString sets the system clipboard to the specified UTF-8 encoded
+// string.
+//
+// This function may only be called from the main thread.
+func SetClipboardString(str string) {
+	cp := C.CString(str)
+	defer C.free(unsafe.Pointer(cp))
+	C.glfwSetClipboardString(nil, cp)
+	panicError()
 }
