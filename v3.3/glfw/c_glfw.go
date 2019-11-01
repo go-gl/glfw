@@ -7,5 +7,6 @@ package glfw
 #include "glfw/src/monitor.c"
 #include "glfw/src/vulkan.c"
 #include "glfw/src/window.c"
+#include "glfw/src/osmesa_context.c"
 */
 import "C"

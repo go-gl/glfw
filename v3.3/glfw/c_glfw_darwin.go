@@ -7,7 +7,7 @@ package glfw
 #include "glfw/src/cocoa_monitor.m"
 #include "glfw/src/cocoa_window.m"
 #include "glfw/src/cocoa_time.c"
-#include "glfw/src/posix_tls.c"
+#include "glfw/src/posix_thread.c"
 #include "glfw/src/nsgl_context.m"
 */
 import "C"
