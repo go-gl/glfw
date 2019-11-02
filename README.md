@@ -19,7 +19,7 @@ If your target system only provides an OpenGL ES implementation (true for some A
 You do this by defining the appropriate build tags, e.g.
 
 ```
-go get -u -tags=gles2 github.com/go-gl/glfw/v3.2/glfw
+go get -u -tags=gles2 github.com/go-gl/glfw/v3.3/glfw
 ```
 
 Supported tags are `gles1`, `gles2`, `gles3` and `vulkan`.
@@ -65,10 +65,10 @@ func main() {
 
 ## Changelog
 
-* Easy `go get` installation. GLFW source code is now included in-repo and compiled in so you don't have to build GLFW on your own and distribute shared libraries. The revision of GLFW C library used is listed in [GLFW_C_REVISION.txt](https://github.com/go-gl/glfw/blob/master/v3.2/glfw/GLFW_C_REVISION.txt) file.
-* The error callback is now set internally. Functions return an error with corresponding code and description (do a type assertion to glfw3.Error for accessing the variables) if the error is recoverable. If not a panic will occur.
-* Joystick functions now uses receivers instead of passing the joystick ID as argument.
-* Vulkan methods are intentionally not implemented. `Window.Handle` can be used to create a Vulkan surface via the [this](https://github.com/vulkan-go/vulkan) package.
+* `(3.3)` Joystick functions now uses receivers instead of passing the joystick ID as argument.
+* `(3.3)` Vulkan methods are intentionally not implemented. `Window.Handle` can be used to create a Vulkan surface via the [this](https://github.com/vulkan-go/vulkan) package.
+* `(3.2)` Easy `go get` installation. GLFW source code is now included in-repo and compiled in so you don't have to build GLFW on your own and distribute shared libraries. The revision of GLFW C library used is listed in [GLFW_C_REVISION.txt](https://github.com/go-gl/glfw/blob/master/v3.3/glfw/GLFW_C_REVISION.txt) file.
+* `(3.2)` The error callback is now set internally. Functions return an error with corresponding code and description (do a type assertion to glfw3.Error for accessing the variables) if the error is recoverable. If not a panic will occur.
 
 ### GLFW 3.3 Specific Changes
 * Renamed `Window.GLFWWindow` to `Window.Handle`
