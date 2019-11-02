@@ -28,3 +28,13 @@ void glfwSetFramebufferSizeCallbackCB(GLFWwindow *window) {
   glfwSetFramebufferSizeCallback(window,
                                  (GLFWframebuffersizefun)goFramebufferSizeCB);
 }
+
+void glfwSetWindowMaximizeCallbackCB(GLFWwindow *window) {
+  glfwSetWindowMaximizeCallback(window,
+                                (GLFWwindowmaximizefun)goWindowMaximizeCB);
+}
+
+void glfwSetWindowContentScaleCallbackCB(GLFWwindow *window) {
+  glfwSetWindowContentScaleCallback(
+      window, (GLFWwindowcontentscalefun)goWindowContentScaleCB);
+}

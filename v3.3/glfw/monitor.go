@@ -18,8 +18,9 @@ type Monitor struct {
 	data *C.GLFWmonitor
 }
 
-// MonitorEvent corresponds to a monitor configuration event.
-type MonitorEvent int
+// PeripheralEvent corresponds to a peripheral(Monitor or Joystick)
+// configuration event.
+type PeripheralEvent int
 
 // GammaRamp describes the gamma ramp for a monitor.
 type GammaRamp struct {
@@ -28,10 +29,10 @@ type GammaRamp struct {
 	Blue  []uint16 // A slice of value describing the response of the blue channel.
 }
 
-// Monitor events.
+// PeripheralEvent events.
 const (
-	Connected    MonitorEvent = C.GLFW_CONNECTED
-	Disconnected MonitorEvent = C.GLFW_DISCONNECTED
+	Connected    PeripheralEvent = C.GLFW_CONNECTED
+	Disconnected PeripheralEvent = C.GLFW_DISCONNECTED
 )
 
 // VidMode describes a single video mode.
@@ -44,11 +45,11 @@ type VidMode struct {
 	RefreshRate int // The refresh rate, in Hz, of the video mode.
 }
 
-var fMonitorHolder func(monitor *Monitor, event MonitorEvent)
+var fMonitorHolder func(monitor *Monitor, event PeripheralEvent)
 
 //export goMonitorCB
 func goMonitorCB(monitor unsafe.Pointer, event C.int) {
-	fMonitorHolder(&Monitor{(*C.GLFWmonitor)(monitor)}, MonitorEvent(event))
+	fMonitorHolder(&Monitor{(*C.GLFWmonitor)(monitor)}, PeripheralEvent(event))
 }
 
 // GetMonitors returns a slice of handles for all currently connected monitors.
@@ -90,6 +91,56 @@ func (m *Monitor) GetPos() (x, y int) {
 	return int(xpos), int(ypos)
 }
 
+// GetWorkarea returns the position, in screen coordinates, of the upper-left
+// corner of the work area of the specified monitor along with the work area
+// size in screen coordinates. The work area is defined as the area of the
+// monitor not occluded by the operating system task bar where present. If no
+// task bar exists then the work area is the monitor resolution in screen
+// coordinates.
+//
+// This function must only be called from the main thread.
+func (m *Monitor) GetWorkarea() (x, y, width, height int) {
+	var cX, cY, cWidth, cHeight C.int
+	C.glfwGetMonitorWorkarea(m.data, &cX, &cY, &cWidth, &cHeight)
+	x, y, width, height = int(cX), int(cY), int(cWidth), int(cHeight)
+	return
+}
+
+// GetContentScale function retrieves the content scale for the specified monitor.
+// The content scale is the ratio between the current DPI and the platform's
+// default DPI. If you scale all pixel dimensions by this scale then your content
+// should appear at an appropriate size. This is especially important for text
+// and any UI elements.
+//
+// This function must only be called from the main thread.
+func (m *Monitor) GetContentScale() (float32, float32) {
+	var x, y C.float
+	C.glfwGetMonitorContentScale(m.data, &x, &y)
+	return float32(x), float32(y)
+}
+
+// SetUserPointer sets the user-defined pointer of the monitor. The current value
+// is retained until the monitor is disconnected. The initial value is nil.
+//
+// This function may be called from the monitor callback, even for a monitor
+// that is being disconnected.
+//
+// This function may be called from any thread. Access is not synchronized.
+func (m *Monitor) SetUserPointer(pointer unsafe.Pointer) {
+	C.glfwSetMonitorUserPointer(m.data, pointer)
+}
+
+// GetUserPointer returns the current value of the user-defined pointer of the
+// monitor. The initial value is nil.
+//
+// This function may be called from the monitor callback, even for a monitor
+// that is being disconnected.
+//
+// This function may be called from any thread. Access is not synchronized.
+func (m *Monitor) GetUserPointer() unsafe.Pointer {
+	return C.glfwGetMonitorUserPointer(m.data)
+}
+
 // GetPhysicalSize returns the size, in millimetres, of the display area of the
 // monitor.
 //
@@ -113,17 +164,24 @@ func (m *Monitor) GetName() string {
 	return C.GoString(mn)
 }
 
+// MonitorCallback is the signature for monitor configuration callback
+// functions.
+type MonitorCallback func(monitor *Monitor, event PeripheralEvent)
+
 // SetMonitorCallback sets the monitor configuration callback, or removes the
 // currently set callback. This is called when a monitor is connected to or
 // disconnected from the system.
-func SetMonitorCallback(cbfun func(monitor *Monitor, event MonitorEvent)) {
+//
+// This function must only be called from the main thread.
+func SetMonitorCallback(cbfun MonitorCallback) MonitorCallback {
+	previous := fMonitorHolder
+	fMonitorHolder = cbfun
 	if cbfun == nil {
 		C.glfwSetMonitorCallback(nil)
 	} else {
-		fMonitorHolder = cbfun
 		C.glfwSetMonitorCallbackCB()
 	}
-	panicError()
+	return previous
 }
 
 // GetVideoModes returns an array of all video modes supported by the monitor.

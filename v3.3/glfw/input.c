@@ -41,3 +41,9 @@ float GetAxisAtIndex(float *axis, int i) { return axis[i]; }
 unsigned char GetButtonsAtIndex(unsigned char *buttons, int i) {
   return buttons[i];
 }
+
+unsigned char GetGamepadButtonAtIndex(GLFWgamepadstate *gp, int i) {
+  return gp->buttons[i];
+}
+
+float GetGamepadAxisAtIndex(GLFWgamepadstate *gp, int i) { return gp->axes[i]; }

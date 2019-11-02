@@ -10,6 +10,8 @@ package glfw
 //void glfwSetWindowRefreshCallbackCB(GLFWwindow *window);
 //void glfwSetWindowFocusCallbackCB(GLFWwindow *window);
 //void glfwSetWindowIconifyCallbackCB(GLFWwindow *window);
+//void glfwSetWindowMaximizeCallbackCB(GLFWwindow *window);
+//void glfwSetWindowContentScaleCallbackCB(GLFWwindow *window);
 import "C"
 
 import (
@@ -51,16 +53,28 @@ func (w *windowList) get(wnd *C.GLFWwindow) *Window {
 // its creation.
 type Hint int
 
-// Window related hints.
+// Init related hints. (Use with glfw.InitHint)
 const (
-	Focused     Hint = C.GLFW_FOCUSED      // Specifies whether the window will be given input focus when created. This hint is ignored for full screen and initially hidden windows.
-	Iconified   Hint = C.GLFW_ICONIFIED    // Specifies whether the window will be minimized.
-	Maximized   Hint = C.GLFW_MAXIMIZED    // Specifies whether the window is maximized.
-	Visible     Hint = C.GLFW_VISIBLE      // Specifies whether the window will be initially visible.
-	Resizable   Hint = C.GLFW_RESIZABLE    // Specifies whether the window will be resizable by the user.
-	Decorated   Hint = C.GLFW_DECORATED    // Specifies whether the window will have window decorations such as a border, a close widget, etc.
-	Floating    Hint = C.GLFW_FLOATING     // Specifies whether the window will be always-on-top.
-	AutoIconify Hint = C.GLFW_AUTO_ICONIFY // Specifies whether fullscreen windows automatically iconify (and restore the previous video mode) on focus loss.
+	JoystickHatButtons  Hint = C.GLFW_JOYSTICK_HAT_BUTTONS  // Specifies whether to also expose joystick hats as buttons, for compatibility with earlier versions of GLFW that did not have glfwGetJoystickHats.
+	CocoaChdirResources Hint = C.GLFW_COCOA_CHDIR_RESOURCES // Specifies whether to set the current directory to the application to the Contents/Resources subdirectory of the application's bundle, if present.
+	CocoaMenubar        Hint = C.GLFW_COCOA_MENUBAR         // Specifies whether to create a basic menu bar, either from a nib or manually, when the first window is created, which is when AppKit is initialized.
+)
+
+// Window related hints/attributes.
+const (
+	Focused                Hint = C.GLFW_FOCUSED                 // Specifies whether the window will be given input focus when created. This hint is ignored for full screen and initially hidden windows.
+	Iconified              Hint = C.GLFW_ICONIFIED               // Specifies whether the window will be minimized.
+	Maximized              Hint = C.GLFW_MAXIMIZED               // Specifies whether the window is maximized.
+	Visible                Hint = C.GLFW_VISIBLE                 // Specifies whether the window will be initially visible.
+	Hovered                Hint = C.GLFW_HOVERED                 // Specifies whether the cursor is currently directly over the content area of the window, with no other windows between. See Cursor enter/leave events for details.
+	Resizable              Hint = C.GLFW_RESIZABLE               // Specifies whether the window will be resizable by the user.
+	Decorated              Hint = C.GLFW_DECORATED               // Specifies whether the window will have window decorations such as a border, a close widget, etc.
+	Floating               Hint = C.GLFW_FLOATING                // Specifies whether the window will be always-on-top.
+	AutoIconify            Hint = C.GLFW_AUTO_ICONIFY            // Specifies whether fullscreen windows automatically iconify (and restore the previous video mode) on focus loss.
+	CenterCursor           Hint = C.GLFW_CENTER_CURSOR           // Specifies whether the cursor should be centered over newly created full screen windows. This hint is ignored for windowed mode windows.
+	TransparentFramebuffer Hint = C.GLFW_TRANSPARENT_FRAMEBUFFER // Specifies whether the framebuffer should be transparent.
+	FocusOnShow            Hint = C.GLFW_FOCUS_ON_SHOW           // Specifies whether the window will be given input focus when glfwShowWindow is called.
+	ScaleToMonitor         Hint = C.GLFW_SCALE_TO_MONITOR        // Specified whether the window content area should be resized based on the monitor content scale of any monitor it is placed on. This includes the initial placement when the window is created.
 )
 
 // Context related hints.
@@ -78,23 +92,32 @@ const (
 
 // Framebuffer related hints.
 const (
-	ContextRevision Hint = C.GLFW_CONTEXT_REVISION
-	RedBits         Hint = C.GLFW_RED_BITS         // Specifies the desired bit depth of the default framebuffer.
-	GreenBits       Hint = C.GLFW_GREEN_BITS       // Specifies the desired bit depth of the default framebuffer.
-	BlueBits        Hint = C.GLFW_BLUE_BITS        // Specifies the desired bit depth of the default framebuffer.
-	AlphaBits       Hint = C.GLFW_ALPHA_BITS       // Specifies the desired bit depth of the default framebuffer.
-	DepthBits       Hint = C.GLFW_DEPTH_BITS       // Specifies the desired bit depth of the default framebuffer.
-	StencilBits     Hint = C.GLFW_STENCIL_BITS     // Specifies the desired bit depth of the default framebuffer.
-	AccumRedBits    Hint = C.GLFW_ACCUM_RED_BITS   // Specifies the desired bit depth of the accumulation buffer.
-	AccumGreenBits  Hint = C.GLFW_ACCUM_GREEN_BITS // Specifies the desired bit depth of the accumulation buffer.
-	AccumBlueBits   Hint = C.GLFW_ACCUM_BLUE_BITS  // Specifies the desired bit depth of the accumulation buffer.
-	AccumAlphaBits  Hint = C.GLFW_ACCUM_ALPHA_BITS // Specifies the desired bit depth of the accumulation buffer.
-	AuxBuffers      Hint = C.GLFW_AUX_BUFFERS      // Specifies the desired number of auxiliary buffers.
-	Stereo          Hint = C.GLFW_STEREO           // Specifies whether to use stereoscopic rendering. Hard constraint.
-	Samples         Hint = C.GLFW_SAMPLES          // Specifies the desired number of samples to use for multisampling. Zero disables multisampling.
-	SRGBCapable     Hint = C.GLFW_SRGB_CAPABLE     // Specifies whether the framebuffer should be sRGB capable.
-	RefreshRate     Hint = C.GLFW_REFRESH_RATE     // Specifies the desired refresh rate for full screen windows. If set to zero, the highest available refresh rate will be used. This hint is ignored for windowed mode windows.
-	DoubleBuffer    Hint = C.GLFW_DOUBLEBUFFER     // Specifies whether the framebuffer should be double buffered. You nearly always want to use double buffering. This is a hard constraint.
+	ContextRevision        Hint = C.GLFW_CONTEXT_REVISION
+	RedBits                Hint = C.GLFW_RED_BITS                 // Specifies the desired bit depth of the default framebuffer.
+	GreenBits              Hint = C.GLFW_GREEN_BITS               // Specifies the desired bit depth of the default framebuffer.
+	BlueBits               Hint = C.GLFW_BLUE_BITS                // Specifies the desired bit depth of the default framebuffer.
+	AlphaBits              Hint = C.GLFW_ALPHA_BITS               // Specifies the desired bit depth of the default framebuffer.
+	DepthBits              Hint = C.GLFW_DEPTH_BITS               // Specifies the desired bit depth of the default framebuffer.
+	StencilBits            Hint = C.GLFW_STENCIL_BITS             // Specifies the desired bit depth of the default framebuffer.
+	AccumRedBits           Hint = C.GLFW_ACCUM_RED_BITS           // Specifies the desired bit depth of the accumulation buffer.
+	AccumGreenBits         Hint = C.GLFW_ACCUM_GREEN_BITS         // Specifies the desired bit depth of the accumulation buffer.
+	AccumBlueBits          Hint = C.GLFW_ACCUM_BLUE_BITS          // Specifies the desired bit depth of the accumulation buffer.
+	AccumAlphaBits         Hint = C.GLFW_ACCUM_ALPHA_BITS         // Specifies the desired bit depth of the accumulation buffer.
+	AuxBuffers             Hint = C.GLFW_AUX_BUFFERS              // Specifies the desired number of auxiliary buffers.
+	Stereo                 Hint = C.GLFW_STEREO                   // Specifies whether to use stereoscopic rendering. Hard constraint.
+	Samples                Hint = C.GLFW_SAMPLES                  // Specifies the desired number of samples to use for multisampling. Zero disables multisampling.
+	SRGBCapable            Hint = C.GLFW_SRGB_CAPABLE             // Specifies whether the framebuffer should be sRGB capable.
+	RefreshRate            Hint = C.GLFW_REFRESH_RATE             // Specifies the desired refresh rate for full screen windows. If set to zero, the highest available refresh rate will be used. This hint is ignored for windowed mode windows.
+	DoubleBuffer           Hint = C.GLFW_DOUBLEBUFFER             // Specifies whether the framebuffer should be double buffered. You nearly always want to use double buffering. This is a hard constraint.
+	CocoaGraphicsSwitching Hint = C.GLFW_COCOA_GRAPHICS_SWITCHING // Specifies whether to in Automatic Graphics Switching, i.e. to allow the system to choose the integrated GPU for the OpenGL context and move it between GPUs if necessary or whether to force it to always run on the discrete GPU.
+	CocoaRetinaFramebuffer Hint = C.GLFW_COCOA_RETINA_FRAMEBUFFER // Specifies whether to use full resolution framebuffers on Retina displays.
+)
+
+// Naming related hints. (Use with glfw.WindowHintString)
+const (
+	CocoaFrameNAME  Hint = C.GLFW_COCOA_FRAME_NAME  // Specifies the UTF-8 encoded name to use for autosaving the window frame, or if empty disables frame autosaving for the window.
+	X11ClassName    Hint = C.GLFW_X11_CLASS_NAME    // Specifies the desired ASCII encoded class parts of the ICCCM WM_CLASS window property.nd instance parts of the ICCCM WM_CLASS window property.
+	X11InstanceName Hint = C.GLFW_X11_INSTANCE_NAME // Specifies the desired ASCII encoded instance parts of the ICCCM WM_CLASS window property.nd instance parts of the ICCCM WM_CLASS window property.
 )
 
 // Values for the ClientAPI hint.
@@ -108,6 +131,7 @@ const (
 const (
 	NativeContextAPI int = C.GLFW_NATIVE_CONTEXT_API
 	EGLContextAPI    int = C.GLFW_EGL_CONTEXT_API
+	OSMesaContextAPI int = C.GLFW_OSMESA_CONTEXT_API
 )
 
 // Values for the ContextRobustness hint.
@@ -147,6 +171,8 @@ type Window struct {
 	fSizeHolder            func(w *Window, width int, height int)
 	fFramebufferSizeHolder func(w *Window, width int, height int)
 	fCloseHolder           func(w *Window)
+	fMaximizeHolder        func(w *Window, iconified bool)
+	fContentScaleHolder    func(w *Window, x float32, y float32)
 	fRefreshHolder         func(w *Window)
 	fFocusHolder           func(w *Window, focused bool)
 	fIconifyHolder         func(w *Window, iconified bool)
@@ -162,9 +188,10 @@ type Window struct {
 	fDropHolder        func(w *Window, names []string)
 }
 
-// GLFWWindow returns a *C.GLFWwindow reference (i.e. the GLFW window itself). This can be used for
-// passing the GLFW window handle to external C libraries.
-func (w *Window) GLFWWindow() uintptr {
+// Handle returns a *C.GLFWwindow reference (i.e. the GLFW window itself).
+// This can be used for passing the GLFW window handle to external libraries
+// like vulkan-go.
+func (w *Window) Handle() uintptr {
 	return uintptr(unsafe.Pointer(w.data))
 }
 
@@ -198,6 +225,12 @@ func goWindowCloseCB(window unsafe.Pointer) {
 	w.fCloseHolder(w)
 }
 
+//export goWindowMaximizeCB
+func goWindowMaximizeCB(window unsafe.Pointer, iconified C.int) {
+	w := windows.get((*C.GLFWwindow)(window))
+	w.fMaximizeHolder(w, glfwbool(iconified))
+}
+
 //export goWindowRefreshCB
 func goWindowRefreshCB(window unsafe.Pointer) {
 	w := windows.get((*C.GLFWwindow)(window))
@@ -218,6 +251,12 @@ func goWindowIconifyCB(window unsafe.Pointer, iconified C.int) {
 	w.fIconifyHolder(w, isIconified)
 }
 
+//export goWindowContentScaleCB
+func goWindowContentScaleCB(window unsafe.Pointer, x C.float, y C.float) {
+	w := windows.get((*C.GLFWwindow)(window))
+	w.fContentScaleHolder(w, float32(x), float32(y))
+}
+
 // DefaultWindowHints resets all window hints to their default values.
 //
 // This function may only be called from the main thread.
@@ -234,6 +273,28 @@ func DefaultWindowHints() {
 func WindowHint(target Hint, hint int) {
 	C.glfwWindowHint(C.int(target), C.int(hint))
 	panicError()
+}
+
+// WindowHintString sets hints for the next call to CreateWindow. The hints,
+// once set, retain their values until changed by a call to this function or
+// DefaultWindowHints, or until the library is terminated.
+//
+// Only string type hints can be set with this function. Integer value hints are
+// set with WindowHint.
+//
+// This function does not check whether the specified hint values are valid. If
+// you set hints to invalid values this will instead be reported by the next
+// call to CreateWindow.
+//
+// Some hints are platform specific. These may be set on any platform but they
+// will only affect their specific platform. Other platforms will ignore them.
+// Setting these hints requires no platform specific headers or functions.
+//
+// This function must only be called from the main thread.
+func WindowHintString(hint Hint, value string) {
+	str := C.CString(value)
+	defer C.free(unsafe.Pointer(str))
+	C.glfwWindowHintString(C.int(hint), str)
 }
 
 // CreateWindow creates a window and its associated context. Most of the options
@@ -481,6 +542,59 @@ func (w *Window) GetFrameSize() (left, top, right, bottom int) {
 	return int(l), int(t), int(r), int(b)
 }
 
+// GetContentScale function retrieves the content scale for the specified
+// window. The content scale is the ratio between the current DPI and the
+// platform's default DPI. If you scale all pixel dimensions by this scale then
+// your content should appear at an appropriate size. This is especially
+// important for text and any UI elements.
+//
+// This function may only be called from the main thread.
+func (w *Window) GetContentScale() (float32, float32) {
+	var x, y C.float
+	C.glfwGetWindowContentScale(w.data, &x, &y)
+	return float32(x), float32(y)
+}
+
+// GetOpacity function returns the opacity of the window, including any
+// decorations.
+//
+// The opacity (or alpha) value is a positive finite number between zero and
+// one, where zero is fully transparent and one is fully opaque. If the system
+// does not support whole window transparency, this function always returns one.
+//
+// The initial opacity value for newly created windows is one.
+//
+// This function may only be called from the main thread.
+func (w *Window) GetOpacity() float32 {
+	return float32(C.glfwGetWindowOpacity(w.data))
+}
+
+// SetOpacity function sets the opacity of the window, including any
+// decorations. The opacity (or alpha) value is a positive finite number between
+// zero and one, where zero is fully transparent and one is fully opaque.
+//
+// The initial opacity value for newly created windows is one.
+//
+// A window created with framebuffer transparency may not use whole window
+// transparency. The results of doing this are undefined.
+//
+// This function may only be called from the main thread.
+func (w *Window) SetOpacity(opacity float32) {
+	C.glfwSetWindowOpacity(w.data, C.float(opacity))
+}
+
+// RequestWindowAttention funciton requests user attention to the specified
+// window. On platforms where this is not supported, attention is requested to
+// the application as a whole.
+//
+// Once the user has given attention, usually by focusing the window or
+// application, the system will end the request automatically.
+//
+// This function must only be called from the main thread.
+func (w *Window) RequestAttention() {
+	C.glfwRequestWindowAttention(w.data)
+}
+
 // Focus brings the specified window to front and sets input focus.
 // The window should already be visible and not iconified.
 //
@@ -489,9 +603,8 @@ func (w *Window) GetFrameSize() (left, top, right, bottom int) {
 //
 // Do not use this function to steal focus from other applications unless you are certain that
 // is what the user wants. Focus stealing can be extremely disruptive.
-func (w *Window) Focus() error {
+func (w *Window) Focus() {
 	C.glfwFocusWindow(w.data)
-	return acceptError(APIUnavailable)
 }
 
 // Iconify iconifies/minimizes the window, if it was previously restored. If it
@@ -500,18 +613,16 @@ func (w *Window) Focus() error {
 // nothing.
 //
 // This function may only be called from the main thread.
-func (w *Window) Iconify() error {
+func (w *Window) Iconify() {
 	C.glfwIconifyWindow(w.data)
-	return acceptError(APIUnavailable)
 }
 
 // Maximize maximizes the specified window if it was previously not maximized.
 // If the window is already maximized, this function does nothing.
 //
 // If the specified window is a full screen window, this function does nothing.
-func (w *Window) Maximize() error {
+func (w *Window) Maximize() {
 	C.glfwMaximizeWindow(w.data)
-	return acceptError(APIUnavailable)
 }
 
 // Restore restores the window, if it was previously iconified/minimized. If it
@@ -520,9 +631,8 @@ func (w *Window) Maximize() error {
 // nothing.
 //
 // This function may only be called from the main thread.
-func (w *Window) Restore() error {
+func (w *Window) Restore() {
 	C.glfwRestoreWindow(w.data)
-	return acceptError(APIUnavailable)
 }
 
 // Show makes the window visible, if it was previously hidden. If the window is
@@ -588,6 +698,21 @@ func (w *Window) GetAttrib(attrib Hint) int {
 	ret := int(C.glfwGetWindowAttrib(w.data, C.int(attrib)))
 	panicError()
 	return ret
+}
+
+// SetAttrib function sets the value of an attribute of the specified window.
+//
+// The supported attributes are Decorated, Resizeable, Floating and AutoIconify.
+//
+// Some of these attributes are ignored for full screen windows. The new value
+// will take effect if the window is later made windowed.
+//
+// Some of these attributes are ignored for windowed mode windows. The new value
+// will take effect if the window is later made full screen.
+//
+// This function may only be called from the main thread.
+func (w *Window) SetAttrib(attrib Hint, value int) {
+	C.glfwSetWindowAttrib(w.data, C.int(attrib), C.int(value))
 }
 
 // SetUserPointer sets the user-defined pointer of the window. The current value
@@ -682,6 +807,45 @@ func (w *Window) SetCloseCallback(cbfun CloseCallback) (previous CloseCallback) 
 	return previous
 }
 
+// MaximizeCallback is the function signature for window maximize callback
+// functions.
+type MaximizeCallback func(w *Window, iconified bool)
+
+// SetMaximizeCallback sets the maximization callback of the specified window,
+// which is called when the window is maximized or restored.
+//
+// This function must only be called from the main thread.
+func (w *Window) SetMaximizeCallback(cbfun MaximizeCallback) MaximizeCallback {
+	previous := w.fMaximizeHolder
+	w.fMaximizeHolder = cbfun
+	if cbfun == nil {
+		C.glfwSetWindowMaximizeCallback(w.data, nil)
+	} else {
+		C.glfwSetWindowMaximizeCallbackCB(w.data)
+	}
+	return previous
+}
+
+// ContentScaleCallback is the function signature for window content scale
+// callback functions.
+type ContentScaleCallback func(w *Window, x float32, y float32)
+
+// SetContentScaleCallback function sets the window content scale callback of
+// the specified window, which is called when the content scale of the specified
+// window changes.
+//
+// This function must only be called from the main thread.
+func (w *Window) SetContentScaleCallback(cbfun ContentScaleCallback) ContentScaleCallback {
+	previous := w.fContentScaleHolder
+	w.fContentScaleHolder = cbfun
+	if cbfun == nil {
+		C.glfwSetWindowContentScaleCallback(w.data, nil)
+	} else {
+		C.glfwSetWindowContentScaleCallbackCB(w.data)
+	}
+	return previous
+}
+
 // RefreshCallback is the window refresh callback.
 type RefreshCallback func(w *Window)
 
@@ -763,12 +927,12 @@ func (w *Window) SetClipboardString(str string) {
 // glfw.GetClipboardString()
 //
 // This function may only be called from the main thread.
-func (w *Window) GetClipboardString() (string, error) {
+func (w *Window) GetClipboardString() string {
 	cs := C.glfwGetClipboardString(w.data)
 	if cs == nil {
-		return "", acceptError(FormatUnavailable)
+		return ""
 	}
-	return C.GoString(cs), nil
+	return C.GoString(cs)
 }
 
 // PollEvents processes only those events that have already been received and
