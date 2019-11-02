@@ -19,8 +19,8 @@ import "C"
 import "unsafe"
 
 // GetCocoaMonitor returns the CGDirectDisplayID of the monitor.
-func (m *Monitor) GetCocoaMonitor() unsafe.Pointer {
-	ret := C.glfwGetCocoaMonitor(m.data)
+func (m *Monitor) GetCocoaMonitor() uintptr {
+	ret := uintptr(C.glfwGetCocoaMonitor(m.data))
 	panicError()
 	return ret
 }

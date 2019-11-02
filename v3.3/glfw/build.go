@@ -13,10 +13,10 @@ package glfw
 // Darwin Build Tags
 // ----------------
 // GLFW Options:
-#cgo darwin CFLAGS: -D_GLFW_COCOA -D_GLFW_VULKAN_STATIC -Wno-deprecated-declarations
+#cgo darwin CFLAGS: -D_GLFW_COCOA -Wno-deprecated-declarations
 
 // Linker Options:
-#cgo darwin LDFLAGS: -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo  -framework IOSurface -framework QuartzCore -framework Metal -lc++
+#cgo darwin LDFLAGS: -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
 
 
 // Linux Build Tags
