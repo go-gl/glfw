@@ -191,8 +191,8 @@ type Window struct {
 // Handle returns a *C.GLFWwindow reference (i.e. the GLFW window itself).
 // This can be used for passing the GLFW window handle to external libraries
 // like vulkan-go.
-func (w *Window) Handle() uintptr {
-	return uintptr(unsafe.Pointer(w.data))
+func (w *Window) Handle() unsafe.Pointer {
+	return unsafe.Pointer(w.data)
 }
 
 // GoWindow creates a Window from a *C.GLFWwindow reference.
@@ -394,18 +394,17 @@ func (w *Window) SetTitle(title string) {
 	panicError()
 }
 
-// SetIcon sets the icon of the specified window. If passed an array of candidate images,
-// those of or closest to the sizes desired by the system are selected. If no images are
-// specified, the window reverts to its default icon.
+// SetIcon sets the icon for win. If passed a slice of candidate images, those
+// of or closest to the sizes desired by the system are selected. If no images
+// are specified (nil or an empty slice), win reverts to its default icon.
 //
-// The image is ideally provided in the form of *image.NRGBA.
-// The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
-// bits per channel with the red channel first. They are arranged canonically
-// as packed sequential rows, starting from the top-left corner. If the image
-// type is not *image.NRGBA, it will be converted to it.
+// The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight bits
+// per channel with the red channel first. They are arranged canonically as
+// packed sequential rows, starting from the top-left corner.
 //
-// The desired image sizes varies depending on platform and system settings. The selected
-// images will be rescaled as needed. Good sizes include 16x16, 32x32 and 48x48.
+// The desired image sizes varies depending on platform and system settings. The
+// selected images will be rescaled as needed. Good sizes include 16x16, 32x32
+// and 48x48.
 func (w *Window) SetIcon(images []image.Image) {
 	count := len(images)
 	cimages := make([]C.GLFWimage, count)

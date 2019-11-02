@@ -16,24 +16,25 @@ void *workaround_glfwGetNSGLContext(GLFWwindow *w) {
 }
 */
 import "C"
+import "unsafe"
 
 // GetCocoaMonitor returns the CGDirectDisplayID of the monitor.
-func (m *Monitor) GetCocoaMonitor() uintptr {
-	ret := uintptr(C.glfwGetCocoaMonitor(m.data))
+func (m *Monitor) GetCocoaMonitor() unsafe.Pointer {
+	ret := C.glfwGetCocoaMonitor(m.data)
 	panicError()
 	return ret
 }
 
 // GetCocoaWindow returns the NSWindow of the window.
-func (w *Window) GetCocoaWindow() uintptr {
-	ret := uintptr(C.workaround_glfwGetCocoaWindow(w.data))
+func (w *Window) GetCocoaWindow() unsafe.Pointer {
+	ret := C.workaround_glfwGetCocoaWindow(w.data)
 	panicError()
 	return ret
 }
 
 // GetNSGLContext returns the NSOpenGLContext of the window.
-func (w *Window) GetNSGLContext() uintptr {
-	ret := uintptr(C.workaround_glfwGetNSGLContext(w.data))
+func (w *Window) GetNSGLContext() unsafe.Pointer {
+	ret := C.workaround_glfwGetNSGLContext(w.data)
 	panicError()
 	return ret
 }

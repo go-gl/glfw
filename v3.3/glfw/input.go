@@ -654,7 +654,7 @@ func (w *Window) SetCharModsCallback(cbfun CharModsCallback) (previous CharModsC
 }
 
 // MouseButtonCallback is the mouse button callback.
-type MouseButtonCallback func(w *Window, button MouseButton, action Action, mod ModifierKey)
+type MouseButtonCallback func(w *Window, button MouseButton, action Action, mods ModifierKey)
 
 // SetMouseButtonCallback sets the mouse button callback which is called when a
 // mouse button is pressed or released.
