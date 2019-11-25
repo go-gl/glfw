@@ -35,15 +35,14 @@
 //
 static NSUInteger getStyleMask(_GLFWwindow* window)
 {
-    NSUInteger styleMask = 0;
+    NSUInteger styleMask = NSWindowStyleMaskMiniaturizable;
 
     if (window->monitor || !window->decorated)
         styleMask |= NSWindowStyleMaskBorderless;
     else
     {
         styleMask |= NSWindowStyleMaskTitled |
-                     NSWindowStyleMaskClosable |
-                     NSWindowStyleMaskMiniaturizable;
+                     NSWindowStyleMaskClosable;
 
         if (window->resizable)
             styleMask |= NSWindowStyleMaskResizable;
@@ -816,7 +815,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
     else
     {
-        [window->ns.object center];
+        [(NSWindow*) window->ns.object center];
         _glfw.ns.cascadePoint =
             NSPointToCGPoint([window->ns.object cascadeTopLeftFromPoint:
                               NSPointFromCGPoint(_glfw.ns.cascadePoint)]);
@@ -961,6 +960,9 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
     [window->ns.object close];
     window->ns.object = nil;
+
+    // HACK: Allow Cocoa to catch up before returning
+    _glfwPlatformPollEvents();
 
     } // autoreleasepool
 }
