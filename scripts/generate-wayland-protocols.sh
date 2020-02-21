@@ -3,7 +3,7 @@
 TMP_CLONE_DIR="/tmp/wayland-protocols"
 GLGLFW_PATH="$1"
 
-if [ "$GLGLFW_PATH" == "" ]; then
+if [ "$GLGLFW_PATH" = "" ]; then
     echo "no glfw destination path set."
     echo "sample: generate-wayland-protocols.sh ../v3.2/glfw/glfw/src"
     exit 1
