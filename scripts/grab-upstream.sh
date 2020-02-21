@@ -51,6 +51,9 @@ if test -n "$(git status --porcelain)"; then
     echo "  2. Run scripts/grab-upstream.sh from the top-level directory"
     echo "  3. Submit the result as a pull request"
     echo
+    echo "If you must apply patches, please do it in grab-upstream.sh so that"
+    echo "these patches are described programmatically."
+    echo
   } 1>&2
   exit 1
 fi
