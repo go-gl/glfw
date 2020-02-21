@@ -2,6 +2,7 @@ sudo: false
 addons:
   apt_packages:
     - libgl1-mesa-dev
+    - libwayland-bin
     - xorg-dev
 language: go
 go:
