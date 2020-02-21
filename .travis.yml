@@ -1,4 +1,5 @@
 sudo: false
+dist: bionic
 addons:
   apt_packages:
     - libgl1-mesa-dev
