@@ -1,8 +1,22 @@
 package glfw
 
-//#define GLFW_INCLUDE_NONE
-//#include "glfw/include/GLFW/glfw3.h"
+/*
+#include <stdint.h>
+#include "glfw/deps/vulkan/vulkan.h"
+#include "glfw/include/GLFW/glfw3.h"
+#include "vulkan.h"
+
+// Helper function for doing raw pointer arithmetic
+static inline const char* getArrayIndex(const char** array, unsigned int index) {
+	return array[index];
+}
+*/
 import "C"
+import (
+	"errors"
+	"reflect"
+	"unsafe"
+)
 
 // VulkanSupported reports whether the Vulkan loader has been found. This check is performed by Init.
 //
@@ -12,4 +26,55 @@ import "C"
 // to check whether a queue family of a physical device supports image presentation.
 func VulkanSupported() bool {
 	return glfwbool(C.glfwVulkanSupported())
+}
+
+// GetVulkanGetInstanceProcAddress returns the function pointer used to find Vulkan core or
+// extension functions. The return value of this function can be passed to the Vulkan library.
+//
+// Note that this function does not work the same way as the glfwGetInstanceProcAddress.
+func GetVulkanGetInstanceProcAddress() unsafe.Pointer {
+	return C.getVulkanProcAddr()
+}
+
+// GetRequiredInstanceExtensions returns a slice of Vulkan instance extension names required
+// by GLFW for creating Vulkan surfaces for GLFW windows. If successful, the list will always
+// contain VK_KHR_surface, so if you don't require any additional extensions you can pass this list
+// directly to the VkInstanceCreateInfo struct.
+//
+// If Vulkan is not available on the machine, this function returns nil. Call
+// VulkanSupported to check whether Vulkan is available.
+//
+// If Vulkan is available but no set of extensions allowing window surface creation was found, this
+// function returns nil. You may still use Vulkan for off-screen rendering and compute work.
+func (window *Window) GetRequiredInstanceExtensions() []string {
+	var count C.uint32_t
+	strarr := C.glfwGetRequiredInstanceExtensions(&count)
+	if count == 0 {
+		return nil
+	}
+
+	extensions := make([]string, count)
+	for i := uint(0); i < uint(count); i++ {
+		extensions[i] = C.GoString(C.getArrayIndex(strarr, C.uint(i)))
+	}
+	return extensions
+}
+
+// CreateWindowSurface creates a Vulkan surface for this window.
+func (window *Window) CreateWindowSurface(instance interface{}, allocCallbacks unsafe.Pointer) (surface uintptr, err error) {
+	if instance == nil {
+		return 0, errors.New("vulkan: instance is nil")
+	}
+	val := reflect.ValueOf(instance)
+	if val.Kind() != reflect.Ptr {
+		return 0, errors.New("vulkan: instance is not a VkInstance (expected kind Ptr, got " + val.Kind().String() + ")")
+	}
+	var vulkanSurface C.VkSurfaceKHR
+	ret := C.glfwCreateWindowSurface(
+		(C.VkInstance)(unsafe.Pointer(reflect.ValueOf(instance).Pointer())), window.data,
+		(*C.VkAllocationCallbacks)(allocCallbacks), (*C.VkSurfaceKHR)(unsafe.Pointer(&vulkanSurface)))
+	if ret != C.VK_SUCCESS {
+		return 0, errors.New("vulkan: error creating window surface")
+	}
+	return uintptr(unsafe.Pointer(&vulkanSurface)), nil
 }
