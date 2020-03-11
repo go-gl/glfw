@@ -1,7 +1,6 @@
 package glfw
 
 /*
-#include "glfw/include/GLFW/glfw3.h"
 #include "glfw/src/internal.h"
 
 GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
