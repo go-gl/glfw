@@ -1,14 +1,18 @@
 package glfw
 
 /*
-#include <stdint.h>
-#include "glfw/deps/vulkan/vulkan.h"
 #include "glfw/include/GLFW/glfw3.h"
-#include "vulkan.h"
+#include "glfw/src/internal.h"
+
+GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
 
 // Helper function for doing raw pointer arithmetic
 static inline const char* getArrayIndex(const char** array, unsigned int index) {
 	return array[index];
+}
+
+void* getVulkanProcAddr() {
+	return vkGetInstanceProcAddr;
 }
 */
 import "C"
