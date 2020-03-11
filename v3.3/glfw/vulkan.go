@@ -19,6 +19,7 @@ void* getVulkanProcAddr() {
 import "C"
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"unsafe"
 )
@@ -72,14 +73,14 @@ func (window *Window) CreateWindowSurface(instance interface{}, allocCallbacks u
 	}
 	val := reflect.ValueOf(instance)
 	if val.Kind() != reflect.Ptr {
-		return 0, errors.New("vulkan: instance is not a VkInstance (expected kind Ptr, got " + val.Kind().String() + ")")
+		return 0, fmt.Errorf("vulkan: instance is not a VkInstance (expected kind Ptr, got %s)", val.Kind())
 	}
 	var vulkanSurface C.VkSurfaceKHR
 	ret := C.glfwCreateWindowSurface(
 		(C.VkInstance)(unsafe.Pointer(reflect.ValueOf(instance).Pointer())), window.data,
 		(*C.VkAllocationCallbacks)(allocCallbacks), (*C.VkSurfaceKHR)(unsafe.Pointer(&vulkanSurface)))
 	if ret != C.VK_SUCCESS {
-		return 0, errors.New("vulkan: error creating window surface")
+		return 0, fmt.Errorf("vulkan: error creating window surface: %d", ret)
 	}
 	return uintptr(unsafe.Pointer(&vulkanSurface)), nil
 }
