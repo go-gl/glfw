@@ -5,6 +5,7 @@ package glfw
 #include "glfw/src/internal.h"
 
 GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
+GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance, const char* procname);
 
 // Helper function for doing raw pointer arithmetic
 static inline const char* getArrayIndex(const char** array, unsigned int index) {
@@ -12,7 +13,7 @@ static inline const char* getArrayIndex(const char** array, unsigned int index) 
 }
 
 void* getVulkanProcAddr() {
-	return vkGetInstanceProcAddr;
+	return glfwGetInstanceProcAddress;
 }
 */
 import "C"
