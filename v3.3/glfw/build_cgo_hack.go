@@ -2,8 +2,9 @@
 
 package glfw
 
-// this file exists purely to prevent the golang toolchain from stripping
-// away the c source directories and files.
+// This file exists purely to prevent the golang toolchain from stripping
+// away the c source directories and files when `go mod vendor` is used
+// to populate a `vendor/` directory of a project depending on `go-gl/glfw`.
 //
 // How it works:
 //  - every directory which only includes c source files receives a dummy.go file.
