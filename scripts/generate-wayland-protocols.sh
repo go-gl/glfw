@@ -24,7 +24,7 @@ generate() {
 
   rm -f "$GLGLFW_PATH/wayland-$NAME"-client-protocol.{h,c}
 
-  wayland-scanner code $TMP_CLONE_DIR/"$GROUP"/"$HEADER"/"$NAME".xml "$GLGLFW_PATH"/wayland-"$NAME"-client-protocol.c
+  wayland-scanner private-code $TMP_CLONE_DIR/"$GROUP"/"$HEADER"/"$NAME".xml "$GLGLFW_PATH"/wayland-"$NAME"-client-protocol.c
   wayland-scanner client-header $TMP_CLONE_DIR/"$GROUP"/"$HEADER"/"$NAME".xml "$GLGLFW_PATH"/wayland-"$NAME"-client-protocol.h
 }
 
