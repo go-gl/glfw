@@ -3,7 +3,7 @@
 TMP_CLONE_DIR="/tmp/wayland-protocols"
 GLGLFW_PATH="$1"
 
-if [ "$GLGLFW_PATH" == "" ]; then
+if [ "$GLGLFW_PATH" = "" ]; then
     echo "no glfw destination path set."
     echo "sample: generate-wayland-protocols.sh ../v3.2/glfw/glfw/src"
     exit 1
@@ -14,7 +14,8 @@ git clone https://github.com/wayland-project/wayland-protocols $TMP_CLONE_DIR
 generate() {
   HEADER=$1
   VER=$2
-  if [[ "$VER" == "stable" ]]; then
+
+  if [ "$VER" = "stable" ]; then
     NAME="$HEADER"
     GROUP="stable"
   else
