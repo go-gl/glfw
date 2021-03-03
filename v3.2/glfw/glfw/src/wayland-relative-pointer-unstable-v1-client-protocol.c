@@ -31,7 +31,7 @@
 extern const struct wl_interface wl_pointer_interface;
 extern const struct wl_interface zwp_relative_pointer_v1_interface;
 
-static const struct wl_interface *wl_rp_types[] = {
+static const struct wl_interface *relative_pointer_unstable_v1_types[] = {
 	NULL,
 	NULL,
 	NULL,
@@ -43,8 +43,8 @@ static const struct wl_interface *wl_rp_types[] = {
 };
 
 static const struct wl_message zwp_relative_pointer_manager_v1_requests[] = {
-	{ "destroy", "", wl_rp_types + 0 },
-	{ "get_relative_pointer", "no", wl_rp_types + 6 },
+	{ "destroy", "", relative_pointer_unstable_v1_types + 0 },
+	{ "get_relative_pointer", "no", relative_pointer_unstable_v1_types + 6 },
 };
 
 WL_EXPORT const struct wl_interface zwp_relative_pointer_manager_v1_interface = {
@@ -54,11 +54,11 @@ WL_EXPORT const struct wl_interface zwp_relative_pointer_manager_v1_interface = 
 };
 
 static const struct wl_message zwp_relative_pointer_v1_requests[] = {
-	{ "destroy", "", wl_rp_types + 0 },
+	{ "destroy", "", relative_pointer_unstable_v1_types + 0 },
 };
 
 static const struct wl_message zwp_relative_pointer_v1_events[] = {
-	{ "relative_motion", "uuffff", wl_rp_types + 0 },
+	{ "relative_motion", "uuffff", relative_pointer_unstable_v1_types + 0 },
 };
 
 WL_EXPORT const struct wl_interface zwp_relative_pointer_v1_interface = {
