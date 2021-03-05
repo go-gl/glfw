@@ -7,8 +7,10 @@ package glfw
 #cgo windows CFLAGS: -D_GLFW_WIN32 -Iglfw/deps/mingw
 
 // Linker Options:
-#cgo windows LDFLAGS: -lopengl32 -lgdi32
+#cgo windows LDFLAGS: -lgdi32
 
+#cgo !gles2,windows LDFLAGS: -lopengl32
+#cgo gles2,windows LDFLAGS: -lGLESv2
 
 // Darwin Build Tags
 // ----------------
