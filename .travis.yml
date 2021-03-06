@@ -19,6 +19,7 @@ install:
 script:
   # Fetch upstream and verify code in our repo matches checkout from upstream.
   - scripts/grab-upstream.sh
+  - git diff
   - go get -t -v ./v3.3/... ./v3.2/...
   - diff -n <(echo -n) <(gofmt -d -s .)
   - go vet ./v3.3/... ./v3.2/...
