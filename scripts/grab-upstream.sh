@@ -109,11 +109,13 @@ EOF
 
   rm v3.3/glfw/glfw/README.md
   ln -sr v3.3/glfw/glfw/src/wayland-xdg-decoration-{unstable-v1-,}client-protocol.h
+
+  go generate ./v3.3/glfw/glfw_tree_rebuild.go
 }
 
-if test -n "$(git status --porcelain ./*/glfw/glfw)"; then
+if test -n "$(git status --porcelain ./*/glfw)"; then
 
-  git status ./*/glfw/glfw
+  git status ./*/glfw
 
   {
     echo
