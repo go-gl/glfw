@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TMP_CLONE_DIR="/tmp/wayland-protocols"
+TMP_CLONE_DIR="$(mktemp -d)"
 GLGLFW_PATH="$1"
 
 if [ "$GLGLFW_PATH" = "" ]; then
@@ -36,7 +36,4 @@ generate "xdg-shell" "stable"
 generate "xdg-decoration" "v1"
 generate "viewporter" "stable"
 
-# Patch for cgo
-sed -i "s|types|wl_pc_types|g" "$GLGLFW_PATH"/wayland-pointer-constraints-unstable-v1-client-protocol.c
-sed -i "s|types|wl_rp_types|g" "$GLGLFW_PATH"/wayland-relative-pointer-unstable-v1-client-protocol.c
-sed -i "s|types|wl_ii_types|g" "$GLGLFW_PATH"/wayland-idle-inhibit-unstable-v1-client-protocol.c
+rm -rf "${TMP_CLONE_DIR}"

@@ -3,6 +3,7 @@ dist: focal
 addons:
   apt_packages:
     - libgl1-mesa-dev
+    - libwayland-bin
     - xorg-dev
 language: go
 go:
@@ -16,6 +17,8 @@ matrix:
 install:
   - true  # Do nothing. This is needed to prevent default install action "go get -t -v ./..." from happening here (we want it to happen inside script step).
 script:
+  # Fetch upstream and verify code in our repo matches checkout from upstream.
+  - scripts/grab-upstream.sh
   - go get -t -v ./v3.3/... ./v3.2/...
   - diff -n <(echo -n) <(gofmt -d -s .)
   - go vet ./v3.3/... ./v3.2/...
