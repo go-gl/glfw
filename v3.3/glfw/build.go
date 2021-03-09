@@ -18,8 +18,10 @@ package glfw
 #cgo darwin CFLAGS: -D_GLFW_COCOA -Wno-deprecated-declarations
 
 // Linker Options:
-#cgo darwin LDFLAGS: -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
+#cgo darwin LDFLAGS: -framework Cocoa -framework IOKit -framework CoreVideo
 
+#cgo !gles2,darwin LDFLAGS: -framework OpenGL
+#cgo gles2,darwin LDFLAGS: -lGLESv2
 
 // Linux Build Tags
 // ----------------
