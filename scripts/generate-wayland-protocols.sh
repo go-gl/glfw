@@ -35,7 +35,6 @@ generate() {
   # This removes the "wayland-xdg-decoration-client-protocol.h"
   # link and moves the original file in place.
   if [ "$HEADER" = "xdg-decoration" ]; then
-    rm "$GLGLFW_PATH/wayland-xdg-decoration-client-protocol.h"
     mv "$WAYLAND_CLIENT_H" "$GLGLFW_PATH/wayland-xdg-decoration-client-protocol.h"
   fi
 }
