@@ -23,10 +23,21 @@ generate() {
     GROUP="unstable"
   fi
 
-  rm -f "$GLGLFW_PATH/wayland-$NAME"-client-protocol.{h,c}
+  WAYLAND_CLIENT_C="$GLGLFW_PATH/wayland-$NAME-client-protocol.c"
+  WAYLAND_CLIENT_H="$GLGLFW_PATH/wayland-$NAME-client-protocol.h"
 
-  wayland-scanner private-code $TMP_CLONE_DIR/"$GROUP"/"$HEADER"/"$NAME".xml "$GLGLFW_PATH"/wayland-"$NAME"-client-protocol.c
-  wayland-scanner client-header $TMP_CLONE_DIR/"$GROUP"/"$HEADER"/"$NAME".xml "$GLGLFW_PATH"/wayland-"$NAME"-client-protocol.h
+  rm -f "$WAYLAND_CLIENT_C" "$WAYLAND_CLIENT_H"
+
+  wayland-scanner private-code $TMP_CLONE_DIR/"$GROUP"/"$HEADER"/"$NAME".xml "$WAYLAND_CLIENT_C"
+  wayland-scanner client-header $TMP_CLONE_DIR/"$GROUP"/"$HEADER"/"$NAME".xml "$WAYLAND_CLIENT_H"
+
+  # Go modules don't support symbolic links.
+  # This removes the "wayland-xdg-decoration-client-protocol.h"
+  # link and moves the original file in place.
+  if [ "$HEADER" = "xdg-decoration" ]; then
+    rm "$GLGLFW_PATH/wayland-xdg-decoration-client-protocol.h"
+    mv "$WAYLAND_CLIENT_H" "$GLGLFW_PATH/wayland-xdg-decoration-client-protocol.h"
+  fi
 }
 
 generate "pointer-constraints" "v1"
