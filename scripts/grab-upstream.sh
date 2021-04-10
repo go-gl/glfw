@@ -108,8 +108,7 @@ EOF
     ./*/glfw/glfw/src/wayland-*
 
   rm v3.3/glfw/glfw/README.md
-  ln -sr v3.3/glfw/glfw/src/wayland-xdg-decoration-{unstable-v1-,}client-protocol.h
-
+  
   go generate ./v3.3/glfw/glfw_tree_rebuild.go
 }
 
