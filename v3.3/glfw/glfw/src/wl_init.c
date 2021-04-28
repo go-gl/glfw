@@ -1157,7 +1157,7 @@ int _glfwPlatformInit(void)
     // Sync so we got all initial output events
     wl_display_roundtrip(_glfw.wl.display);
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD__)
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
 #endif
@@ -1217,7 +1217,7 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD__)
     _glfwTerminateJoysticksLinux();
 #endif
     _glfwTerminateEGL();

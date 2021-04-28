@@ -2771,7 +2771,7 @@ void _glfwPlatformPollEvents(void)
 {
     _GLFWwindow* window;
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__FreeBSD__)
     _glfwDetectJoystickConnectionLinux();
 #endif
     XPending(_glfw.x11.display);
