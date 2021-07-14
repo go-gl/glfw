@@ -38,7 +38,7 @@ func Init() error {
 	// will be fixed in GLFW 3.3.5. As a temporary fix, ignore this error.
 	// See go-gl/glfw#292, go-gl/glfw#324, and glfw/glfw#1763.
 	err := acceptError(APIUnavailable, invalidValue)
-	if err.(*Error).Code == invalidValue {
+	if e, ok := err.(*Error); ok && e.Code == invalidValue {
 		return nil
 	}
 	return err
