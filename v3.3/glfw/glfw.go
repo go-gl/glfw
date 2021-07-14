@@ -34,7 +34,10 @@ const (
 // This function may only be called from the main thread.
 func Init() error {
 	C.glfwInit()
-	return acceptError(APIUnavailable)
+	// invalidValue can happen when specific joysticks are used. This issue
+	// will be fixed in GLFW 3.3.5. As a temporary fix, accept this error.
+	// See go-gl/glfw#292, go-gl/glfw#324, and glfw/glfw#1763.
+	return acceptError(APIUnavailable, invalidValue)
 }
 
 // Terminate destroys all remaining windows, frees any allocated resources and
