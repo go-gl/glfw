@@ -1094,7 +1094,7 @@ int _glfwPlatformInit(void)
         }
     }
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__FreeBSD__)
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
 #endif
@@ -1187,7 +1187,7 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateEGL();
     _glfwTerminateGLX();
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__FreeBSD__)
     _glfwTerminateJoysticksLinux();
 #endif
 }

@@ -155,7 +155,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 #include "glx_context.h"
 #include "egl_context.h"
 #include "osmesa_context.h"
-#if defined(__linux__)
+#if defined(__linux__) || defined(__FreeBSD__)
 #include "linux_joystick.h"
 #else
 #include "null_joystick.h"
