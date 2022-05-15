@@ -224,7 +224,7 @@ func WindowHint(target Hint, hint int) {
 // as not all parameters and hints are hard constraints. This includes the size
 // of the window, especially for full screen windows. To retrieve the actual
 // attributes of the created window and context, use queries like
-// GetWindowAttrib and GetWindowSize.
+// Window.GetAttrib and Window.GetSize.
 //
 // To create the window at a specific position, make it initially invisible using
 // the Visible window hint, set its position and then show it.
