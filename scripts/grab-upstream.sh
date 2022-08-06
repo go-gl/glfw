@@ -18,6 +18,7 @@ excludes=(
   --exclude=glfw-*/examples
   # Deleted later because it is needed for patches:
   # --exclude=glfw-*/README.md
+  --exclude=glfw-*/CONTRIBUTORS.md
   --exclude=glfw-*/src/*.in
   --exclude=glfw-*/src/CMakeLists.txt
   --exclude=glfw-*/tests
