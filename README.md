@@ -16,6 +16,28 @@
 go get -u github.com/go-gl/glfw/v3.3/glfw
 ```
 
+## Bazel
+
+[Bazel](https://bazel.build) is supported, though currently only for the below
+versions and platforms:
+
+* v3.3, macOS
+* v3.3, Linux X11
+
+The `go_repository` name must be `com_github_go_gl_glfw`.
+
+[Gazelle](https://github.com/bazelbuild/bazel-gazelle/blob/master/README.rst)
+should be able to automatically add the appropriate `go_repository` as long as you're using a version that includes Bazel support.
+
+You can then reference this in your `BUILD.bazel` file like so:
+
+```py
+go_library(
+    ...
+    deps = ["@com_github_go_gl_glfw//v3.3/glfw"],
+)
+```
+
 ### OpenGL ES
 
 If your target system only provides an OpenGL ES implementation (true for some ARM boards), you need to link against that implementation.

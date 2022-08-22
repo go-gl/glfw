@@ -1,0 +1,165 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+# These were extracted from build.go.
+_clinkopts = select({
+    "@io_bazel_rules_go//go/platform:darwin": [
+        "-framework Cocoa",
+        "-framework IOKit",
+        "-framework CoreVideo",
+        "-framework OpenGL",
+    ],
+    "@io_bazel_rules_go//go/platform:linux": [
+        "-lGL",
+        "-lX11",
+        "-lXrandr",
+        "-lXxf86vm",
+        "-lXi",
+        "-lXcursor",
+        "-lm",
+        "-lXinerama",
+        "-ldl",
+        "-lrt",
+    ],
+    "//conditions:default": [],
+})
+
+_include_path = "v3.3/glfw/glfw/src"
+
+_include_copts = [
+    "-I" + _include_path,
+    # https://github.com/bazelbuild/bazel/issues/1672
+    "-I" + "external/com_github_go_gl_glfw/" + _include_path,
+]
+
+# These were extracted from build.go.
+_copts = _include_copts + select({
+    "@io_bazel_rules_go//go/platform:darwin": [
+        "-D_GLFW_COCOA",
+        "-Wno-deprecated-declarations",
+        "-x objective-c",
+    ],
+    "@io_bazel_rules_go//go/platform:linux": [
+        "-D_GLFW_X11",
+    ],
+    "//conditions:default": [],
+})
+
+# Trick cc_library into building objective C code.
+# https://github.com/bazelbuild/bazel/issues/2420
+_objc_srcs = glob(["glfw/src/*.m"])
+
+_objc_dot_c_srcs = [i + ".c" for i in _objc_srcs]
+
+genrule(
+    name = "m_to_c",
+    srcs = _objc_srcs,
+    outs = _objc_dot_c_srcs,
+    cmd = "for i in $(SRCS); do cp $$i $(GENDIR)/$$i.c; done",
+)
+
+# Listed in c_glfw.go
+c_glfw_srcs = [
+    "glfw/src/context.c",
+    "glfw/src/init.c",
+    "glfw/src/input.c",
+    "glfw/src/monitor.c",
+    "glfw/src/osmesa_context.c",
+    "glfw/src/vulkan.c",
+    "glfw/src/window.c",
+]
+
+# Included by c_glfw_srcs
+c_glfw_hdrs = [
+    "glfw/include/GLFW/glfw3.h",
+    "glfw/include/GLFW/glfw3native.h",
+    "glfw/src/internal.h",
+    "glfw/src/mappings.h",
+    "glfw/src/osmesa_context.h",
+]
+
+# Listed in c_glfw_darwin.go
+c_glfw_darwin_srcs = [
+    "glfw/src/cocoa_time.c",
+    "glfw/src/egl_context.c",
+    "glfw/src/posix_thread.c",
+] + _objc_dot_c_srcs
+
+# Included by c_glfw_darwin_srcs
+c_glfw_darwin_hdrs = [
+    "glfw/src/cocoa_joystick.h",
+    "glfw/src/cocoa_platform.h",
+    "glfw/src/egl_context.h",
+    "glfw/src/nsgl_context.h",
+    "glfw/src/posix_thread.h",
+]
+
+# Listed in c_glfw_lin.go
+c_glfw_lin_srcs = [
+    "glfw/src/egl_context.c",
+    "glfw/src/glx_context.c",
+    "glfw/src/linux_joystick.c",
+    "glfw/src/posix_thread.c",
+    "glfw/src/posix_time.c",
+    "glfw/src/x11_init.c",
+    "glfw/src/x11_monitor.c",
+    "glfw/src/x11_window.c",
+    "glfw/src/xkb_unicode.c",
+]
+
+# Included by c_glfw_lin_srcs
+c_glfw_lin_hdrs = [
+    "glfw/src/egl_context.h",
+    "glfw/src/glx_context.h",
+    "glfw/src/linux_joystick.h",
+    "glfw/src/posix_thread.h",
+    "glfw/src/posix_time.h",
+    "glfw/src/x11_platform.h",
+    "glfw/src/xkb_unicode.h",
+]
+
+cc_library(
+    name = "glfw_c",
+    srcs = c_glfw_srcs + select({
+        "@io_bazel_rules_go//go/platform:darwin": c_glfw_darwin_srcs,
+        "@io_bazel_rules_go//go/platform:linux": c_glfw_lin_srcs,
+        "//conditions:default": [],
+    }),
+    hdrs = c_glfw_hdrs + select({
+        "@io_bazel_rules_go//go/platform:darwin": c_glfw_darwin_hdrs,
+        "@io_bazel_rules_go//go/platform:linux": c_glfw_lin_hdrs,
+        "//conditions:default": [],
+    }),
+    copts = _copts,
+    linkopts = _clinkopts,
+)
+
+go_library(
+    name = "glfw",
+    srcs = [
+        "context.go",
+        "error.c",
+        "error.go",
+        "glfw.go",
+        "glfw/include/GLFW/glfw3.h",
+        "glfw/include/GLFW/glfw3native.h",
+        "glfw_tree_rebuild.go",
+        "input.c",
+        "input.go",
+        "monitor.c",
+        "monitor.go",
+        "native_darwin.go",
+        "native_linbsd_x11.go",
+        "native_windows.go",
+        "time.go",
+        "util.go",
+        "vulkan.go",
+        "window.c",
+        "window.go",
+    ],
+    cdeps = [":glfw_c"],
+    cgo = True,
+    clinkopts = _clinkopts,
+    copts = _copts,
+    importpath = "github.com/go-gl/glfw/v3.3/glfw",
+    visibility = ["//visibility:public"],
+)
