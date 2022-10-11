@@ -1,4 +1,4 @@
-workspace(name = "com_github_go_gl_glfw")
+workspace(name = "com_github_go_gl_glfw_v3_3_glfw")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 

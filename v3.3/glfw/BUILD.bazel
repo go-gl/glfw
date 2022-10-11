@@ -68,10 +68,19 @@ c_glfw_srcs = [
     "glfw/src/window.c",
 ]
 
+# A separate library so we can set strip_include_prefix
+# separately.
+cc_library(
+    name = "include",
+    hdrs = [
+        "glfw/include/GLFW/glfw3.h",
+        "glfw/include/GLFW/glfw3native.h",
+    ],
+    strip_include_prefix = "glfw/include",
+)
+
 # Included by c_glfw_srcs
 c_glfw_hdrs = [
-    "glfw/include/GLFW/glfw3.h",
-    "glfw/include/GLFW/glfw3native.h",
     "glfw/src/internal.h",
     "glfw/src/mappings.h",
     "glfw/src/osmesa_context.h",
@@ -131,6 +140,10 @@ cc_library(
     }),
     copts = _copts,
     linkopts = _clinkopts,
+    strip_include_prefix = "glfw/src",
+    deps = [
+        ":include",
+    ],
 )
 
 go_library(
@@ -140,8 +153,6 @@ go_library(
         "error.c",
         "error.go",
         "glfw.go",
-        "glfw/include/GLFW/glfw3.h",
-        "glfw/include/GLFW/glfw3native.h",
         "glfw_tree_rebuild.go",
         "input.c",
         "input.go",
