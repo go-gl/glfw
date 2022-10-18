@@ -1,5 +1,6 @@
 package glfw
 
+//#define NS_FORMAT_ARGUMENT(A)
 //#define GLFW_EXPOSE_NATIVE_COCOA
 //#define GLFW_EXPOSE_NATIVE_NSGL
 //#include <GLFW/glfw3.h>

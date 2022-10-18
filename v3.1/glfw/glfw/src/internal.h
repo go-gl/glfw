@@ -56,6 +56,8 @@
  #error "No supported client library selected"
 #endif
 
+#define NS_FORMAT_ARGUMENT(A)
+
 // Disable the inclusion of the platform glext.h by gl.h to allow proper
 // inclusion of our own, newer glext.h below
 #define GL_GLEXT_LEGACY

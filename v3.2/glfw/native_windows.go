@@ -1,5 +1,6 @@
 package glfw
 
+//#define NS_FORMAT_ARGUMENT(A)
 //#define GLFW_EXPOSE_NATIVE_WIN32
 //#define GLFW_EXPOSE_NATIVE_WGL
 //#define GLFW_INCLUDE_NONE

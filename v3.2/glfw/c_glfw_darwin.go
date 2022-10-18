@@ -2,6 +2,7 @@ package glfw
 
 /*
 #cgo CFLAGS: -x objective-c
+#define NS_FORMAT_ARGUMENT(A)
 #include "glfw/src/cocoa_init.m"
 #include "glfw/src/cocoa_joystick.m"
 #include "glfw/src/cocoa_monitor.m"

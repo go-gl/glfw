@@ -45,6 +45,8 @@
  #error "You must not define any header option macros when compiling GLFW"
 #endif
 
+#define NS_FORMAT_ARGUMENT(A)
+
 #define GLFW_INCLUDE_NONE
 #include "../include/GLFW/glfw3.h"
 
