@@ -47,3 +47,19 @@ unsigned char GetGamepadButtonAtIndex(GLFWgamepadstate *gp, int i) {
 }
 
 float GetGamepadAxisAtIndex(GLFWgamepadstate *gp, int i) { return gp->axes[i]; }
+
+void glfwSetIMEStatusCallbackCB(GLFWwindow *window) {
+  glfwSetIMEStatusCallback(
+      window, (GLFWimestatusfun)goIMEStatusCB);
+}
+
+void glfwSetPreeditCandidateCallbackCB(GLFWwindow *window) {
+  glfwSetPreeditCandidateCallback(
+      window, (GLFWpreeditcandidatefun)goPreeditCandidateCB);
+}
+
+void glfwSetPreeditCallbackCB(GLFWwindow *window) {
+  glfwSetPreeditCallback(
+      window, (GLFWpreeditfun)goPreeditCB);
+}
+

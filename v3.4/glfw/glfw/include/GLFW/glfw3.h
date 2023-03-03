@@ -5151,7 +5151,7 @@ GLFWAPI void glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor);
  *
  *  @sa @ref ime_support
  *
- *  @since Added in GLFW 3.X.
+ *  @since Added in GLFWFF 3.4.
  *
  *  @ingroup input
  */

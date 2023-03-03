@@ -16,6 +16,9 @@ package glfw
 //unsigned char GetButtonsAtIndex(unsigned char *buttons, int i);
 //float GetGamepadAxisAtIndex(GLFWgamepadstate *gp, int i);
 //unsigned char GetGamepadButtonAtIndex(GLFWgamepadstate *gp, int i);
+//void glfwSetIMEStatusCallbackCB(GLFWwindow *window);
+//void glfwSetPreeditCandidateCallbackCB(GLFWwindow *window);
+//void glfwSetPreeditCallbackCB(GLFWwindow *window);
 import "C"
 
 import (
@@ -307,6 +310,7 @@ const (
 	StickyMouseButtonsMode InputMode = C.GLFW_STICKY_MOUSE_BUTTONS // Value can be either 1 or 0
 	LockKeyMods            InputMode = C.GLFW_LOCK_KEY_MODS        // Value can be either 1 or 0
 	RawMouseMotion         InputMode = C.GLFW_RAW_MOUSE_MOTION     // Value can be either 1 or 0
+	IMEMode                InputMode = C.GLFW_IME                  // Value can be either 1 or 0
 )
 
 // Cursor mode values.
@@ -968,6 +972,165 @@ func (joy Joystick) GetGamepadState() *GamepadState {
 	for i := 0; i < 6; i++ {
 		gs.Axes[i] = float32(C.GetGamepadAxisAtIndex(&cgs, C.int(i)))
 	}
-
 	return &gs
+}
+
+// textIMEToString converts a zero terminated C array of C.uint to a Go string
+// The string must be correctly nul-terminated and have the correct size
+// if it is not nil.
+func textIMEToString(size C.int, text *C.uint) string {
+	if text == nil {
+		return ""
+	}
+	runes := []rune{}
+	for i := uintptr(0); i < uintptr(size); i++ {
+		rnptr := unsafe.Pointer(uintptr(unsafe.Pointer(text)) + unsafe.Sizeof(size)*i)
+		rn := rune(*(*C.uint)(rnptr))
+		if rn == 0 {
+			break
+		}
+		runes = append(runes, rn)
+	}
+	return string(runes)
+}
+
+// blockIMEToArray converts a zero terminated C array of C.int to a Go array
+// The array must have the correct size if it is not nil.
+func blockIMEToArray(count C.int, cSizes *C.int) []int {
+	if cSizes == nil {
+		return []int{}
+	}
+	sizes := []int{}
+
+	for i := uintptr(0); i < uintptr(count); i++ {
+		szptr := unsafe.Pointer(uintptr(unsafe.Pointer(cSizes)) + unsafe.Sizeof(count)*i)
+		sz := int(*(*C.int)(szptr))
+		sizes = append(sizes, sz)
+	}
+	return sizes
+
+}
+
+//export goIMEStatusCB
+func goIMEStatusCB(window unsafe.Pointer) {
+	w := windows.get((*C.GLFWwindow)(window))
+	w.fIMEStatusHolder(w)
+}
+
+//export goPreeditCandidateCB
+func goPreeditCandidateCB(window unsafe.Pointer, candidates_count, selected_index, page_start, page_size C.int) {
+	w := windows.get((*C.GLFWwindow)(window))
+	w.fPreeditCandidateHolder(w, int(candidates_count),
+		int(selected_index),
+		int(page_start),
+		int(page_size))
+}
+
+//export goPreeditCB
+func goPreeditCB(window unsafe.Pointer, preedit_count C.int, preedit_string *C.uint, block_count C.int, block_sizes *C.int, focused_block C.int, caret C.int) {
+	w := windows.get((*C.GLFWwindow)(window))
+
+	text := textIMEToString(preedit_count, preedit_string)
+	block := blockIMEToArray(block_count, block_sizes)
+	focus := int(focused_block)
+	car := int(caret)
+	w.fPreeditHolder(w, text, block, focus, car)
+}
+
+// IMEStatusCallback is the IME status change callback.
+type IMEStatusCallback func(w *Window)
+
+// SetIMEStatusCallback sets the IME status callback of the window, which is
+// called when the status of the IME input nethid changes. This is normally
+// when the user activates or deactivates the IME.
+//
+// This function must only be called from the main thread.
+func (w *Window) SetIMEStatusCallback(cbfun IMEStatusCallback) (previous IMEStatusCallback) {
+	previous = w.fIMEStatusHolder
+	w.fIMEStatusHolder = cbfun
+	if cbfun == nil {
+		C.glfwSetIMEStatusCallback(w.data, nil)
+	} else {
+		C.glfwSetIMEStatusCallbackCB(w.data)
+	}
+	panicError()
+	return previous
+}
+
+// PreeditCandidateCallback is the IME status change callback.
+type PreeditCandidateCallback func(w *Window, candidates_count, selected_index, page_start, page_size int)
+
+// SetPreeditCandidateCallback sets the pre edit candidatestatus callback of
+// the window, which is called the uses selects a different predit alternative
+// from the list that the IME presents.
+//
+// This function must only be called from the main thread.
+func (w *Window) SetPreeditCandidateCallback(cbfun PreeditCandidateCallback) (previous PreeditCandidateCallback) {
+	previous = w.fPreeditCandidateHolder
+	w.fPreeditCandidateHolder = cbfun
+	if cbfun == nil {
+		C.glfwSetPreeditCandidateCallback(w.data, nil)
+	} else {
+		C.glfwSetPreeditCandidateCallbackCB(w.data)
+	}
+	panicError()
+	return previous
+}
+
+// PreeditCallback is the IME status change callback.
+type PreeditCallback func(w *Window, text string, blocks []int, focus, cursor int)
+
+// SetPreeditCallback sets the pre edit callback of
+// the window, which is called when the user selects an IME input
+// from the list that the IME presents.
+//
+// This function must only be called from the main thread.
+func (w *Window) SetPreeditCallback(cbfun PreeditCallback) (previous PreeditCallback) {
+	previous = w.fPreeditHolder
+	w.fPreeditHolder = cbfun
+	if cbfun == nil {
+		C.glfwSetPreeditCallback(w.data, nil)
+	} else {
+		C.glfwSetPreeditCallbackCB(w.data)
+	}
+	panicError()
+	return previous
+}
+
+// Retrieves the area of the preedit text cursor.
+//
+// This function may only be called from the main thread.
+func (w *Window) GetPreeditCursorRectangle() (x, y, wi, hi int) {
+	var cx, cy, cw, ch C.int
+	C.glfwGetPreeditCursorRectangle(w.data, &cx, &cy, &cw, &ch)
+	x, y, wi, hi = int(cx), int(cy), int(cw), int(ch)
+	panicError()
+	return x, y, wi, hi
+}
+
+// Sets the area of the preedit text cursor.
+//
+// This function may only be called from the main thread.
+func (w *Window) SetPreeditCursorRectangle(x, y, wi, hi int) {
+	C.glfwSetPreeditCursorRectangle(w.data, C.int(x), C.int(y), C.int(wi), C.int(hi))
+	panicError()
+}
+
+// This function resets IME's preedit text. Not needed on most platforms.
+//
+//  This function may only be called from the main thread.
+func (w *Window) ResetPreeditText() {
+	C.glfwResetPreeditText(w.data)
+	panicError()
+}
+
+// Returns the preedit candidate. Only needed if you use the
+// ManagePreeditCandidateHint. May not be implemented on most platforms.
+//
+// This function may only be called from the main thread.
+func (w *Window) GetPreeditCandidate(index int) (text string, textCount int) {
+	var cTextCount C.int
+	ctext := C.glfwGetPreeditCandidate(w.data, C.int(index), &cTextCount)
+	panicError()
+	return textIMEToString(cTextCount, ctext), int(cTextCount)
 }

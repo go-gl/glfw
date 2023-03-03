@@ -120,6 +120,11 @@ const (
 	X11InstanceName Hint = C.GLFW_X11_INSTANCE_NAME // Specifies the desired ASCII encoded instance parts of the ICCCM WM_CLASS window property.nd instance parts of the ICCCM WM_CLASS window property.
 )
 
+// IME related hint
+const (
+	ManagePreeditCandidate Hint = C.GLFW_MANAGE_PREEDIT_CANDIDATE // Specifies the application managges the preedit candidate. MacOS only.
+)
+
 // Values for the ClientAPI hint.
 const (
 	OpenGLAPI   int = C.GLFW_OPENGL_API
@@ -155,6 +160,14 @@ const (
 	OpenGLCompatProfile int = C.GLFW_OPENGL_COMPAT_PROFILE
 )
 
+// Cursor hints
+const (
+	NormalCursor   = C.GLFW_CURSOR_NORMAL
+	HiddenCursor   = C.GLFW_CURSOR_HIDDEN
+	DisabledCursor = C.GLFW_CURSOR_DISABLED
+	CapturedCursor = C.GLFW_CURSOR_CAPTURED
+)
+
 // Other values.
 const (
 	True     int = 1 // GL_TRUE
@@ -186,6 +199,11 @@ type Window struct {
 	fCharHolder        func(w *Window, char rune)
 	fCharModsHolder    func(w *Window, char rune, mods ModifierKey)
 	fDropHolder        func(w *Window, names []string)
+
+	// IME
+	fIMEStatusHolder        func(w *Window)
+	fPreeditCandidateHolder func(w *Window, candidates_count, selected_index, page_start, page_size int)
+	fPreeditHolder          func(w *Window, text string, blocks []int, focus, cursor int)
 }
 
 // Handle returns a *C.GLFWwindow reference (i.e. the GLFW window itself).
@@ -728,6 +746,13 @@ func (w *Window) GetUserPointer() unsafe.Pointer {
 	ret := C.glfwGetWindowUserPointer(w.data)
 	panicError()
 	return ret
+}
+
+// Drag starts a drag operation to the specified window.
+//
+// This function must only be called from the main thread.
+func (w *Window) Drag() {
+	C.glfwDragWindow(w.data)
 }
 
 // PosCallback is the window position callback.
