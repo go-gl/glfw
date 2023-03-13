@@ -686,6 +686,7 @@ type CursorPosCallback func(w *Window, xpos float64, ypos float64)
 // when the cursor is moved. The callback is provided with the position relative
 // to the upper-left corner of the client area of the window.
 func (w *Window) SetCursorPosCallback(cbfun CursorPosCallback) (previous CursorPosCallback) {
+	previous = w.fCursorPosHolder
 	w.fCursorPosHolder = cbfun
 	var previousC C.GLFWcursorposfun
 	if cbfun == nil {
@@ -696,6 +697,9 @@ func (w *Window) SetCursorPosCallback(cbfun CursorPosCallback) (previous CursorP
 	panicError()
 	if previousC == nil {
 		return nil
+	}
+	if previousC == (C.GLFWcursorposfun)(C.goCursorPosCB) {
+		return previous
 	}
 	return func(w2 *Window, xpos2 float64, ypos2 float64) {
 		C.goCursorPosCB_call(previousC, w2.data, C.double(xpos2), C.double(ypos2))
