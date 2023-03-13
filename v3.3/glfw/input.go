@@ -3,12 +3,15 @@ package glfw
 //#include <stdlib.h>
 //#define GLFW_INCLUDE_NONE
 //#include "glfw/include/GLFW/glfw3.h"
+//
+//void goCursorPosCB(GLFWwindow* window, double xpos, double ypos);
+//
 //void glfwSetJoystickCallbackCB();
 //void glfwSetKeyCallbackCB(GLFWwindow *window);
 //void glfwSetCharCallbackCB(GLFWwindow *window);
 //void glfwSetCharModsCallbackCB(GLFWwindow *window);
 //void glfwSetMouseButtonCallbackCB(GLFWwindow *window);
-//void glfwSetCursorPosCallbackCB(GLFWwindow *window);
+//void goCursorPosCB_call(GLFWcursorposfun cbfun, GLFWwindow *window, double xpos, double ypos);
 //void glfwSetCursorEnterCallbackCB(GLFWwindow *window);
 //void glfwSetScrollCallbackCB(GLFWwindow *window);
 //void glfwSetDropCallbackCB(GLFWwindow *window);
@@ -335,8 +338,8 @@ func goMouseButtonCB(window unsafe.Pointer, button, action, mods C.int) {
 }
 
 //export goCursorPosCB
-func goCursorPosCB(window unsafe.Pointer, xpos, ypos C.double) {
-	w := windows.get((*C.GLFWwindow)(window))
+func goCursorPosCB(window *C.GLFWwindow, xpos, ypos C.double) {
+	w := windows.get(window)
 	w.fCursorPosHolder(w, float64(xpos), float64(ypos))
 }
 
@@ -683,15 +686,17 @@ type CursorPosCallback func(w *Window, xpos float64, ypos float64)
 // when the cursor is moved. The callback is provided with the position relative
 // to the upper-left corner of the client area of the window.
 func (w *Window) SetCursorPosCallback(cbfun CursorPosCallback) (previous CursorPosCallback) {
-	previous = w.fCursorPosHolder
 	w.fCursorPosHolder = cbfun
+	var previousC C.GLFWcursorposfun
 	if cbfun == nil {
-		C.glfwSetCursorPosCallback(w.data, nil)
+		previousC = C.glfwSetCursorPosCallback(w.data, nil)
 	} else {
-		C.glfwSetCursorPosCallbackCB(w.data)
+		previousC = C.glfwSetCursorPosCallback(w.data, (C.GLFWcursorposfun)(C.goCursorPosCB))
 	}
 	panicError()
-	return previous
+	return func(w2 *Window, xpos2 float64, ypos2 float64) {
+		C.goCursorPosCB_call(previousC, w2.data, C.double(xpos2), C.double(ypos2))
+	}
 }
 
 // CursorEnterCallback is the cursor boundary crossing callback.
