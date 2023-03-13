@@ -694,6 +694,9 @@ func (w *Window) SetCursorPosCallback(cbfun CursorPosCallback) (previous CursorP
 		previousC = C.glfwSetCursorPosCallback(w.data, (C.GLFWcursorposfun)(C.goCursorPosCB))
 	}
 	panicError()
+	if previousC == nil {
+		return nil
+	}
 	return func(w2 *Window, xpos2 float64, ypos2 float64) {
 		C.goCursorPosCB_call(previousC, w2.data, C.double(xpos2), C.double(ypos2))
 	}
