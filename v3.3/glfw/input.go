@@ -496,24 +496,7 @@ func (w *Window) SetCursorPos(xpos, ypos float64) {
 // The cursor hotspot is specified in pixels, relative to the upper-left corner of the cursor image.
 // Like all other coordinate systems in GLFW, the X-axis points to the right and the Y-axis points down.
 func CreateCursor(img image.Image, xhot, yhot int) *Cursor {
-	var imgC C.GLFWimage
-	var pixels []uint8
-	b := img.Bounds()
-
-	switch img := img.(type) {
-	case *image.NRGBA:
-		pixels = img.Pix
-	default:
-		m := image.NewNRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
-		draw.Draw(m, m.Bounds(), img, b.Min, draw.Src)
-		pixels = m.Pix
-	}
-
-	pix, free := bytes(pixels)
-
-	imgC.width = C.int(b.Dx())
-	imgC.height = C.int(b.Dy())
-	imgC.pixels = (*C.uchar)(pix)
+	imgC, free := imageToGLFW(img)
 
 	c := C.glfwCreateCursor(&imgC, C.int(xhot), C.int(yhot))
 

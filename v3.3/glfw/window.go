@@ -412,24 +412,7 @@ func (w *Window) SetIcon(images []image.Image) {
 	freePixels := make([]func(), count)
 
 	for i, img := range images {
-		var pixels []uint8
-		b := img.Bounds()
-
-		switch img := img.(type) {
-		case *image.NRGBA:
-			pixels = img.Pix
-		default:
-			m := image.NewNRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
-			draw.Draw(m, m.Bounds(), img, b.Min, draw.Src)
-			pixels = m.Pix
-		}
-
-		pix, free := bytes(pixels)
-		freePixels[i] = free
-
-		cimages[i].width = C.int(b.Dx())
-		cimages[i].height = C.int(b.Dy())
-		cimages[i].pixels = (*C.uchar)(pix)
+		cimages[i], freePixels[i] = imageToGLFW(img)
 	}
 
 	var p *C.GLFWimage
