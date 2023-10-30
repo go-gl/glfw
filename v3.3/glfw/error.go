@@ -145,8 +145,7 @@ func flushErrors() {
 //
 // Platform errors are always printed, for information why please see:
 //
-//  https://github.com/go-gl/glfw/issues/127
-//
+//	https://github.com/go-gl/glfw/issues/127
 func acceptError(codes ...ErrorCode) error {
 	// Grab the next error, if there is one.
 	err := fetchError()
