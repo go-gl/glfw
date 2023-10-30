@@ -1,3 +1,4 @@
+//go:build (linux && !wayland) || (freebsd && !wayland)
 // +build linux,!wayland freebsd,!wayland
 
 package glfw

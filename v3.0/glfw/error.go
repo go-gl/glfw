@@ -5,10 +5,10 @@ package glfw
 //void glfwSetErrorCallbackCB();
 import "C"
 
-//ErrorCode corresponds to an error code.
+// ErrorCode corresponds to an error code.
 type ErrorCode int
 
-//Error codes.
+// Error codes.
 const (
 	NotInitialized     ErrorCode = C.GLFW_NOT_INITIALIZED     //GLFW has not been initialized.
 	NoCurrentContext   ErrorCode = C.GLFW_NO_CURRENT_CONTEXT  //No context is current.
@@ -28,10 +28,10 @@ func goErrorCB(code C.int, desc *C.char) {
 	fErrorHolder(ErrorCode(code), C.GoString(desc))
 }
 
-//SetErrorCallback sets the error callback, which is called with an error code
-//and a human-readable description each time a GLFW error occurs.
+// SetErrorCallback sets the error callback, which is called with an error code
+// and a human-readable description each time a GLFW error occurs.
 //
-//This function may be called before Init.
+// This function may be called before Init.
 func SetErrorCallback(cbfun func(code ErrorCode, desc string)) {
 	if cbfun == nil {
 		C.glfwSetErrorCallback(nil)
