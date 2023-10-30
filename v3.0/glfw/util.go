@@ -5,8 +5,5 @@ package glfw
 import "C"
 
 func glfwbool(b C.int) bool {
-	if b == C.int(True) {
-		return true
-	}
-	return false
+	return b == C.int(True)
 }
