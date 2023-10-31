@@ -20,7 +20,6 @@ import "C"
 
 import (
 	"image"
-	"image/draw"
 	"unsafe"
 )
 
