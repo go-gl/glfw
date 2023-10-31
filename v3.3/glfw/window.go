@@ -16,7 +16,6 @@ import "C"
 
 import (
 	"image"
-	"image/draw"
 	"sync"
 	"unsafe"
 )
