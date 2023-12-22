@@ -24,6 +24,8 @@ excludes=(
   --exclude=glfw-*/tests
 )
 
+set -e
+
 grab-upstream() {
   local godir=$1
   if [[ ! -d "$godir" ]]; then
@@ -47,6 +49,7 @@ grab-upstream() {
     while IFS= read -r -d $'\0' D
   do
     cat > "$D"/dummy.go <<EOF
+//go:build required
 // +build required
 
 // Package dummy prevents go tooling from stripping the c dependencies.
@@ -60,6 +63,7 @@ EOF
   grab-upstream v3.2/glfw
 
   cat > v3.2/glfw/glfw/deps/dummy.go <<EOF
+//go:build required
 // +build required
 
 // Package dummy prevents go tooling from stripping the c dependencies.
@@ -91,6 +95,7 @@ EOF
   grab-upstream v3.3/glfw
 
   cat > v3.3/glfw/glfw/deps/dummy.go <<EOF
+//go:build required 
 // +build required
 
 // Package dummy prevents go tooling from stripping the c dependencies.

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 TMP_CLONE_DIR="$(mktemp -d)"
 GLGLFW_PATH="$1"
 
