@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 TMP_CLONE_DIR="$(mktemp -d)"
 GLGLFW_PATH="$1"
 
@@ -9,7 +11,7 @@ if [ "$GLGLFW_PATH" = "" ]; then
     exit 1
 fi
 
-git clone https://github.com/wayland-project/wayland-protocols $TMP_CLONE_DIR
+git clone https://gitlab.freedesktop.org/wayland/wayland-protocols.git $TMP_CLONE_DIR
 
 generate() {
   HEADER=$1
