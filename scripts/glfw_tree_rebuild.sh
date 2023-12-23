@@ -5,6 +5,8 @@
 # glfw_tree_rebuild.go. Invoke this in a directory containing
 # glfw_tree_rebuild.go.
 
+set -e
+
 export GIT_INDEX_FILE=$(mktemp)
 rm $GIT_INDEX_FILE
 git update-index
