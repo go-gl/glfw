@@ -8,6 +8,7 @@ import "C"
 import (
 	"fmt"
 	"log"
+	"os"
 )
 
 // ErrorCode corresponds to an error code.
@@ -118,8 +119,8 @@ func goErrorCB(code C.int, desc *C.char) {
 	select {
 	case lastError <- err:
 	default:
-		fmt.Println("GLFW: An uncaught error has occurred:", err)
-		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
+		fmt.Fprintln(os.Stderr, "go-gl/glfw: internal error: an uncaught error has occurred:", err)
+		fmt.Fprintln(os.Stderr, "go-gl/glfw: Please report this in the Go package issue tracker.")
 	}
 }
 
@@ -134,8 +135,8 @@ func init() {
 func flushErrors() {
 	err := fetchError()
 	if err != nil {
-		fmt.Println("GLFW: An uncaught error has occurred:", err)
-		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
+		fmt.Fprintln(os.Stderr, "go-gl/glfw: internal error: an uncaught error has occurred:", err)
+		fmt.Fprintln(os.Stderr, "go-gl/glfw: Please report this in the Go package issue tracker.")
 	}
 }
 
@@ -172,8 +173,8 @@ func acceptError(codes ...ErrorCode) error {
 	case notInitialized, noCurrentContext, invalidEnum, invalidValue, outOfMemory:
 		panic(err)
 	default:
-		fmt.Println("GLFW: An invalid error was not accepted by the caller:", err)
-		fmt.Println("GLFW: Please report this bug in the Go package immediately.")
+		fmt.Fprintln(os.Stderr, "go-gl/glfw: internal error: an invalid error was not accepted by the caller:", err)
+		fmt.Fprintln(os.Stderr, "go-gl/glfw: Please report this in the Go package issue tracker.")
 		panic(err)
 	}
 }
