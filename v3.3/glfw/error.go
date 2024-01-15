@@ -23,6 +23,7 @@ const (
 	invalidValue     ErrorCode = C.GLFW_INVALID_VALUE      // One of the parameters for the function was given an invalid value.
 	outOfMemory      ErrorCode = C.GLFW_OUT_OF_MEMORY      // A memory allocation failed.
 	platformError    ErrorCode = C.GLFW_PLATFORM_ERROR     // A platform-specific error occurred that does not match any of the more specific categories.
+	noWindowContext  ErrorCode = C.GLFW_NO_WINDOW_CONTEXT  // A window that does not have an OpenGL or OpenGL ES context was passed to a function that requires it to have one.
 )
 
 const (
@@ -84,6 +85,8 @@ func (e ErrorCode) String() string {
 		return "OutOfMemory"
 	case platformError:
 		return "PlatformError"
+	case noWindowContext:
+		return "NoWindowContext"
 	case APIUnavailable:
 		return "APIUnavailable"
 	case VersionUnavailable:
@@ -170,7 +173,7 @@ func acceptError(codes ...ErrorCode) error {
 	case platformError:
 		log.Println(err)
 		return nil
-	case notInitialized, noCurrentContext, invalidEnum, invalidValue, outOfMemory:
+	case notInitialized, noCurrentContext, invalidEnum, invalidValue, outOfMemory, noWindowContext:
 		panic(err)
 	default:
 		fmt.Fprintln(os.Stderr, "go-gl/glfw: internal error: an invalid error was not accepted by the caller:", err)
