@@ -9,6 +9,8 @@ package glfw
 //void glfwSetCharModsCallbackCB(GLFWwindow *window);
 //void glfwSetPreeditCallbackCB(GLFWwindow *window);
 //void glfwSetIMEStatusCallbackCB(GLFWwindow *window);
+//void glfwSetPreeditCandidateCallbackCB(GLFWwindow *window);
+//unsigned int* glfwGetPreeditCandidate(GLFWwindow* window, int index, int* textCount);
 //void glfwSetMouseButtonCallbackCB(GLFWwindow *window);
 //void glfwSetCursorPosCallbackCB(GLFWwindow *window);
 //void glfwSetCursorEnterCallbackCB(GLFWwindow *window);
@@ -329,6 +331,16 @@ func goJoystickCB(joy, event C.int) {
 	fJoystickHolder(Joystick(joy), PeripheralEvent(event))
 }
 
+func getStringFromGlfwUtf32(runeCount int, utf32Ptr unsafe.Pointer) string {
+	runes := make([]rune, runeCount)
+	for i := 0; i < runeCount; i++ {
+		runes[i] = *(*rune)(utf32Ptr)
+		utf32Ptr = unsafe.Pointer(uintptr(utf32Ptr) + unsafe.Sizeof(int32(0)))
+	}
+	result := string(runes)
+	return result
+}
+
 //export goPreeditCB
 func goPreeditCB(
 	window unsafe.Pointer,
@@ -341,14 +353,16 @@ func goPreeditCB(
 ) {
 	w := windows.get((*C.GLFWwindow)(window))
 	// Convert Utf32 string of glfw to string of Go
+	// prcount := int(preeditCount)
+	// preeditPtr := preeditString
+	// preeditRune := make([]rune, prcount)
+	// for i := 0; i < prcount; i++ {
+	// 	preeditRune[i] = *(*rune)(preeditPtr)
+	// 	preeditPtr = unsafe.Pointer(uintptr(preeditPtr) + unsafe.Sizeof(int32(0)))
+	// }
+	// preeditStr := string(preeditRune)
 	prcount := int(preeditCount)
-	preeditPtr := preeditString
-	preeditRune := make([]rune, prcount)
-	for i := 0; i < prcount; i++ {
-		preeditRune[i] = *(*rune)(preeditPtr)
-		preeditPtr = unsafe.Pointer(uintptr(preeditPtr) + unsafe.Sizeof(int32(0)))
-	}
-	preeditStr := string(preeditRune)
+	preeditStr := getStringFromGlfwUtf32(prcount, preeditString)
 	w.fPreeditHolder(w, prcount, preeditStr, int(blockCount), "", int(focusedBlock), int(caret))
 }
 
@@ -356,6 +370,36 @@ func goPreeditCB(
 func goIMEStatusCB(window unsafe.Pointer) {
 	w := windows.get((*C.GLFWwindow)(window))
 	w.fImeStatusHolder(w)
+}
+
+//export goPreeditCandidateCB
+func goPreeditCandidateCB(
+	window unsafe.Pointer,
+	candidatesCount int,
+	selectedIndex int,
+	pageStart int,
+	pageSize int,
+) {
+	w := windows.get((*C.GLFWwindow)(window))
+	w.fPreeditCandidateHolder(w, candidatesCount, selectedIndex, pageStart, pageSize)
+}
+
+func GetPreeditCandidate(window unsafe.Pointer) []string {
+	w := windows.get((*C.GLFWwindow)(window))
+	results := []string{}
+	for i := 0; i < 100; i++ {
+		textCount := C.int(0)
+		index := C.int(i)
+		textPtrUint := C.glfwGetPreeditCandidate(w.data, index, &textCount)
+		if textPtrUint == nil {
+			return results
+		}
+		count := int(textCount)
+		textPtr := unsafe.Pointer(textPtrUint)
+		str := getStringFromGlfwUtf32(count, textPtr)
+		results = append(results, str)
+	}
+	return results
 }
 
 //export goMouseButtonCB
@@ -713,6 +757,34 @@ func (w *Window) SetImeStatusCallback(cbfun ImeStatusCallback) (previous ImeStat
 		C.glfwSetIMEStatusCallback(w.data, nil)
 	} else {
 		C.glfwSetIMEStatusCallbackCB(w.data)
+	}
+	panicError()
+	return previous
+}
+
+// PreeditCallback is the window refresh callback.
+type PreeditCandidateCallback func(
+	w *Window,
+	candidatesCount int,
+	selectedIndex int,
+	pageStart int,
+	pageSize int,
+)
+
+// PreeditCandidateCallback sets the refresh callback of the window, which
+// is called when the client area of the window needs to be redrawn, for example
+// if the window has been exposed after having been covered by another window.
+//
+// On compositing window systems such as Aero, Compiz or Aqua, where the window
+// contents are saved off-screen, this callback may be called only very
+// infrequently or never at all.
+func (w *Window) SetPreeditCandidateCallback(cbfun PreeditCandidateCallback) (previous PreeditCandidateCallback) {
+	previous = w.fPreeditCandidateHolder
+	w.fPreeditCandidateHolder = cbfun
+	if cbfun == nil {
+		C.glfwSetPreeditCandidateCallback(w.data, nil)
+	} else {
+		C.glfwSetPreeditCandidateCallbackCB(w.data)
 	}
 	panicError()
 	return previous

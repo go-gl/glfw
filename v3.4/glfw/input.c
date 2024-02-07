@@ -24,6 +24,15 @@ void glfwSetIMEStatusCallbackCB(GLFWwindow *window) {
   glfwSetIMEStatusCallback(window, (GLFWimestatusfun)goIMEStatusCB);
 }
 
+void glfwSetPreeditCandidateCallbackCB(GLFWwindow *window) {
+  glfwSetPreeditCandidateCallback(window, (GLFWpreeditcandidatefun)goPreeditCandidateCB);
+}
+
+unsigned int* glfwGetPreeditCandidateCB(GLFWwindow* window, int index, int* textCount)
+{
+  return glfwGetPreeditCandidate(window, index, textCount);
+}
+
 void glfwSetMouseButtonCallbackCB(GLFWwindow *window) {
   glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)goMouseButtonCB);
 }

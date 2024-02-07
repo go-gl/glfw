@@ -186,7 +186,14 @@ type Window struct {
 		focusedBlock int,
 		caret int,
 	)
-	fImeStatusHolder   func(w *Window)
+	fImeStatusHolder        func(w *Window)
+	fPreeditCandidateHolder func(
+		w *Window,
+		candidatesCount int,
+		selectedIndex int,
+		pageStart int,
+		pageSize int,
+	)
 	fMouseButtonHolder func(w *Window, button MouseButton, action Action, mod ModifierKey)
 	fCursorPosHolder   func(w *Window, xpos float64, ypos float64)
 	fCursorEnterHolder func(w *Window, entered bool)
