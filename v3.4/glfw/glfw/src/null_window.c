@@ -48,7 +48,7 @@ static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
         *height = _glfw_max(*height, window->maxheight);
 }
 
-static void fitToMonitor(_GLFWwindow* window)
+static void null_window_fitToMonitor(_GLFWwindow* window)
 {
     GLFWvidmode mode;
     _glfwGetVideoModeNull(window->monitor, &mode);
@@ -77,7 +77,7 @@ static int null_window_createNativeWindow(_GLFWwindow* window,
                               const _GLFWfbconfig* fbconfig)
 {
     if (window->monitor)
-        fitToMonitor(window);
+        null_window_fitToMonitor(window);
     else
     {
         if (wndconfig->xpos == GLFW_ANY_POSITION && wndconfig->ypos == GLFW_ANY_POSITION)
@@ -211,7 +211,7 @@ void _glfwSetWindowMonitorNull(_GLFWwindow* window,
     {
         window->null.visible = GLFW_TRUE;
         null_window_acquireMonitor(window);
-        fitToMonitor(window);
+        null_window_fitToMonitor(window);
     }
     else
     {

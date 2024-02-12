@@ -1145,6 +1145,7 @@ extern "C" {
 #define GLFW_LOCK_KEY_MODS          0x00033004
 #define GLFW_RAW_MOUSE_MOTION       0x00033005
 #define GLFW_IME                    0x00033006
+#define GLFW_IME_OWNERDRAW          0x00033011
 
 #define GLFW_CURSOR_NORMAL          0x00034001
 #define GLFW_CURSOR_HIDDEN          0x00034002

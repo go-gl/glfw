@@ -620,6 +620,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
             return window->rawMouseMotion;
         case GLFW_IME:
             return _glfw.platform.getIMEStatus(window);
+        case GLFW_IME_OWNERDRAW:
+            return window->imeOwnerDraw;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
@@ -731,6 +733,12 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
         case GLFW_IME:
         {
             _glfw.platform.setIMEStatus(window, value ? GLFW_TRUE : GLFW_FALSE);
+            return;
+        }
+
+        case GLFW_IME_OWNERDRAW:
+        {
+            window->imeOwnerDraw = value;
             return;
         }
     }
@@ -1027,6 +1035,13 @@ GLFWAPI void glfwSetPreeditCursorRectangle(GLFWwindow* handle, int x, int y, int
 
     _glfw.platform.updatePreeditCursorRectangle(window);
 }
+
+GLFWAPI void glfwUpdatePreeditCursorRectangle(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _glfw.platform.updatePreeditCursorRectangle(window);
+}
+
 
 GLFWAPI void glfwResetPreeditText(GLFWwindow* handle)
 {

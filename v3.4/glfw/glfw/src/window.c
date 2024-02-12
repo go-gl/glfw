@@ -247,6 +247,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->preedit.cursorPosY = height;
     window->preedit.cursorWidth = 0;
     window->preedit.cursorHeight = 0;
+    window->imeOwnerDraw = 0;
 
     if (!_glfw.platform.createWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {

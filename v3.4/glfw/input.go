@@ -11,6 +11,9 @@ package glfw
 //void glfwSetIMEStatusCallbackCB(GLFWwindow *window);
 //void glfwSetPreeditCandidateCallbackCB(GLFWwindow *window);
 //unsigned int* glfwGetPreeditCandidate(GLFWwindow* window, int index, int* textCount);
+//void glfwGetPreeditCursorRectangle(GLFWwindow* handle, int* x, int* y, int* w, int* h);
+//void glfwSetPreeditCursorRectangle(GLFWwindow* handle, int x, int y, int w, int h);
+//void glfwUpdatePreeditCursorRectangle(GLFWwindow* window);
 //void glfwSetMouseButtonCallbackCB(GLFWwindow *window);
 //void glfwSetCursorPosCallbackCB(GLFWwindow *window);
 //void glfwSetCursorEnterCallbackCB(GLFWwindow *window);
@@ -310,6 +313,7 @@ const (
 	StickyMouseButtonsMode InputMode = C.GLFW_STICKY_MOUSE_BUTTONS // Value can be either 1 or 0
 	LockKeyMods            InputMode = C.GLFW_LOCK_KEY_MODS        // Value can be either 1 or 0
 	RawMouseMotion         InputMode = C.GLFW_RAW_MOUSE_MOTION     // Value can be either 1 or 0
+	ImeOwnerDraw           InputMode = C.GLFW_IME_OWNERDRAW        // Value can be either 1 or 0
 )
 
 // Cursor mode values.
@@ -384,22 +388,42 @@ func goPreeditCandidateCB(
 	w.fPreeditCandidateHolder(w, candidatesCount, selectedIndex, pageStart, pageSize)
 }
 
-func GetPreeditCandidate(window unsafe.Pointer) []string {
-	w := windows.get((*C.GLFWwindow)(window))
-	results := []string{}
-	for i := 0; i < 100; i++ {
-		textCount := C.int(0)
-		index := C.int(i)
-		textPtrUint := C.glfwGetPreeditCandidate(w.data, index, &textCount)
-		if textPtrUint == nil {
-			return results
-		}
-		count := int(textCount)
-		textPtr := unsafe.Pointer(textPtrUint)
-		str := getStringFromGlfwUtf32(count, textPtr)
-		results = append(results, str)
+func (w *Window) GetPreeditCandidate(index int) *string {
+	textCount := C.int(0)
+	idx := C.int(index)
+	textPtrUint := C.glfwGetPreeditCandidate(w.data, idx, &textCount)
+	if textPtrUint == nil {
+		return nil
 	}
-	return results
+	count := int(textCount)
+	textPtr := unsafe.Pointer(textPtrUint)
+	str := getStringFromGlfwUtf32(count, textPtr)
+	return &str
+}
+
+func (w *Window) GetPreeditCursorRectangle(x, y, width, height *int) {
+	var xx, yy, ww, hh C.int
+	C.glfwGetPreeditCursorRectangle(w.data, &xx, &yy, &ww, &hh)
+	if x != nil {
+		*x = int(xx)
+	}
+	if y != nil {
+		*y = int(yy)
+	}
+	if width != nil {
+		*width = int(ww)
+	}
+	if height != nil {
+		*height = int(hh)
+	}
+}
+
+func (w *Window) SetPreeditCursorRectangle(x, y, width, height int) {
+	C.glfwSetPreeditCursorRectangle(w.data, C.int(x), C.int(y), C.int(width), C.int(height))
+}
+
+func (w *Window) UpdatePreeditCursorRectangle() {
+	C.glfwUpdatePreeditCursorRectangle(w.data)
 }
 
 //export goMouseButtonCB

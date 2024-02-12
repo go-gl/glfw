@@ -586,6 +586,7 @@ struct _GLFWwindow
     _GLFWcontext        context;
 
     _GLFWpreedit        preedit;
+    GLFWbool            imeOwnerDraw;
 
     struct {
         GLFWwindowposfun          pos;

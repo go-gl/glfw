@@ -904,6 +904,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     {
         case WM_IME_SETCONTEXT:
         {
+            if (!window->imeOwnerDraw)
+                break;
+
             // To draw preedit text by an application side
             if (lParam & ISC_SHOWUICOMPOSITIONWINDOW)
                 lParam &= ~ISC_SHOWUICOMPOSITIONWINDOW;
@@ -1145,6 +1148,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_IME_COMPOSITION:
         {
+            if (!window->imeOwnerDraw)
+                break;
             if (lParam & (GCS_RESULTSTR | GCS_COMPSTR))
             {
                 if (lParam & GCS_RESULTSTR)
@@ -1153,16 +1158,32 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                     getImmPreedit(window);
                 return TRUE;
             }
-            break;
+break;
         }
 
         case WM_IME_ENDCOMPOSITION:
         {
+            if (!window->imeOwnerDraw)
+                break;
             clearImmPreedit(window);
             // Usually clearing candidates in IMN_CLOSECANDIDATE is sufficient.
             // However, some IME need it here, e.g. Google Japanese Input.
             clearImmCandidate(window);
             return TRUE;
+        }
+
+        case WM_IME_REQUEST:
+        {
+            switch (wParam)
+            {
+                case IMR_CANDIDATEWINDOW:
+                case IMR_QUERYCHARPOSITION:
+                    // Candidate Window coordinates will become invalid
+                    // if they are not changed at this timing.
+                    _glfwUpdatePreeditCursorRectangleWin32(window);
+                default:
+                    return FALSE;
+            }
         }
 
         case WM_IME_NOTIFY:
@@ -2821,8 +2842,11 @@ void _glfwUpdatePreeditCursorRectangleWin32(_GLFWwindow* window)
     int y = preedit->cursorPosY;
     int w = preedit->cursorWidth;
     int h = preedit->cursorHeight;
+    COMPOSITIONFORM cf = {CFS_FORCE_POSITION, {x, y}, { x, y, x + w, y + h }};
+    // ### need X-like inputStyle config settings
     CANDIDATEFORM excludeRect = { 0, CFS_EXCLUDE, { x, y }, { x, y, x + w, y + h } };
 
+    ImmSetCompositionWindow(hIMC, &cf);
     ImmSetCandidateWindow(hIMC, &excludeRect);
 
     ImmReleaseContext(hWnd, hIMC);
