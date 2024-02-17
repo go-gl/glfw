@@ -541,12 +541,18 @@ static void inputContextDestroyCallback(XIC ic, XPointer clientData, XPointer ca
 //
 static void _ximPreeditStartCallback(XIC xic, XPointer clientData, XPointer callData)
 {
+    _GLFWwindow* window = (_GLFWwindow*) clientData;
+    window->x11.imeFocus = GLFW_TRUE;
+    _glfwInputIMEStatus(window);
 }
 
 // IME Done callback (do nothing)
 //
 static void _ximPreeditDoneCallback(XIC xic, XPointer clientData, XPointer callData)
 {
+    _GLFWwindow* window = (_GLFWwindow*) clientData;
+    window->x11.imeFocus = GLFW_FALSE;
+    _glfwInputIMEStatus(window);
 }
 
 // IME Draw callback
@@ -696,6 +702,7 @@ static void _ximStatusStartCallback(XIC xic, XPointer clientData, XPointer callD
 {
     _GLFWwindow* window = (_GLFWwindow*) clientData;
     window->x11.imeFocus = GLFW_TRUE;
+    _glfwInputIMEStatus(window);
 }
 
 // IME Status Done callback
@@ -1447,6 +1454,24 @@ static void processEvent(XEvent *event)
 
         case KeyPress:
         {
+            // long mask = 0xaaaaaaaa;
+            // XGetICValues(window->x11.ic, XNFilterEvents, &mask, NULL);
+            // XKeyPressedEvent xevent;
+            // xevent.type = event->type;
+            // xevent.serial = 0;		/* hope it doesn't matter */
+            // xevent.send_event = event->xkey.send_event;
+            // xevent.display = _glfw.x11.display;
+            // xevent.window = event->xkey.window;
+            // xevent.root = window->x11.parent;
+            // xevent.subwindow = xevent.window;
+            // xevent.time = event->xkey.time;
+            // xevent.x = xevent.x_root = 0;
+            // xevent.y = xevent.y_root = 0;
+            // xevent.state = event->xkey.state;
+            // xevent.keycode = event->xkey.keycode;
+            // xevent.same_screen = True;
+            // if (XFilterEvent ((XEvent *)&xevent, window->x11.handle))
+            //     return;
             const int key = translateKey(keycode);
             const int mods = translateState(event->xkey.state);
             const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
@@ -2150,8 +2175,8 @@ void _glfwCreateInputContextX11(_GLFWwindow* window)
                                    preeditList,
                                    XNStatusAttributes,
                                    statusList,
-                                   XNDestroyCallback,
-                                   &callback,
+                                //    XNDestroyCallback,
+                                //    &callback,
                                    NULL);
 
         XFree(preeditList);
