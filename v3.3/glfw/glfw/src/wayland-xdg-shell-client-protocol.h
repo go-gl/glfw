@@ -257,6 +257,10 @@ extern const struct wl_interface xdg_surface_interface;
  * id, and well as trigger user interactive operations such as interactive
  * resize and move.
  *
+ * A xdg_toplevel by default is responsible for providing the full intended
+ * visual representation of the toplevel, which depending on the window
+ * state, may mean things like a title bar, window controls and drop shadow.
+ *
  * Unmapping an xdg_toplevel means that the surface cannot be shown
  * by the compositor until it is explicitly mapped again.
  * All active operations (e.g., move, resize) are canceled and all
@@ -279,6 +283,10 @@ extern const struct wl_interface xdg_surface_interface;
  * fullscreen, and minimize, set application-specific metadata like title and
  * id, and well as trigger user interactive operations such as interactive
  * resize and move.
+ *
+ * A xdg_toplevel by default is responsible for providing the full intended
+ * visual representation of the toplevel, which depending on the window
+ * state, may mean things like a title bar, window controls and drop shadow.
  *
  * Unmapping an xdg_toplevel means that the surface cannot be shown
  * by the compositor until it is explicitly mapped again.
