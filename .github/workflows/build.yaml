@@ -1,0 +1,83 @@
+name: Build
+on:
+    pull_request:
+    push:
+        branches: [ ci, master, latest, 3.3-stable ]
+    workflow_dispatch:
+permissions:
+    statuses: write
+    contents: read
+
+jobs:
+    build-linux-x11:
+        name: X11 (Linux)
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Install dependencies
+              run: |
+                  sudo apt update
+                  sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libgl1-mesa-dev
+
+            - name: Set up Go
+              uses: actions/setup-go@v3
+              with:
+                go-version: 1.19
+
+            - name: Build
+              run: go build -v ./v3.4/glfw
+
+            - name: Vet
+              run: go vet ./v3.4/glfw
+
+
+    build-linux-full:
+        name: X11+Wayland (Linux)
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Install dependencies
+              run: |
+                  sudo apt update
+                  sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev wayland-protocols libwayland-dev libxkbcommon-dev libgl1-mesa-dev
+
+            - name: Set up Go
+              uses: actions/setup-go@v3
+              with:
+                go-version: 1.19
+
+            - name: Build
+              run: go build -v ./v3.4/glfw
+
+    build-macos-cocoa:
+        name: Cocoa (macOS)
+        runs-on: macos-latest
+        env:
+            MACOSX_DEPLOYMENT_TARGET: 10.8
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Set up Go
+              uses: actions/setup-go@v3
+              with:
+                go-version: 1.19
+
+            - name: Build
+              run: go build -v ./v3.4/glfw
+
+    build-windows-win32-vs2022:
+        name: Win32 (Windows, VS2022)
+        runs-on: windows-latest
+        env:
+            CFLAGS: /WX
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Set up Go
+              uses: actions/setup-go@v3
+              with:
+                go-version: 1.19
+
+            - name: Build
+              run: go build -v ./v3.4/glfw
+
