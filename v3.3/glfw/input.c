@@ -20,8 +20,9 @@ void glfwSetMouseButtonCallbackCB(GLFWwindow *window) {
   glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)goMouseButtonCB);
 }
 
-void glfwSetCursorPosCallbackCB(GLFWwindow *window) {
-  glfwSetCursorPosCallback(window, (GLFWcursorposfun)goCursorPosCB);
+void goCursorPosCB_call(GLFWcursorposfun cbfun, GLFWwindow *window, double xpos, double ypos)
+{
+  cbfun(window, xpos, ypos);
 }
 
 void glfwSetCursorEnterCallbackCB(GLFWwindow *window) {
