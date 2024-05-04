@@ -1,6 +1,8 @@
 package glfw
 
 /*
+#cgo CFLAGS: -Iglfw/include
+
 // Windows Build Tags
 // ----------------
 // GLFW Options:
