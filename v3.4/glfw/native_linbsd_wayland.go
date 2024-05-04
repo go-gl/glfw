@@ -11,6 +11,8 @@ package glfw
 //#include "glfw/include/GLFW/glfw3native.h"
 import "C"
 
+const WAYLAND = true
+
 func GetWaylandDisplay() *C.struct_wl_display {
 	ret := C.glfwGetWaylandDisplay()
 	panicError()

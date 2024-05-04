@@ -406,6 +406,10 @@ func (w *Window) SetTitle(title string) {
 // The desired image sizes varies depending on platform and system settings. The selected
 // images will be rescaled as needed. Good sizes include 16x16, 32x32 and 48x48.
 func (w *Window) SetIcon(images []image.Image) {
+	if (WAYLAND) {
+		println("warning: Wayland: The platform does not support setting the window icon")
+		return
+	}
 	count := len(images)
 	cimages := make([]C.GLFWimage, count)
 	freePixels := make([]func(), count)
