@@ -1,7 +1,7 @@
 package glfw
 
 /*
-#cgo CFLAGS: -Iglfw/include
+#cgo CFLAGS: -Iglfw/include -D_GNU_SOURCE
 
 // Windows Build Tags
 // ----------------
@@ -29,6 +29,7 @@ package glfw
 // ----------------
 // GLFW Options:
 #cgo linux,!wayland CFLAGS: -D_GLFW_X11
+#cgo linux,x11 CFLAGS: -D_GLFW_X11
 #cgo linux,wayland CFLAGS: -D_GLFW_WAYLAND
 
 // Linker Options:
@@ -38,6 +39,7 @@ package glfw
 #cgo linux,gles3 LDFLAGS: -lGLESv3
 #cgo linux,vulkan LDFLAGS: -lvulkan
 #cgo linux,!wayland LDFLAGS: -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama -ldl -lrt
+#cgo linux,x11 LDFLAGS: -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -lm -lXinerama -ldl -lrt
 #cgo linux,wayland LDFLAGS: -lwayland-client -lwayland-cursor -lwayland-egl -lxkbcommon -lm -ldl -lrt
 
 // BSD Build Tags
