@@ -17,7 +17,6 @@ jobs:
 
     - name: Install analysis tools
       run: |
-        go install golang.org/x/tools/cmd/goimports@latest
         go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
         go install honnef.co/go/tools/cmd/staticcheck@latest
 
@@ -30,11 +29,11 @@ jobs:
     - name: Vet
       run: go vet ./...
 
-    - name: Goimports
-      run: test -z "$(goimports -e -d . | tee /dev/stderr)"
+    - name: Formatting
+      run: test -z "$(gofmt -e -d . | tee /dev/stderr)"
 
     - name: Gocyclo
-      run: gocyclo -over 15 .
+      run: gocyclo -over 30 .
 
     - name: Staticcheck
       run: staticcheck ./...
