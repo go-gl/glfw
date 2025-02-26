@@ -21,7 +21,7 @@ jobs:
         go-version-file: 'go.mod'
 
     - name: Prepare
-      run: rm -rf v3.0/
+      run: rm -rf v3.0/ v3.1/ v3.2/
 
     - name: Get dependencies
       run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
