@@ -20,8 +20,11 @@ jobs:
         go-version: ${{ matrix.go-version }}
         go-version-file: 'go.mod'
 
+    - name: Prepare
+      run: rm -rf v3.0/
+
     - name: Get dependencies
-      run: sudo apt-get update && sudo apt-get install gcc libglfw3 libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
+      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
 
     - name: Tests
       run: go test -race ./...
