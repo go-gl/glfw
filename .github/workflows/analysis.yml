@@ -20,20 +20,21 @@ jobs:
         go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
         go install honnef.co/go/tools/cmd/staticcheck@latest
 
-    - name: Prepare
-      run: cd v3.3/glfw
-
     - name: Get dependencies
       run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
 
     - name: Vet
-      run: go vet ./...
+      run: |
+        cd v3.3/glfw && go vet ./...
 
     - name: Formatting
-      run: test -z "$(gofmt -e -d . | tee /dev/stderr)"
+      run: |
+        cd v3.3/glfw && test -z "$(gofmt -e -d . | tee /dev/stderr)"
 
     - name: Gocyclo
-      run: gocyclo -over 30 .
+      run: |
+        cd v3.3/glfw && gocyclo -over 30 .
 
     - name: Staticcheck
-      run: staticcheck ./...
+      run: |
+        cd v3.3/glfw && staticcheck ./...

@@ -18,13 +18,11 @@ jobs:
     - uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go-version }}
-        go-version-file: 'go.mod'
-
-    - name: Prepare
-      run: cd v3.3/glfw
+        go-version-file: 'go.mod' 
 
     - name: Get dependencies
       run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
 
     - name: Tests
-      run: go test -race ./...
+      run: |
+        cd v3.3/glfw && go test -race ./...
