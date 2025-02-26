@@ -22,7 +22,7 @@ jobs:
         go install honnef.co/go/tools/cmd/staticcheck@latest
 
     - name: Get dependencies
-      run: sudo apt-get update && sudo apt-get install gcc glfw libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
+      run: sudo apt-get update && sudo apt-get install gcc libglfw3 libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
 
     - name: Vet
       run: go vet ./...
