@@ -95,7 +95,7 @@ const (
 	KeyZ            Key = C.GLFW_KEY_Z
 	KeyLeftBracket  Key = C.GLFW_KEY_LEFT_BRACKET
 	KeyBackslash    Key = C.GLFW_KEY_BACKSLASH
-	KeyBracket      Key = C.GLFW_KEY_RIGHT_BRACKET // Kept for backward compatbility
+	KeyBracket      Key = C.GLFW_KEY_RIGHT_BRACKET //Kept for backward compatbility
 	KeyRightBracket Key = C.GLFW_KEY_RIGHT_BRACKET
 	KeyGraveAccent  Key = C.GLFW_KEY_GRAVE_ACCENT
 	KeyWorld1       Key = C.GLFW_KEY_WORLD_1
@@ -207,9 +207,9 @@ const (
 type Action int
 
 const (
-	Release Action = C.GLFW_RELEASE // The key or button was released.
-	Press   Action = C.GLFW_PRESS   // The key or button was pressed.
-	Repeat  Action = C.GLFW_REPEAT  // The key was held down until it repeated.
+	Release Action = C.GLFW_RELEASE //The key or button was released.
+	Press   Action = C.GLFW_PRESS   //The key or button was pressed.
+	Repeat  Action = C.GLFW_REPEAT  //The key was held down until it repeated.
 )
 
 // InputMode corresponds to an input mode.
@@ -217,9 +217,9 @@ type InputMode int
 
 // Input modes
 const (
-	Cursor             InputMode = C.GLFW_CURSOR               // See Cursor mode values
-	StickyKeys         InputMode = C.GLFW_STICKY_KEYS          // Value can be either 1 or 0
-	StickyMouseButtons InputMode = C.GLFW_STICKY_MOUSE_BUTTONS // Value can be either 1 or 0
+	Cursor             InputMode = C.GLFW_CURSOR               //See Cursor mode values
+	StickyKeys         InputMode = C.GLFW_STICKY_KEYS          //Value can be either 1 or 0
+	StickyMouseButtons InputMode = C.GLFW_STICKY_MOUSE_BUTTONS //Value can be either 1 or 0
 )
 
 // Cursor mode values
@@ -422,7 +422,7 @@ func GetJoystickAxes(joy Joystick) ([]float32, error) {
 
 	axis := C.glfwGetJoystickAxes(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
 	if axis == nil {
-		return nil, errors.New("joystick is not present")
+		return nil, errors.New("Joystick is not present.")
 	}
 
 	a := make([]float32, length)
@@ -439,7 +439,7 @@ func GetJoystickButtons(joy Joystick) ([]byte, error) {
 
 	buttons := C.glfwGetJoystickButtons(C.int(joy), (*C.int)(unsafe.Pointer(&length)))
 	if buttons == nil {
-		return nil, errors.New("joystick is not present")
+		return nil, errors.New("Joystick is not present.")
 	}
 
 	b := make([]byte, length)
@@ -454,7 +454,7 @@ func GetJoystickButtons(joy Joystick) ([]byte, error) {
 func GetJoystickName(joy Joystick) (string, error) {
 	jn := C.glfwGetJoystickName(C.int(joy))
 	if jn == nil {
-		return "", errors.New("joystick is not present")
+		return "", errors.New("Joystick is not present.")
 	}
 
 	return C.GoString(jn), nil

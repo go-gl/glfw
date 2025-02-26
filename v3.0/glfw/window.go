@@ -53,42 +53,42 @@ type Hint int
 
 // Window related hints.
 const (
-	Focused   Hint = C.GLFW_FOCUSED   // Specifies whether the window will be focused.
-	Iconified Hint = C.GLFW_ICONIFIED // Specifies whether the window will be minimized.
-	Visible   Hint = C.GLFW_VISIBLE   // Specifies whether the window will be initially visible.
-	Resizable Hint = C.GLFW_RESIZABLE // Specifies whether the window will be resizable by the user.
-	Decorated Hint = C.GLFW_DECORATED // Specifies whether the window will have window decorations such as a border, a close widget, etc.
+	Focused   Hint = C.GLFW_FOCUSED   //Specifies whether the window will be focused.
+	Iconified Hint = C.GLFW_ICONIFIED //Specifies whether the window will be minimized.
+	Visible   Hint = C.GLFW_VISIBLE   //Specifies whether the window will be initially visible.
+	Resizable Hint = C.GLFW_RESIZABLE //Specifies whether the window will be resizable by the user.
+	Decorated Hint = C.GLFW_DECORATED //Specifies whether the window will have window decorations such as a border, a close widget, etc.
 )
 
 // Context related hints.
 const (
-	ClientApi               Hint = C.GLFW_CLIENT_API            // Specifies which client API to create the context for. Hard constraint.
-	ContextVersionMajor     Hint = C.GLFW_CONTEXT_VERSION_MAJOR // Specifies the client API version that the created context must be compatible with.
-	ContextVersionMinor     Hint = C.GLFW_CONTEXT_VERSION_MINOR // Specifies the client API version that the created context must be compatible with.
-	ContextRobustness       Hint = C.GLFW_CONTEXT_ROBUSTNESS    // Specifies the robustness strategy to be used by the context.
-	OpenglForwardCompatible Hint = C.GLFW_OPENGL_FORWARD_COMPAT // Specifies whether the OpenGL context should be forward-compatible. Hard constraint.
+	ClientApi               Hint = C.GLFW_CLIENT_API            //Specifies which client API to create the context for. Hard constraint.
+	ContextVersionMajor     Hint = C.GLFW_CONTEXT_VERSION_MAJOR //Specifies the client API version that the created context must be compatible with.
+	ContextVersionMinor     Hint = C.GLFW_CONTEXT_VERSION_MINOR //Specifies the client API version that the created context must be compatible with.
+	ContextRobustness       Hint = C.GLFW_CONTEXT_ROBUSTNESS    //Specifies the robustness strategy to be used by the context.
+	OpenglForwardCompatible Hint = C.GLFW_OPENGL_FORWARD_COMPAT //Specifies whether the OpenGL context should be forward-compatible. Hard constraint.
 	OpenglDebugContext      Hint = C.GLFW_OPENGL_DEBUG_CONTEXT
-	OpenglProfile           Hint = C.GLFW_OPENGL_PROFILE // Specifies which OpenGL profile to create the context for. Hard constraint.
+	OpenglProfile           Hint = C.GLFW_OPENGL_PROFILE //Specifies which OpenGL profile to create the context for. Hard constraint.
 )
 
 // Framebuffer related hints.
 const (
 	ContextRevision Hint = C.GLFW_CONTEXT_REVISION
-	RedBits         Hint = C.GLFW_RED_BITS         // Specifies the desired bit depth of the default framebuffer.
-	GreenBits       Hint = C.GLFW_GREEN_BITS       // Specifies the desired bit depth of the default framebuffer.
-	BlueBits        Hint = C.GLFW_BLUE_BITS        // Specifies the desired bit depth of the default framebuffer.
-	AlphaBits       Hint = C.GLFW_ALPHA_BITS       // Specifies the desired bit depth of the default framebuffer.
-	DepthBits       Hint = C.GLFW_DEPTH_BITS       // Specifies the desired bit depth of the default framebuffer.
-	StencilBits     Hint = C.GLFW_STENCIL_BITS     // Specifies the desired bit depth of the default framebuffer.
-	AccumRedBits    Hint = C.GLFW_ACCUM_RED_BITS   // Specifies the desired bit depth of the accumulation buffer.
-	AccumGreenBits  Hint = C.GLFW_ACCUM_GREEN_BITS // Specifies the desired bit depth of the accumulation buffer.
-	AccumBlueBits   Hint = C.GLFW_ACCUM_BLUE_BITS  // Specifies the desired bit depth of the accumulation buffer.
-	AccumAlphaBits  Hint = C.GLFW_ACCUM_ALPHA_BITS // Specifies the desired bit depth of the accumulation buffer.
-	AuxBuffers      Hint = C.GLFW_AUX_BUFFERS      // Specifies the desired number of auxiliary buffers.
-	Stereo          Hint = C.GLFW_STEREO           // Specifies whether to use stereoscopic rendering. Hard constraint.
-	Samples         Hint = C.GLFW_SAMPLES          // Specifies the desired number of samples to use for multisampling. Zero disables multisampling.
-	SrgbCapable     Hint = C.GLFW_SRGB_CAPABLE     // Specifies whether the framebuffer should be sRGB capable.
-	RefreshRate     Hint = C.GLFW_REFRESH_RATE     // specifies the desired refresh rate for full screen windows. If set to zero, the highest available refresh rate will be used. This hint is ignored for windowed mode windows.
+	RedBits         Hint = C.GLFW_RED_BITS         //Specifies the desired bit depth of the default framebuffer.
+	GreenBits       Hint = C.GLFW_GREEN_BITS       //Specifies the desired bit depth of the default framebuffer.
+	BlueBits        Hint = C.GLFW_BLUE_BITS        //Specifies the desired bit depth of the default framebuffer.
+	AlphaBits       Hint = C.GLFW_ALPHA_BITS       //Specifies the desired bit depth of the default framebuffer.
+	DepthBits       Hint = C.GLFW_DEPTH_BITS       //Specifies the desired bit depth of the default framebuffer.
+	StencilBits     Hint = C.GLFW_STENCIL_BITS     //Specifies the desired bit depth of the default framebuffer.
+	AccumRedBits    Hint = C.GLFW_ACCUM_RED_BITS   //Specifies the desired bit depth of the accumulation buffer.
+	AccumGreenBits  Hint = C.GLFW_ACCUM_GREEN_BITS //Specifies the desired bit depth of the accumulation buffer.
+	AccumBlueBits   Hint = C.GLFW_ACCUM_BLUE_BITS  //Specifies the desired bit depth of the accumulation buffer.
+	AccumAlphaBits  Hint = C.GLFW_ACCUM_ALPHA_BITS //Specifies the desired bit depth of the accumulation buffer.
+	AuxBuffers      Hint = C.GLFW_AUX_BUFFERS      //Specifies the desired number of auxiliary buffers.
+	Stereo          Hint = C.GLFW_STEREO           //Specifies whether to use stereoscopic rendering. Hard constraint.
+	Samples         Hint = C.GLFW_SAMPLES          //Specifies the desired number of samples to use for multisampling. Zero disables multisampling.
+	SrgbCapable     Hint = C.GLFW_SRGB_CAPABLE     //Specifies whether the framebuffer should be sRGB capable.
+	RefreshRate     Hint = C.GLFW_REFRESH_RATE     //specifies the desired refresh rate for full screen windows. If set to zero, the highest available refresh rate will be used. This hint is ignored for windowed mode windows.
 )
 
 // Values for the ClientApi hint.
@@ -252,7 +252,7 @@ func CreateWindow(width, height int, title string, monitor *Monitor, share *Wind
 	w := C.glfwCreateWindow(C.int(width), C.int(height), t, m, s)
 
 	if w == nil {
-		return nil, errors.New("can't create window")
+		return nil, errors.New("Can't create window.")
 	}
 	wnd := &Window{data: w}
 	windows.put(wnd)
@@ -400,7 +400,7 @@ func (w *Window) GetMonitor() (*Monitor, error) {
 	m := C.glfwGetWindowMonitor(w.data)
 
 	if m == nil {
-		return nil, errors.New("can't get the monitor")
+		return nil, errors.New("Can't get the monitor.")
 	}
 	return &Monitor{m}, nil
 }

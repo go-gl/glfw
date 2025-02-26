@@ -23,9 +23,9 @@ type MonitorEvent int
 
 // GammaRamp describes the gamma ramp for a monitor.
 type GammaRamp struct {
-	Red   []uint16 // A slice of value describing the response of the red channel.
-	Green []uint16 // A slice of value describing the response of the green channel.
-	Blue  []uint16 // A slice of value describing the response of the blue channel.
+	Red   []uint16 //A slice of value describing the response of the red channel.
+	Green []uint16 //A slice of value describing the response of the green channel.
+	Blue  []uint16 //A slice of value describing the response of the blue channel.
 }
 
 // Monitor events.
@@ -36,12 +36,12 @@ const (
 
 // VideoMode describes a single video mode.
 type VideoMode struct {
-	Width       int // The width, in pixels, of the video mode.
-	Height      int // The height, in pixels, of the video mode.
-	RedBits     int // The bit depth of the red channel of the video mode.
-	GreenBits   int // The bit depth of the green channel of the video mode.
-	BlueBits    int // The bit depth of the blue channel of the video mode.
-	RefreshRate int // The refresh rate, in Hz, of the video mode.
+	Width       int //The width, in pixels, of the video mode.
+	Height      int //The height, in pixels, of the video mode.
+	RedBits     int //The bit depth of the red channel of the video mode.
+	GreenBits   int //The bit depth of the green channel of the video mode.
+	BlueBits    int //The bit depth of the blue channel of the video mode.
+	RefreshRate int //The refresh rate, in Hz, of the video mode.
 }
 
 var fMonitorHolder func(monitor *Monitor, event MonitorEvent)
@@ -58,7 +58,7 @@ func GetMonitors() ([]*Monitor, error) {
 	mC := C.glfwGetMonitors((*C.int)(unsafe.Pointer(&length)))
 
 	if mC == nil {
-		return nil, errors.New("can't get the monitor list")
+		return nil, errors.New("Can't get the monitor list.")
 	}
 
 	m := make([]*Monitor, length)
@@ -76,7 +76,7 @@ func GetPrimaryMonitor() (*Monitor, error) {
 	m := C.glfwGetPrimaryMonitor()
 
 	if m == nil {
-		return nil, errors.New("can't get the primary monitor")
+		return nil, errors.New("Can't get the primary monitor.")
 	}
 	return &Monitor{m}, nil
 }
@@ -107,7 +107,7 @@ func (m *Monitor) GetPhysicalSize() (width, height int) {
 func (m *Monitor) GetName() (string, error) {
 	mn := C.glfwGetMonitorName(m.data)
 	if mn == nil {
-		return "", errors.New("can't get monitor name")
+		return "", errors.New("Can't get monitor name.")
 	}
 
 	return C.GoString(mn), nil
@@ -134,7 +134,7 @@ func (m *Monitor) GetVideoModes() ([]*VideoMode, error) {
 
 	vC := C.glfwGetVideoModes(m.data, (*C.int)(unsafe.Pointer(&length)))
 	if vC == nil {
-		return nil, errors.New("can't get the video mode list")
+		return nil, errors.New("Can't get the video mode list.")
 	}
 
 	v := make([]*VideoMode, length)
@@ -154,7 +154,7 @@ func (m *Monitor) GetVideoMode() (*VideoMode, error) {
 	t := C.glfwGetVideoMode(m.data)
 
 	if t == nil {
-		return nil, errors.New("can't get the video mode")
+		return nil, errors.New("Can't get the video mode.")
 	}
 	return &VideoMode{int(t.width), int(t.height), int(t.redBits), int(t.greenBits), int(t.blueBits), int(t.refreshRate)}, nil
 }
@@ -171,7 +171,7 @@ func (m *Monitor) GetGammaRamp() (*GammaRamp, error) {
 
 	rampC := C.glfwGetGammaRamp(m.data)
 	if rampC == nil {
-		return nil, errors.New("can't get the gamma ramp")
+		return nil, errors.New("Can't get the gamma ramp.")
 	}
 
 	length := int(rampC.size)
