@@ -27,7 +27,7 @@ func DetachCurrentContext() {
 func GetCurrentContext() (*Window, error) {
 	w := C.glfwGetCurrentContext()
 	if w == nil {
-		return nil, errors.New("Current context is not set.")
+		return nil, errors.New("current context is not set")
 	}
 	return windows.get(w), nil
 }

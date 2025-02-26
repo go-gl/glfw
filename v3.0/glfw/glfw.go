@@ -15,9 +15,9 @@ package glfw
 import "C"
 
 const (
-	VersionMajor    = C.GLFW_VERSION_MAJOR    //This is incremented when the API is changed in non-compatible ways.
-	VersionMinor    = C.GLFW_VERSION_MINOR    //This is incremented when features are added to the API but it remains backward-compatible.
-	VersionRevision = C.GLFW_VERSION_REVISION //This is incremented when a bug fix release is made that does not contain any API changes.
+	VersionMajor    = C.GLFW_VERSION_MAJOR    // This is incremented when the API is changed in non-compatible ways.
+	VersionMinor    = C.GLFW_VERSION_MINOR    // This is incremented when features are added to the API but it remains backward-compatible.
+	VersionRevision = C.GLFW_VERSION_REVISION // This is incremented when a bug fix release is made that does not contain any API changes.
 )
 
 // Init initializes the GLFW library. Before most GLFW functions can be used,

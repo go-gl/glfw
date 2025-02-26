@@ -16,6 +16,7 @@ void* getVulkanProcAddr() {
 }
 */
 import "C"
+
 import (
 	"errors"
 	"fmt"
