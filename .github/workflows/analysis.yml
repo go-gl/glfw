@@ -1,0 +1,40 @@
+name: Static Analysis
+on: [push, pull_request]
+permissions:
+  contents: read
+
+jobs:
+  static_analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: actions/setup-go@v5
+      with:
+        go-version: 'stable'
+
+    - name: Install analysis tools
+      run: |
+        go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+        go install honnef.co/go/tools/cmd/staticcheck@latest
+
+    - name: Get dependencies
+      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
+
+    - name: Vet
+      run: |
+        cd v3.3/glfw && go vet ./...
+
+    - name: Formatting
+      run: |
+        cd v3.3/glfw && test -z "$(gofmt -e -d . | tee /dev/stderr)"
+
+    - name: Gocyclo
+      run: |
+        cd v3.3/glfw && gocyclo -over 30 .
+
+    - name: Staticcheck
+      run: |
+        cd v3.3/glfw && staticcheck ./...
