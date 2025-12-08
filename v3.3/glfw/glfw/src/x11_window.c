@@ -27,7 +27,9 @@
 // It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 
 #include "internal.h"
 
@@ -3234,4 +3236,3 @@ GLFWAPI const char* glfwGetX11SelectionString(void)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return getSelectionString(_glfw.x11.PRIMARY);
 }
-
