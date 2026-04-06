@@ -1,14 +1,14 @@
 [![Tests](https://github.com/go-gl/glfw/actions/workflows/tests.yml/badge.svg)](https://github.com/go-gl/glfw/actions/workflows/tests.yml)
 [![Static Analysis](https://github.com/go-gl/glfw/actions/workflows/analysis.yml/badge.svg)](https://github.com/go-gl/glfw/actions/workflows/analysis.yml)
-[![GoDoc](https://godoc.org/github.com/go-gl/glfw/v3.3/glfw?status.svg)](https://godoc.org/github.com/go-gl/glfw/v3.3/glfw)
+[![GoDoc](https://godoc.org/github.com/go-gl/glfw/v3.4/glfw?status.svg)](https://godoc.org/github.com/go-gl/glfw/v3.4/glfw)
 
-# GLFW 3.3 for Go 
+# GLFW 3.4 for Go
 
 ## Installation
 
 * GLFW C library source is included and built automatically as part of the Go package. But you need to make sure you have dependencies of GLFW:
 	* On macOS, you need Xcode or Command Line Tools for Xcode (`xcode-select --install`) for required headers and libraries.
-	* On Ubuntu/Debian-like Linux distributions, you need `libgl1-mesa-dev` and `xorg-dev` packages.
+	* On Ubuntu/Debian-like Linux distributions, the default Linux build enables both X11 and Wayland, so you need `libgl1-mesa-dev`, `xorg-dev`, `libwayland-dev`, `libxkbcommon-dev` and `wayland-protocols`.
 	* On CentOS/Fedora-like Linux distributions, you need `libX11-devel libXcursor-devel libXrandr-devel libXinerama-devel mesa-libGL-devel libXi-devel libXxf86vm-devel` packages.
 	* On FreeBSD, you need the package `pkgconf`. To build for X, you also need the package `xorg`; and to build for Wayland, you need the package `wayland`.
 	* On NetBSD, to build for X, you need the X11 sets installed. These are included in all graphical installs, and can be added to the system with `sysinst(8)` on non-graphical systems. Wayland support is incomplete, due to missing wscons support in upstream GLFW. To attempt to build for Wayland, you need to install the `wayland libepoll-shim` packages and set the environment variable `PKG_CONFIG_PATH=/usr/pkg/libdata/pkgconfig`.
@@ -17,7 +17,7 @@
 * Go 1.4+ is required on Windows (otherwise you must use MinGW v4.8.1 exactly, see [Go issue 8811](https://github.com/golang/go/issues/8811)).
 
 ```
-go get -u github.com/go-gl/glfw/v3.3/glfw
+go get -u github.com/go-gl/glfw/v3.4/glfw
 ```
 
 ### OpenGL ES
@@ -26,7 +26,7 @@ If your target system only provides an OpenGL ES implementation (true for some A
 You do this by defining the appropriate build tags, e.g.
 
 ```
-go get -u -tags=gles2 github.com/go-gl/glfw/v3.3/glfw
+go get -u -tags=gles2 github.com/go-gl/glfw/v3.4/glfw
 ```
 
 Supported tags are `gles1`, `gles2`, `gles3` and `vulkan`.
@@ -39,7 +39,7 @@ package main
 
 import (
 	"runtime"
-	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/go-gl/glfw/v3.4/glfw"
 )
 
 func init() {
@@ -71,6 +71,43 @@ func main() {
 ```
 
 ## Changelog
+
+### GLFW 3.4 Specific Changes
+
+* This section is cumulative for the v3.4 branch and includes changes from multiple commits.
+* Added support for dynamic runtime switching between X11 and Wayland on Linux.
+* Replaced compile-time Wayland icon checking with `glfwGetPlatform()`.
+* Mapped `GLFW_FEATURE_UNAVAILABLE` and `GLFW_FEATURE_UNIMPLEMENTED` to prevent go panics on unsupported platform features.
+* Mapped `GLFW_CURSOR_UNAVAILABLE` and `GLFW_PLATFORM_UNAVAILABLE`.
+* Added function `GetPlatform`.
+* Added function `PlatformSupported`.
+* Added function `InitAllocator`.
+* Added function `InitVulkanLoader`.
+* Added function `GetError`.
+* Added function `GetPhysicalDevicePresentationSupport`.
+* Added function `Window.GetTitle`.
+* Added function `Window.GetCocoaView`.
+* Added hint `MousePassthrough`.
+* Added hint `PositionX`.
+* Added hint `PositionY`.
+* Added hint `ContextDebug`.
+* Added hint `ContextNoError`.
+* Added hint `AnglePlatformType`.
+* Added hint `PlatformHint`.
+* Added hint `ScaleFramebuffer`.
+* Added hint `Win32KeyboardMenu`.
+* Added hint `Win32ShowDefault`.
+* Added hint `WaylandAppID`.
+* Added hint `WaylandLibdecor`.
+* Added hint `X11XcbVulkanSurface`.
+* Added hint value `AnyPosition`.
+* Added hint value `WaylandPreferLibdecor`.
+* Added hint value `WaylandDisableLibdecor`.
+* Added cursor mode value `CursorCaptured`.
+* `GLFW_UNLIMITED_MOUSE_BUTTONS` is not mapped because it is not present in the vendored GLFW C revision used by this package.
+* Added multiple new standard cursors like `PointingHandCursor`, `ResizeEWCursor`, etc.
+* Added `AnglePlatformType*` hint values for configuring ANGLE rendering backend.
+* Added `Platform` type and values (`AnyPlatform`, `PlatformWin32`, `PlatformCocoa`, `PlatformWayland`, `PlatformX11`, `PlatformNull`).
 
 ### GLFW 3.3 Specific Changes
 - Joystick functions now uses receivers instead of passing the joystick ID as argument.
@@ -136,8 +173,8 @@ func main() {
 * `GetClipboardString` No longer returns an error.
 
 
-### GLFW 3.2 Specfic Changes
-- Easy `go get` installation. GLFW source code is now included in-repo and compiled in so you don't have to build GLFW on your own and distribute shared libraries. The revision of GLFW C library used is listed in [GLFW_C_REVISION.txt](https://github.com/go-gl/glfw/blob/master/v3.3/glfw/GLFW_C_REVISION.txt) file.
+### GLFW 3.2 Specific Changes
+- Easy `go get` installation. GLFW source code is now included in-repo and compiled in so you don't have to build GLFW on your own and distribute shared libraries. The revision of GLFW C library used is listed in [GLFW_C_REVISION.txt](https://github.com/go-gl/glfw/blob/master/v3.2/glfw/GLFW_C_REVISION.txt) file.
 - The error callback is now set internally. Functions return an error with corresponding code and description (do a type assertion to glfw3.Error for accessing the variables) if the error is recoverable. If not a panic will occur.
 
 * Added function `Window.SetSizeLimits`.
@@ -158,7 +195,7 @@ func main() {
 * Added hint `EGLContextAPI`.
 
 
-### GLFW 3.1 Specfic Changes
+### GLFW 3.1 Specific Changes
 * Added type `Cursor`.
 * Added function `Window.SetDropCallback`.
 * Added function `Window.SetCharModsCallback`.

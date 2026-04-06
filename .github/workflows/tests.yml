@@ -10,6 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         go-version: ['', 'stable']
+        module-dir: ['v3.3/glfw', 'v3.4/glfw']
 
     steps:
     - uses: actions/checkout@v4
@@ -18,11 +19,11 @@ jobs:
     - uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go-version }}
-        go-version-file: 'go.mod' 
+        go-version-file: ${{ matrix.module-dir }}/go.mod
 
     - name: Get dependencies
-      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev
+      run: sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev libwayland-dev libxkbcommon-dev wayland-protocols
 
     - name: Tests
       run: |
-        cd v3.3/glfw && go test -race ./...
+        cd "${{ matrix.module-dir }}" && go test -race ./...
