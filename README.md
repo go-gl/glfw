@@ -17,7 +17,7 @@
 * Go 1.4+ is required on Windows (otherwise you must use MinGW v4.8.1 exactly, see [Go issue 8811](https://github.com/golang/go/issues/8811)).
 
 ```
-go get -u github.com/go-gl/glfw/v3.4/glfw
+go get github.com/go-gl/glfw/v3.4/glfw
 ```
 
 ### OpenGL ES
@@ -26,7 +26,7 @@ If your target system only provides an OpenGL ES implementation (true for some A
 You do this by defining the appropriate build tags, e.g.
 
 ```
-go get -u -tags=gles2 github.com/go-gl/glfw/v3.4/glfw
+go get -tags=gles2 github.com/go-gl/glfw/v3.4/glfw
 ```
 
 Supported tags are `gles1`, `gles2`, `gles3` and `vulkan`.
