@@ -205,7 +205,7 @@ const (
 
 	// AnyPosition is a hint value for PositionX and PositionY that lets the
 	// window manager decide the initial window position.
-	AnyPosition int = C.GLFW_ANY_POSITION
+	AnyPosition int = -1 << 31 // C.GLFW_ANY_POSITION
 )
 
 // Window represents a window.
