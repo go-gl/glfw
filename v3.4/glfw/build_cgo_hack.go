@@ -14,6 +14,7 @@ package glfw
 import (
 	// Prevent go tooling from stripping out the c source files.
 	_ "github.com/go-gl/glfw/v3.4/glfw/glfw/deps"
+	_ "github.com/go-gl/glfw/v3.4/glfw/glfw/include"
 	_ "github.com/go-gl/glfw/v3.4/glfw/glfw/include/GLFW"
 	_ "github.com/go-gl/glfw/v3.4/glfw/glfw/src"
 )
