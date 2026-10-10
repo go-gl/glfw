@@ -34,8 +34,8 @@ package glfw
 // -tags x11,wayland: both enabled (explicit)
 #cgo linux,!x11,!wayland CFLAGS: -D_GLFW_X11 -D_GLFW_WAYLAND
 #cgo linux,x11,!wayland CFLAGS: -D_GLFW_X11
-#cgo linux,!x11,wayland CFLAGS: -D_GLFW_WAYLAND
-#cgo linux,x11,wayland CFLAGS: -D_GLFW_X11 -D_GLFW_WAYLAND
+#cgo linux,!x11,wayland CFLAGS: -D_GLFW_WAYLAND -I /usr/include/wayland
+#cgo linux,x11,wayland CFLAGS: -D_GLFW_X11 -D_GLFW_WAYLAND -I /usr/include/wayland
 
 // Linker Options:
 #cgo linux,!gles1,!gles2,!gles3,!vulkan LDFLAGS: -lGL
