@@ -340,6 +340,24 @@ void _glfwPollMonitorsCocoa(void)
         {
             if (disconnected[j] && disconnected[j]->ns.unitNumber == unitNumber)
             {
+                // The same unit may come back with a new display ID, for
+                // example when switching between external and built-in
+                // displays, and the old ID is then no longer valid
+                if (disconnected[j]->ns.displayID != displays[i])
+                {
+                    disconnected[j]->ns.displayID = displays[i];
+                    disconnected[j]->ns.fallbackRefreshRate = 0.0;
+
+                    CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displays[i]);
+                    if (CGDisplayModeGetRefreshRate(mode) == 0.0)
+                    {
+                        disconnected[j]->ns.fallbackRefreshRate =
+                            getFallbackRefreshRate(displays[i]);
+                    }
+
+                    CGDisplayModeRelease(mode);
+                }
+
                 disconnected[j]->ns.screen = screen;
                 disconnected[j] = NULL;
                 break;
